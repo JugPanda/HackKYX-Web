@@ -109,7 +109,7 @@ export default async function GamePage({ params }: PageProps) {
             <Badge>
               {(game.config as { story?: { difficulty?: string } })?.story?.difficulty || "veteran"}
             </Badge>
-            <Badge variant="outline">
+            <Badge variant="default">
               {(game.config as { story?: { tone?: string } })?.story?.tone || "hopeful"}
             </Badge>
           </div>
