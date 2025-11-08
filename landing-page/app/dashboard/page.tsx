@@ -67,10 +67,8 @@ export default async function DashboardPage() {
                     <Badge
                       variant={
                         game.status === "published"
-                          ? "default"
-                          : game.status === "building"
-                            ? "secondary"
-                            : "outline"
+                          ? "success"
+                          : "default"
                       }
                     >
                       {game.status}
