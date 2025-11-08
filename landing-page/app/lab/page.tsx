@@ -15,6 +15,19 @@ import {
   MadlibPayload,
 } from "@/lib/schemas";
 
+type GeneratedConfig = {
+  story?: {
+    leadName?: string;
+    codename?: string;
+    hubDescription?: string;
+    rivalName?: string;
+    hubName?: string;
+    goal?: string;
+    tone?: MadlibPayload["tone"];
+    difficulty?: MadlibPayload["difficulty"];
+  };
+};
+
 const toneOptions: Array<{ label: string; value: MadlibPayload["tone"]; blurb: string }> = [
   { label: "Hopeful", value: "hopeful", blurb: "Bright synths, high morale" },
   { label: "Gritty", value: "gritty", blurb: "Grounded stakes, low resources" },
@@ -104,18 +117,21 @@ export default function MadlibLabPage() {
     }
   };
 
-  const applyGeneratedConfig = (config: any) => {
+  const applyGeneratedConfig = (config: GeneratedConfig | undefined) => {
+    if (!config || !config.story) {
+      return;
+    }
     setFormData((prev) => ({
       ...prev,
-      survivorName: config?.story?.leadName ?? prev.survivorName,
-      codename: config?.story?.codename ?? prev.codename,
-      survivorBio: config?.story?.hubDescription ?? prev.survivorBio,
-      nemesisName: config?.story?.rivalName ?? prev.nemesisName,
-      safehouseName: config?.story?.hubName ?? prev.safehouseName,
-      safehouseDescription: config?.story?.hubDescription ?? prev.safehouseDescription,
-      victoryCondition: config?.story?.goal ?? prev.victoryCondition,
-      tone: config?.story?.tone ?? prev.tone,
-      difficulty: config?.story?.difficulty ?? prev.difficulty,
+      survivorName: config.story?.leadName ?? prev.survivorName,
+      codename: config.story?.codename ?? prev.codename,
+      survivorBio: config.story?.hubDescription ?? prev.survivorBio,
+      nemesisName: config.story?.rivalName ?? prev.nemesisName,
+      safehouseName: config.story?.hubName ?? prev.safehouseName,
+      safehouseDescription: config.story?.hubDescription ?? prev.safehouseDescription,
+      victoryCondition: config.story?.goal ?? prev.victoryCondition,
+      tone: config.story?.tone ?? prev.tone,
+      difficulty: config.story?.difficulty ?? prev.difficulty,
     }));
   };
 
