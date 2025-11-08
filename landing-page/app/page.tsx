@@ -76,6 +76,34 @@ const engineHighlights = [
   },
 ];
 
+const enginePipeline = [
+  {
+    title: "Madlib prompts",
+    detail: "Writers pick the lead, rival, hub space, tone, and goals in plain language. The UI keeps inputs synced with validation.",
+  },
+  {
+    title: "Schema-checked JSON",
+    detail: "The builder emits a payload that matches the `madlibSchema` consumed by demo-game/main.py, so characters, difficulty, and art drop in automatically.",
+  },
+  {
+    title: "Runtime patching",
+    detail: "The Python engine ingests that JSON, seeds NPC names, HUD colors, and room props, then pygbag bundles everything into the playable demo you saw above.",
+  },
+];
+
+const engineConfigSample = `{
+  "characters": {
+    "survivor": {"name": "Dr. Rowan", "codename": "Beacon"},
+    "nemesis": {"name": "Mireborn", "threatLevel": "Delta"}
+  },
+  "world": {
+    "safehouse": {"name": "Riverside Relay", "media": "data:image/png;base64,..."},
+    "victoryCondition": "Synthesize the relay serum",
+    "tone": "hopeful",
+    "difficulty": "veteran"
+  }
+}`;
+
 const roadmap = [
   {
     phase: "Now",
@@ -464,32 +492,44 @@ export default function HomePage() {
             </div>
           </section>
 
-          <section id="engine" className="grid gap-8 py-12 lg:grid-cols-2">
-            <Card className="h-full border-slate-800/70 bg-slate-950/40">
-              <CardContent className="space-y-5 p-8">
-                <p className="text-xs uppercase tracking-[0.35em] text-slate-500">Playable snippet</p>
-                <pre className="overflow-x-auto rounded-2xl bg-black/70 p-6 text-sm text-emerald-200">
-{`room.add_platform({
-  x: 360,
-  y: 420,
-  width: 160,
-  material: "stone",
-  on_enter=lambda player: player.boost(1.25)
-})`}
+        <section id="engine" className="grid gap-8 py-12 lg:grid-cols-2">
+          <Card className="h-full border-slate-800/70 bg-slate-950/40">
+            <CardContent className="space-y-6 p-8">
+              <p className="text-xs uppercase tracking-[0.35em] text-slate-500">Engine pipeline</p>
+              <div className="space-y-4">
+                {enginePipeline.map((step, idx) => (
+                  <div key={step.title} className="flex gap-4 text-sm text-slate-300">
+                    <div className="mt-1 flex h-7 w-7 items-center justify-center rounded-full border border-emerald-400/40 text-xs text-emerald-200">
+                      {idx + 1}
+                    </div>
+                    <div>
+                      <p className="text-base font-semibold text-white">{step.title}</p>
+                      <p className="text-slate-400">{step.detail}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <div className="space-y-3">
+                <p className="text-xs uppercase tracking-[0.35em] text-slate-500">Config sample</p>
+                <pre className="overflow-x-auto rounded-2xl bg-black/70 p-6 text-xs leading-relaxed text-emerald-200">
+{engineConfigSample}
                 </pre>
                 <p className="text-slate-400">
-                  Edit JSON or Python, save, and watch the running build patch in place. No reload. No downtime.
+                  That payload is exactly what fuels <code className="font-mono text-emerald-200">demo-game/main.py</code> and the iframe demo above.
+                  Update the JSON with Madlib, rerun <code className="font-mono text-emerald-200">pygbag</code>, and the playable build refreshes instantly.
                 </p>
-                <div className="flex items-center gap-3 text-sm text-slate-300">
-                  <PlayCircle className="h-4 w-4" />
-                  Preview URLs update every time your branch pushes.
-                </div>
-              </CardContent>
-            </Card>
-            <Card className="h-full border-slate-800/70 bg-gradient-to-br from-slate-900/70 via-slate-900/40 to-slate-800/40">
-              <CardContent className="space-y-5 p-8">
-                <p className="text-xs uppercase tracking-[0.35em] text-slate-500">Engine highlights</p>
-                <div className="space-y-4">
+              </div>
+              <Button size="lg" className="w-full" asChild>
+                <Link href="/lab">
+                  Open builder → game
+                </Link>
+              </Button>
+            </CardContent>
+          </Card>
+          <Card className="h-full border-slate-800/70 bg-gradient-to-br from-slate-900/70 via-slate-900/40 to-slate-800/40">
+            <CardContent className="space-y-5 p-8">
+              <p className="text-xs uppercase tracking-[0.35em] text-slate-500">Engine highlights</p>
+              <div className="space-y-4">
                   {engineHighlights.map((item) => (
                     <div key={item.title} className="rounded-2xl border border-slate-800/70 bg-slate-950/40 p-5">
                       <div className="flex items-center gap-3">
