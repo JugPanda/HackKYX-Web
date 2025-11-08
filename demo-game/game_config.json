@@ -1,12 +1,12 @@
 {
-  "survivorName": "Create",
-  "codename": "Create",
-  "nemesisName": "The Mireborn",
-  "survivorBio": "Create 2d platformer",
-  "safehouseName": "Gravity Bastion",
-  "safehouseDescription": "Create 2d platformer",
+  "survivorName": "Astra Quinn",
+  "codename": "Astra",
+  "nemesisName": "Rust Choir",
+  "survivorBio": "create a 2d platformer",
+  "safehouseName": "Bloom Harbor",
+  "safehouseDescription": "create a 2d platformer",
   "safehouseImage": "",
-  "victoryCondition": "Restore power to the drifting city",
+  "victoryCondition": "Smuggle survivors across the skyline",
   "tone": "hopeful",
   "difficulty": "veteran"
 }
