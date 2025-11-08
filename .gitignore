@@ -43,3 +43,10 @@ web/
 *.wasm
 *.data
 
+# Node / Next.js
+node_modules/
+.next/
+landing-page/node_modules/
+landing-page/.next/
+landing-page/.turbo/
+landing-page/out/

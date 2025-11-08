@@ -1,0 +1,58 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: 1 4 9;
+  --foreground: 244 247 255;
+}
+
+body {
+  font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  color: rgb(var(--foreground));
+  background: #010409;
+  min-height: 100vh;
+  position: relative;
+  overflow-x: hidden;
+}
+
+body::before,
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: -1;
+}
+
+body::before {
+  background-image:
+    radial-gradient(circle at 20% 20%, rgba(56, 189, 248, 0.2), transparent 45%),
+    radial-gradient(circle at 80% 0%, rgba(16, 185, 129, 0.12), transparent 50%),
+    radial-gradient(circle at 0% 60%, rgba(99, 102, 241, 0.15), transparent 40%);
+  filter: drop-shadow(0 0 120px rgba(56, 189, 248, 0.4));
+}
+
+body::after {
+  background-image: linear-gradient(
+      120deg,
+      rgba(13, 17, 23, 0.9),
+      rgba(1, 4, 9, 0.95),
+      rgba(0, 0, 0, 0.9)
+    ),
+    linear-gradient(
+      rgba(255, 255, 255, 0.02) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0.02) 1px,
+      transparent 1px
+    );
+  background-size: auto, 120px 120px, 120px 120px;
+  mix-blend-mode: screen;
+}
+
+::selection {
+  background: rgba(99, 102, 241, 0.25);
+}
