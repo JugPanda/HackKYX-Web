@@ -464,16 +464,16 @@ export default function HomePage() {
             </div>
           </section>
 
-          <section id="creatives" className="space-y-8 py-12">
-            <div className="flex flex-col gap-4 text-center">
-              <p className="text-xs uppercase tracking-[0.35em] text-slate-500">For non-technical creatives</p>
-              <h2 className="text-3xl font-semibold text-white sm:text-4xl">
-                Make the apocalypse feel personal—no coding required.
-              </h2>
-              <p className="text-slate-400">
-                Whether you draw, write, or stream, KYX keeps the controls approachable so anyone can sculpt
-                their own lore, props, and hero moments in a few clicks.
-              </p>
+        <section id="creatives" className="space-y-8 py-12">
+          <div className="flex flex-col gap-4 text-center">
+            <p className="text-xs uppercase tracking-[0.35em] text-slate-500">For non-technical creatives</p>
+            <h2 className="text-3xl font-semibold text-white sm:text-4xl">
+              Make a playable story—no coding required.
+            </h2>
+            <p className="text-slate-400">
+              Whether you draw, write, or stream, KYX keeps the controls approachable so anyone can sculpt
+              their own lore, props, and hero moments in a few clicks.
+            </p>
             </div>
             <div className="grid gap-6 md:grid-cols-3">
               {creativeFeatures.map((feature) => (
