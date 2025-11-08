@@ -492,7 +492,7 @@ export default function MadlibLabPage() {
                         <div className="text-center text-white/80">
                           <p className="text-3xl mb-2">🎮</p>
                           <p className="text-sm font-semibold">{formData.survivorName || "Your Hero"}</p>
-                          <p className="text-xs opacity-75">vs {formData.nemesisName || &quot;The Enemy&quot;}</p>
+                          <p className="text-xs opacity-75">vs {formData.nemesisName || "The Enemy"}</p>
                         </div>
                       </div>
                     )}
