@@ -43,7 +43,7 @@ export default async function CommunityPage() {
                         by {game.profiles?.username || "Anonymous"}
                       </CardDescription>
                     </div>
-                    <Badge variant="secondary">
+                    <Badge variant="default">
                       {(game.config as { story?: { difficulty?: string } })?.story?.difficulty || "veteran"}
                     </Badge>
                   </div>

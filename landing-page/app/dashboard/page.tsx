@@ -85,7 +85,7 @@ export default async function DashboardPage() {
                   <div className="flex items-center gap-4 text-sm text-muted-foreground mb-4">
                     <span>❤️ {game.like_count}</span>
                     <span>▶️ {game.play_count}</span>
-                    <Badge variant="outline">{game.visibility}</Badge>
+                    <Badge variant="default">{game.visibility}</Badge>
                   </div>
 
                   <div className="flex gap-2">
