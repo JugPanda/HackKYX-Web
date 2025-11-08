@@ -1,11 +1,19 @@
 # Multi-Room Platformer & KYX Builder
 
-This repo bundles two halves of the KYX experience:
+This repo bundles **three** components of the KYX experience:
 
-1. `demo-game/` – a pygame-ce + pygbag multi-room platformer inspired by Hollow Knight, complete with sprinting, dashing, dust FX, and smarter enemy AI.
-2. `landing-page/` – a Next.js 14 site that markets the engine, embeds the latest pygbag build, and hosts a Madlib-style config editor that outputs the JSON consumed by the Python game.
+1. **`demo-game/`** – a pygame-ce + pygbag multi-room platformer inspired by Hollow Knight, complete with sprinting, dashing, dust FX, and smarter enemy AI.
+2. **`landing-page/`** – a Next.js 14 site with AI-powered game creation, user authentication, community features, and a dashboard for managing games.
+3. **`build-service/`** – a Python Flask service that builds games using pygbag and deploys them to Supabase Storage.
 
-Use the Madlib lab to define characters and tone, run `pygbag` to regenerate the WebAssembly build, copy the bundle into `landing-page/public/demo-game/`, and redeploy so visitors can instantly play the refresh.
+## 🎮 Full Platform Features
+
+- **AI Game Generation**: Describe your game idea and GPT-4 generates the Python code
+- **Community Platform**: Share games, like, comment, and discover other creators
+- **User Authentication**: Sign up with email/password via Supabase
+- **Build System**: Separate Python service converts games to WebAssembly
+- **Cloud Storage**: Games hosted on Supabase Storage
+- **Dashboard**: Track build status and manage your published games
 
 ## Gameplay Features
 
@@ -21,9 +29,31 @@ Use the Madlib lab to define characters and tone, run `pygbag` to regenerate the
 - `demo-game/main.py` – Python/pygame game logic
 - `demo-game/build/` – Output of `pygbag main.py` (WebAssembly bundle + APK)
 - `demo-game/game_config.json` – Story + tuning values merged into the runtime at launch
-- `landing-page/` – Next.js marketing site and Madlib lab
-- `landing-page/public/demo-game/` – Static copy of the latest pygbag build served by the site
-- Root docs (`README.md`, `INDEX.md`, `notes.txt`) plus `requirements.txt`
+- `landing-page/` – Next.js marketing site, game creator, and community platform
+- `build-service/` – **Python Flask build service** (see [Build Service Guide](./build-service/DEPLOY_GUIDE.md))
+- Root docs (`README.md`, `INDEX.md`, `SETUP.md`, `ARCHITECTURE.md`)
+
+## 🚀 Quick Start (Full Platform)
+
+### 1. Deploy the Build Service First
+
+The build service is required for users to build and publish games. See the [Build Service Deploy Guide](./build-service/DEPLOY_GUIDE.md) for step-by-step instructions.
+
+**TL;DR**: Deploy `build-service/` to Railway (free), set environment variables, get the service URL.
+
+### 2. Configure Vercel Environment Variables
+
+Add these to your Vercel project (in addition to Supabase and OpenAI keys):
+- `BUILD_SERVICE_URL` - Your deployed build service URL
+- `BUILD_SERVICE_SECRET` - Shared secret for authentication
+
+### 3. Done!
+
+Users can now:
+1. Create games with AI on your site
+2. Build and publish games (processed by the build service)
+3. Share games in the community
+4. Play games directly in the browser
 
 ## Requirements
 

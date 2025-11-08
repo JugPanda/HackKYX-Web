@@ -1,0 +1,18 @@
+services:
+  - type: web
+    name: kyx-build-service
+    env: docker
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    plan: free
+    healthCheckPath: /health
+    envVars:
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_SERVICE_KEY
+        sync: false
+      - key: BUILD_SERVICE_SECRET
+        sync: false
+      - key: PORT
+        value: 8080
+
