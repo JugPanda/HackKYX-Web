@@ -3,67 +3,70 @@
 _Last updated: 2025-11-08 (UTC)_
 
 ## Snapshot
-- Core gameplay lives in `main.py` (492 lines): a pygame-ce multi-room platformer with async game loop, platform/enemy classes, wraparound room transitions, and pygbag compatibility.
-- `index.html` (821 lines) is a Bottle Episodes mod-creator UI with a dark gradient layout, live JSON builder, validation, and download helpers for the sample `example_mod.json`.
-- `build/` holds the pygbag export pipeline (version `0.9.2`), including the generated web bundle plus an Android APK and accompanying cache blobs.
-- Documentation (`README.md`, `INDEX.md`) and dependency pinning (`requirements.txt`) live at the repo root alongside `.gitignore` rules.
-- Generated folders (`build/web-cache`, `__pycache__/`) are safe to delete before rebuilding or committing.
+- `demo-game/` contains the Hollow Knight-inspired pygame-ce platformer with sprint/dash, dust FX, parallax art, and asynchronous pygbag loop.
+- `landing-page/` is the Next.js 14 marketing site + Madlib lab. It embeds the pygbag build (copied into `landing-page/public/demo-game/`) so visitors can play the Python demo inside the site.
+- Root docs (`README.md`, `notes.txt`, this index) describe how the Python game and Next.js site work together; `requirements.txt` pins pygame-ce + pygbag.
+- Generated folders (`demo-game/build/web-cache`, `demo-game/__pycache__`, `landing-page/.next/`) are safe to delete/regenerate.
 
 ## Directory Tree
 ```
 HackKentucky-KYX/
-├── main.py
-├── index.html
+├── demo-game/
+│   ├── main.py
+│   └── build/
+│       ├── version.txt
+│       ├── web/
+│       │   ├── favicon.png
+│       │   ├── demo-game.apk
+│       │   └── index.html
+│       └── web-cache/
+│           └── hashed *.data/*.head/*.tmpl chunks from pygbag
+├── landing-page/
+│   ├── app/
+│   │   ├── page.tsx
+│   │   ├── lab/page.tsx
+│   │   └── api/madlib/route.ts
+│   ├── lib/schemas.ts
+│   ├── public/demo-game/  # copy of demo-game/build/web
+│   └── … (components, configs, package.json, etc.)
+├── index.html             # legacy Bottle Episodes tool
 ├── example_mod.json
 ├── requirements.txt
 ├── README.md
-├── INDEX.md
+├── notes.txt
 ├── .gitignore
-├── build/
-│   ├── version.txt
-│   ├── web/
-│   │   ├── favicon.png
-│   │   ├── hackkentucky-kyx.apk
-│   │   └── index.html
-│   └── web-cache/
-│       └── hashed *.data / *.head / *.tmpl chunks from pygbag
-├── __pycache__/
-│   └── main.cpython-312.pyc
 └── .git/
 ```
 
 ## File Details
 
-### Gameplay Code
-- `main.py` – Async `asyncio.run(main())` entry point that sets up the pygame window, `Room`/`Platform` layout definitions (5 rooms), and `Player` plus simple patrolling `Enemy` AI. Supports WASD/arrow movement, variable jump heights, friction, stomp/bounce logic, HUD text, and looping room transitions for both desktop and web builds.
+### Gameplay Code (`demo-game/`)
+- `main.py` – Asynchronous pygame-ce loop with Hollow Knight-inspired palette, parallax backgrounds, sprint/dash player controller, dust particles, horned sprite rendering, health orbs, and smarter enemies. Designed for pygbag (WebAssembly) export and for consumption of Madlib-generated JSON.
+- `build/` – Output of `pygbag main.py`. `web/` holds the distributable bundle copied into the Next.js public folder; `web-cache/` caches pygbag chunks; `version.txt` tracks pygbag version.
 
-### Web & Modding Tools
-- `index.html` – Single-page tool for creating Bottle Episodes mods. Includes CSS for a frosted-glass dark UI, form sections for game settings, characters, environment, and items, a live JSON preview pane, copy/download buttons, and color pickers. Runs fully client-side (vanilla JS).
-- `example_mod.json` – Sample “Shadow Runner Mod” payload showing the JSON schema produced by the web tool (metadata, stats, environment, inventory, hazards, and crafting flags).
+### Website & Builder (`landing-page/`)
+- `app/page.tsx` – Marketing copy, engine pipeline explanation, iframe pointing to `/demo-game/index.html`, stats/workflow sections.
+- `app/lab/page.tsx` – Madlib-style UI generalized to “lead/rival/hub”, emitting payloads defined in `lib/schemas.ts`.
+- `app/api/madlib/route.ts` – Validates payloads (Zod), emits server response consumed by the UI.
+- `lib/schemas.ts` – Shared schema/types for the Madlib form, API, and documentation (kept in Git by `.gitignore` exception).
+- `public/demo-game/` – Static copy of the latest pygbag bundle (overwrite after each `pygbag` run).
+- `.eslintrc.json`, `tsconfig.json`, `package.json`, etc. – Next.js tooling (Strict ESLint preset).
 
-### Build Outputs
-- `build/version.txt` – Tracks the current pygbag export version (`0.9.2`) for the produced assets.
-- `build/web/` – The distributable bundle created by `pygbag main.py`, containing the WASM-ready HTML shell plus an `hackkentucky-kyx.apk` mobile package and favicon.
-- `build/web-cache/` – Hashed `.data`, `.head`, and `.tmpl` chunks written by pygbag’s caching layer; regenerate by rerunning the build.
+### Legacy Web Tool
+- `index.html` + `example_mod.json` – Bottle Episodes mod creator reference UI/sample payload (vanilla JS). Not tied to the Next.js site but kept for historical context.
 
-### Documentation & Configuration
-- `README.md` (123 lines) – Primary setup and usage guide: highlights pygame-ce requirements, install steps, local/web run commands, control scheme, and customization knobs.
-- `INDEX.md` – This living document that inventories every file/folder for quick onboarding.
-- `requirements.txt` – Python dependency pins (`pygame-ce>=2.3.0`, `pygbag>=0.6.0`) plus reminders to remove vanilla pygame to avoid conflicts.
-- `.gitignore` – Filters out Python caches, virtualenvs, editor junk, OS files, and pygbag artifacts (`build/`, `web/`, `*.wasm`, `*.data`).
-
-### Generated Artifacts
-- `build/web-cache/` – Recreated whenever pygbag stages assets; safe to clean if space is needed.
-- `__pycache__/main.cpython-312.pyc` – CPython bytecode from the most recent local run.
-- `.git/` – Local repository metadata (logs, refs, hooks).
+### Documentation & Config
+- `README.md` – Explains both halves of the project, controls, pygbag workflow, and how to refresh the website embed.
+- `notes.txt` – Development log covering combat, AI, visual pass, dash/dust systems, and site integration.
+- `requirements.txt` – Python dependency pins (`pygame-ce>=2.3.0`, `pygbag>=0.6.0`) with reminder to uninstall vanilla pygame.
+- `.gitignore` – Ignores common Python/Node artifacts plus pygbag output while whitelisting `landing-page/lib/`.
 
 ## Quick Reference
-- Run the platformer locally: `python main.py`
-- Build for the web (outputs to `build/`): `pygbag main.py`
-- Launch the mod creator: open `index.html` in any modern browser
-- Install dependencies: `pip install -r requirements.txt` (after uninstalling vanilla `pygame` if present)
+- Install Python deps: `pip install -r requirements.txt` (after `pip uninstall pygame` if necessary)
+- Run game locally: `cd demo-game && python main.py`
+- Build for web: `cd demo-game && pygbag main.py`
+- Update website embed: copy `demo-game/build/web/*` → `landing-page/public/demo-game/`
+- Run website: `cd landing-page && npm install && npm run dev`
+- Lint/build website: `npm run lint && npm run build`
 
----
-
-Use this index as the jumping-off point before editing gameplay code, tweaking the web tool, or pruning build artifacts.
-
+Use this index as a quick map before editing gameplay code, tweaking the Next.js site, or regenerating pygbag assets.

@@ -1,123 +1,131 @@
-# Multi-Room Platformer Game
+# Multi-Room Platformer & KYX Builder
 
-A 2D platformer game built with pygame-ce and pygbag, featuring multiple rooms, smooth physics, and web compatibility.
+This repo bundles two halves of the KYX experience:
 
-## Features
+1. `demo-game/` – a pygame-ce + pygbag multi-room platformer inspired by Hollow Knight, complete with sprinting, dashing, dust FX, and smarter enemy AI.
+2. `landing-page/` – a Next.js 14 site that markets the engine, embeds the latest pygbag build, and hosts a Madlib-style config editor that outputs the JSON consumed by the Python game.
 
-- Multi-room gameplay with seamless transitions
-- Smooth player movement with advanced physics
-- Variable jump height (hold jump to jump higher)
-- Multiple platform layouts across 5 different rooms
-- Precise collision detection
-- Web-ready with pygbag support
-- Room transitions when walking off screen edges
+Use the Madlib lab to define characters and tone, run `pygbag` to regenerate the WebAssembly build, copy the bundle into `landing-page/public/demo-game/`, and redeploy so visitors can instantly play the refresh.
+
+## Gameplay Features
+
+- Multi-room exploration with wraparound transitions, parallax silhouettes, and ambient fireflies
+- Sprint (Shift) and dash (Ctrl/J) with cooldown, reduced gravity, and runway dust particles
+- Variable jump height, friction-based movement, and Hollow Knight-inspired character art
+- Health system with glowing HUD orbs, invulnerability frames, knockback, and game-over overlays
+- Enemies driven by patrol/chase/attack states, edge awareness, and vertical navigation
+- JSON-configured lore injected via the Madlib lab and surfaced in the playable iframe
+
+## Repository Layout
+
+- `demo-game/main.py` – Python/pygame game logic
+- `demo-game/build/` – Output of `pygbag main.py` (WebAssembly bundle + APK)
+- `landing-page/` – Next.js marketing site and Madlib lab
+- `landing-page/public/demo-game/` – Static copy of the latest pygbag build served by the site
+- Root docs (`README.md`, `INDEX.md`, `notes.txt`) plus `requirements.txt`
 
 ## Requirements
 
-- Python 3.8 or higher
-- pygame-ce
-- pygbag (for web deployment)
+- Python 3.8+ (3.12 used here)
+- `pygame-ce` and `pygbag` (installed via `requirements.txt`)
+- Node 18+ (for the Next.js site)
 
-## Installation
+## Python Game Setup
 
-### Important: pygame-ce vs pygame
+### Install Dependencies
 
-This project uses **pygame-ce** (Community Edition), not the original pygame. If you have the original pygame installed, it may conflict. Follow these steps:
+> ⚠️ This project uses **pygame-ce**, not the original pygame.
 
-1. **Uninstall original pygame (if installed):**
 ```bash
-pip uninstall pygame
-```
-
-2. **Install pygame-ce and other dependencies:**
-```bash
+pip uninstall pygame          # only if vanilla pygame is installed
 pip install -r requirements.txt
 ```
 
-3. **Verify installation:**
+Verify:
+
 ```bash
 python -c "import pygame; print(pygame.version.ver)"
 ```
 
-If you see an import error, make sure:
-- You're using the correct Python environment
-- pygame-ce is installed (not the original pygame)
-- Your IDE is using the correct Python interpreter
+### Run Locally
 
-## Running the Game
-
-### Local Development
-
-Run the game locally:
 ```bash
+cd demo-game
 python main.py
 ```
 
-### Web Deployment with pygbag
-
-To build and run the game in a web browser:
+### Build for the Web (pygbag)
 
 ```bash
+cd demo-game
 pygbag main.py
 ```
 
-This will:
-1. Compile the game to WebAssembly
-2. Start a local server
-3. Open the game in your browser at `http://localhost:8000`
+This compiles to WebAssembly, serves a preview at <http://localhost:8000>, and writes the distributable bundle into `demo-game/build/web/`.
 
-**Note**: The game is now async-compatible for web deployment. The code uses `asyncio` to ensure smooth operation in the browser.
+To update the website embed, copy the build into the Next.js public folder:
 
-For production deployment, you can build the game and host the generated files on any web server.
+```bash
+rm -rf landing-page/public/demo-game
+cp -r demo-game/build/web landing-page/public/demo-game
+```
+
+After copying, re-run `npm run build` inside `landing-page/` and redeploy (e.g., via Vercel) so `/demo-game/index.html` serves the refreshed build.
 
 ## Controls
 
-- **Arrow Keys** or **WASD**: Move left/right
-- **Space** or **Up Arrow**: Jump (hold to jump higher)
-- **Walk off screen edges**: Transition between rooms
-- **Close window**: Quit game
+| Action | Input |
+| --- | --- |
+| Move | Arrow keys or WASD |
+| Sprint | Left/Right Shift |
+| Dash | Ctrl / J (short cooldown) |
+| Jump | Space / Up Arrow (hold for higher) |
+| Room change | Walk off screen edges |
 
-## Game Mechanics
+## Key Mechanics
 
-- **Gravity**: Player falls naturally when not on a platform
-- **Variable Jump**: Hold jump button to jump higher (variable jump height)
-- **Movement**: Smooth horizontal movement with friction
-- **Collision**: Precise collision detection with platforms
-- **Room System**: 5 different rooms with unique platform layouts
-- **Room Transitions**: Walk off the left or right edge to move between rooms
-
-## Project Structure
-
-```
-.
-├── main.py              # Main game file
-├── requirements.txt     # Python dependencies
-└── README.md           # This file
-```
+- **Physics** – Variable jumps, friction, reduced-gravity dashes
+- **FX** – Hollow Knight-inspired palette, cloak animation, dust particles, fireflies, parallax layers
+- **Health** – Orb HUD, invulnerability flashes, knockback, death overlay
+- **AI** – Patrol/chase/attack state machine, edge detection, jump decisions, separate horizontal/vertical collision resolution
+- **HUD** – Instruction stack, health orbs, dynamic game-over messaging
 
 ## Customization
 
-You can easily customize the game by modifying constants in `main.py`:
+`demo-game/main.py` is heavily parameterized. Modify constants to change window size, gravity, dash speed, palette, and room layouts. Add new `Room` instances or enemies, tweak the Madlib-driven storyline, or hook up additional sprites.
 
-- `WINDOW_WIDTH` / `WINDOW_HEIGHT`: Game window size
-- `GRAVITY`: How fast the player falls
-- `jump_power` / `initial_jump_power`: Jump height settings
-- `PLAYER_SPEED`: Horizontal movement speed
-- `FRICTION`: Ground friction coefficient
-- Colors: Modify the color constants for different palettes
-- Rooms: Add or modify room layouts in the `rooms` list
+## Website (landing-page/)
 
-## Adding More Features
+```bash
+cd landing-page
+npm install
+npm run dev   # local preview
+npm run lint  # strict Next.js preset
+npm run build # production build
+```
 
-The game structure makes it easy to add:
-- Enemies
-- Collectibles
-- Multiple levels
-- Sound effects
-- Sprite animations
-- Power-ups
+Key files:
+
+- `app/page.tsx` – marketing content, iframe embed, engine pipeline explanation
+- `app/lab/page.tsx` – Madlib UI that emits the JSON stored in `lib/schemas.ts`
+- `lib/schemas.ts` – Zod schema + TypeScript types shared by UI and API
+- `app/api/madlib/route.ts` – Validates payloads and echoes the config consumed by `demo-game/main.py`
+- `public/demo-game/` – static pygbag bundle served at `/demo-game/index.html`
+
+### Recommended Deployment Settings
+
+- Framework preset: **Next.js**
+- Build command: `npm run build` (default)
+- Output: `.next`
+
+## Workflow Recap
+
+1. Adjust story/lore via the Madlib lab (or edit JSON manually).
+2. Feed the payload into `demo-game/main.py` logic if needed.
+3. Run `pygbag main.py` from `demo-game/` to regenerate the WebAssembly bundle.
+4. Copy `demo-game/build/web/*` into `landing-page/public/demo-game/`.
+5. `npm run build` in `landing-page/` and redeploy (Vercel, etc.).
 
 ## License
 
-This project is open source and available for modification and distribution.
-
+Open source – modify, extend, and redistribute freely.

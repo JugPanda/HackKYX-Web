@@ -31,3 +31,18 @@
 ## 6. Jump Collision Fixes
 - Enemy movement now resolves horizontal and vertical collisions separately (mirroring the player logic), so when an enemy jumps and brushes a platform edge it no longer gets teleported sideways.
 - Added historical position checks for vertical impacts to determine whether the enemy landed on top, hit from below, or just grazed the side, ensuring consistent placement after jumps.
+
+## 7. Hollow Knight Visual Pass
+- Added global color palette, gradient sky, parallax silhouettes, mist overlay, fireflies, and glowing HUD elements to echo Hollow Knight’s tone.
+- Platform sprites now have cyan etching, player sprite renders cloaks/horns/shadow, enemies get additive glows, and UI font switch to orb-based health indicators.
+- Ground + background surfaces are cached so the new effects remain performant.
+
+## 8. Movement Upgrades
+- Player gains sprint (Shift) and dash (Ctrl/J) with cooldown timers, gravity scaling, invulnerability flashes, and exhaust dust particles tied to movement speed.
+- Dash logic includes direction locking, knockback-safe invulnerability window, and variable gravity to keep aerial control crisp.
+- Dust particles are spawned via `GroundDustParticle` helper and rendered both from movement and dash bursts.
+
+## 9. Website + Madlib Integration
+- Landing page (Next.js) now embeds `landing-page/public/demo-game/index.html` via iframe, includes engine pipeline explaining how Madlib JSON feeds `demo-game/main.py`, and features generalized copy (no longer zombie-only).
+- Madlib lab language updated to “lead/rival/hub” terminology while still outputting compatible JSON.
+- Added documentation in README/INDEX to describe copying `demo-game/build/web` into the Next.js public folder so the playable iframe stays up to date.
