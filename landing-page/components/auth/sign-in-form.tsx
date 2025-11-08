@@ -11,10 +11,22 @@ export function SignInForm() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
-  const supabase = createClient();
+  
+  // Check if Supabase is configured
+  const isConfigured = process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  const supabase = isConfigured ? createClient() : null;
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!supabase) {
+      setMessage({ 
+        type: "error", 
+        text: "Supabase is not configured. Please add environment variables." 
+      });
+      return;
+    }
+    
     setLoading(true);
     setMessage(null);
 
@@ -40,6 +52,11 @@ export function SignInForm() {
         <CardDescription>Sign in to create and manage your KYX games</CardDescription>
       </CardHeader>
       <CardContent>
+        {!isConfigured && (
+          <div className="p-3 mb-4 text-sm rounded bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400">
+            ⚠️ Supabase not configured. Please add your environment variables to <code className="font-mono">.env.local</code>
+          </div>
+        )}
         <form onSubmit={handleSignIn} className="space-y-4">
           <div>
             <Input

@@ -1,0 +1,97 @@
+%PDF-1.4
+1 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
+endobj
+2 0 obj
+<< /Length 2827 >>
+stream
+BT
+/F1 12 Tf
+1 0 0 1 72.00 750.00 Tm (KYX PLATFORM TECH STACK) Tj
+1 0 0 1 72.00 702.00 Tm (AT A GLANCE) Tj
+1 0 0 1 72.00 670.00 Tm (• Dual surface: `landing-page/` \(Next.js marketing + community UI\) and `demo-game/`) Tj
+1 0 0 1 72.00 654.00 Tm (\(Python/pygame platformer shipped through pygbag\)) Tj
+1 0 0 1 72.00 638.00 Tm (• Shared config JSON generated via the Madlib lab UI or `/api/generate-config`, consumed) Tj
+1 0 0 1 72.00 622.00 Tm (by both the Python runtime and Next.js APIs) Tj
+1 0 0 1 72.00 606.00 Tm (• Supabase handles PostgreSQL data, authentication, and storage for published WebAssembly) Tj
+1 0 0 1 72.00 590.00 Tm (bundles) Tj
+1 0 0 1 72.00 558.00 Tm (FRONTEND \(LANDING-PAGE/\)) Tj
+1 0 0 1 72.00 526.00 Tm (• **Next.js 14 \(App Router\) & React 18** for server components, streaming routes, and) Tj
+1 0 0 1 72.00 510.00 Tm (client-side interactivity) Tj
+1 0 0 1 72.00 494.00 Tm (• **TypeScript** across app routes, API handlers, and shared schema utilities) Tj
+1 0 0 1 72.00 478.00 Tm (• **Tailwind CSS** plus **shadcn/ui** primitives for layout, theming, and accessible) Tj
+1 0 0 1 72.00 462.00 Tm (components) Tj
+1 0 0 1 72.00 446.00 Tm (• **Lucide React** icons and **next-themes** for light/dark mode support) Tj
+1 0 0 1 72.00 430.00 Tm (• Madlib lab UI on `/lab` that emits config JSON and posts to the build pipeline) Tj
+1 0 0 1 72.00 414.00 Tm (• Community surfaces: `/community`, `/dashboard`, `/auth/*` built atop Supabase auth) Tj
+1 0 0 1 72.00 398.00 Tm (helpers and route middleware) Tj
+1 0 0 1 72.00 366.00 Tm (BACKEND & APIS) Tj
+1 0 0 1 72.00 334.00 Tm (• Next.js API routes \(`app/api/*`\) for game CRUD, build queue orchestration, prompt-to-) Tj
+1 0 0 1 72.00 318.00 Tm (config generation, comments, reports, and moderation) Tj
+1 0 0 1 72.00 302.00 Tm (• Supabase client for server-side actions plus RLS-protected access from the browser) Tj
+1 0 0 1 72.00 286.00 Tm (• Rate limiting + content filtering utilities \(in-memory guards plus heuristics on user-) Tj
+1 0 0 1 72.00 270.00 Tm (generated text\)) Tj
+1 0 0 1 72.00 254.00 Tm (• Build processor endpoints \(`/api/games/build`, `/api/games/process-build`\) shell out to) Tj
+1 0 0 1 72.00 238.00 Tm (Python, monitor status rows, and upload bundles to storage) Tj
+1 0 0 1 72.00 206.00 Tm (GAME ENGINE \(DEMO-GAME/\)) Tj
+1 0 0 1 72.00 174.00 Tm (• **Python 3.12** runtime with `pygame-ce` for rendering, physics, and input) Tj
+1 0 0 1 72.00 158.00 Tm (• **pygbag** compiles the platformer to WebAssembly for iframe embedding) Tj
+1 0 0 1 72.00 142.00 Tm (• `tools/build_game.py` CLI wraps config writing, pygbag execution, and artifact copying) Tj
+1 0 0 1 72.00 126.00 Tm (• `game_config.json` merges Madlib output with engine defaults at launch) Tj
+1 0 0 1 72.00 94.00 Tm (DATA & INFRASTRUCTURE) Tj
+ET
+
+endstream
+endobj
+3 0 obj
+<< /Type /Page /Parent 6 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 1 0 R >> >> /Contents 2 0 R >>
+endobj
+4 0 obj
+<< /Length 1476 >>
+stream
+BT
+/F1 12 Tf
+1 0 0 1 72.00 750.00 Tm (• **Supabase PostgreSQL** tables: `profiles`, `games`, `build_queue`, `likes`, `comments`,) Tj
+1 0 0 1 72.00 734.00 Tm (`reports`) Tj
+1 0 0 1 72.00 718.00 Tm (• **Supabase Auth** \(email/password + GitHub OAuth\) with RLS policies enforced per table) Tj
+1 0 0 1 72.00 702.00 Tm (• **Supabase Storage** `game-bundles` bucket holds public WebAssembly builds referenced by) Tj
+1 0 0 1 72.00 686.00 Tm (`/community/[username]/[slug]`) Tj
+1 0 0 1 72.00 670.00 Tm (• Recommended deployment: Next.js on Vercel + worker/queue \(Railway/Fly/etc.\) for long-) Tj
+1 0 0 1 72.00 654.00 Tm (running pygbag builds) Tj
+1 0 0 1 72.00 622.00 Tm (DEVELOPER TOOLING & WORKFLOW) Tj
+1 0 0 1 72.00 590.00 Tm (• Node 18+ toolchain: `npm run dev`, `npm run lint`, `npm run build`) Tj
+1 0 0 1 72.00 574.00 Tm (• Python requirements pinned via `requirements.txt`; local loop is `python main.py` for) Tj
+1 0 0 1 72.00 558.00 Tm (the game and `pygbag main.py` for web builds) Tj
+1 0 0 1 72.00 542.00 Tm (• Automated workflow summary:) Tj
+1 0 0 1 72.00 526.00 Tm (  1. Author lore in Madlib lab or via `/api/generate-config`) Tj
+1 0 0 1 72.00 510.00 Tm (  2. Persist config, queue build with `/api/games/build`, and monitor `build_queue`) Tj
+1 0 0 1 72.00 494.00 Tm (  3. Python worker runs pygbag, uploads artifacts, and marks the game `built`) Tj
+1 0 0 1 72.00 478.00 Tm (  4. Publish through `/api/games/publish` to surface in community feeds) Tj
+ET
+
+endstream
+endobj
+5 0 obj
+<< /Type /Page /Parent 6 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 1 0 R >> >> /Contents 4 0 R >>
+endobj
+6 0 obj
+<< /Type /Pages /Kids [3 0 R 5 0 R] /Count 2 >>
+endobj
+7 0 obj
+<< /Type /Catalog /Pages 6 0 R >>
+endobj
+xref
+0 8
+0000000000 65535 f 
+0000000009 00000 n 
+0000000079 00000 n 
+0000002958 00000 n 
+0000003084 00000 n 
+0000004612 00000 n 
+0000004738 00000 n 
+0000004801 00000 n 
+trailer
+<< /Size 8 /Root 7 0 R >>
+startxref
+4850
+%%EOF

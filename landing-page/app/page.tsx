@@ -17,14 +17,13 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Logo } from "@/components/logo";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { UserNav } from "@/components/auth/user-nav";
 
 const navLinks = [
   { label: "Engine", href: "#engine" },
   { label: "Workflow", href: "#workflow" },
-  { label: "For Creatives", href: "#creatives" },
-  { label: "Mods", href: "#mods" },
-  { label: "Roadmap", href: "#roadmap" },
-  { label: "Madlib Lab", href: "/lab" },
+  { label: "Community", href: "/community" },
+  { label: "Create Game", href: "/lab" },
 ];
 
 const logos = ["Hack Kentucky", "Speedrun Labs", "IndieForge", "GDK", "CampusGG"];
@@ -209,11 +208,7 @@ export default function HomePage() {
           </nav>
           <div className="flex items-center gap-3">
             <ThemeToggle />
-            <Button variant="outline" className="hidden border-slate-700 text-slate-200 hover:bg-white hover:text-slate-900 md:flex" asChild>
-              <Link href="https://github.com/HackKentucky" target="_blank">
-                Sign in with GitHub
-              </Link>
-            </Button>
+            <UserNav />
           </div>
         </header>
 
@@ -252,17 +247,14 @@ export default function HomePage() {
               </div>
               <div className="flex flex-wrap gap-4">
                 <Button size="lg" asChild>
-                  <Link href="#builder">
-                    Launch live builder <ArrowRight className="ml-2 h-4 w-4" />
+                  <Link href="/lab">
+                    Create Your Game <ArrowRight className="ml-2 h-4 w-4" />
                   </Link>
                 </Button>
                 <Button size="lg" variant="outline" asChild>
-                  <Link href="https://github.com/HackKentucky" target="_blank">
-                    View the repo
+                  <Link href="/community">
+                    Browse Community Games
                   </Link>
-                </Button>
-                <Button size="lg" variant="ghost" className="text-slate-200 hover:text-white" asChild>
-                  <Link href="/lab">Try the Madlib Lab</Link>
                 </Button>
               </div>
               <div className="flex flex-wrap gap-6 text-sm text-slate-400">
@@ -360,11 +352,11 @@ export default function HomePage() {
                   </p>
                   <div className="flex flex-wrap gap-3">
                     <Button size="sm" asChild>
-                      <Link href="#builder">See the builder</Link>
+                      <Link href="/lab">Create a Game</Link>
                     </Button>
                     <Button size="sm" variant="outline" asChild>
-                      <Link href="https://github.com/HackKentucky" target="_blank">
-                        Deploy guide
+                      <Link href="/community">
+                        View Community
                       </Link>
                     </Button>
                   </div>
@@ -444,8 +436,8 @@ export default function HomePage() {
                 </h2>
               </div>
               <Button variant="subtle" asChild>
-                <Link href="https://github.com/HackKentucky" target="_blank">
-                  Explore the repo
+                <Link href="/dashboard">
+                  Your Dashboard
                 </Link>
               </Button>
             </div>
@@ -487,7 +479,7 @@ export default function HomePage() {
             </div>
             <div className="flex justify-center">
               <Button size="lg" variant="outline" asChild>
-                <Link href="/lab">Open the Madlib Lab</Link>
+                <Link href="/lab">Create Your Game</Link>
               </Button>
             </div>
           </section>
@@ -521,7 +513,7 @@ export default function HomePage() {
               </div>
               <Button size="lg" className="w-full" asChild>
                 <Link href="/lab">
-                  Open builder → game
+                  Start Creating →
                 </Link>
               </Button>
             </CardContent>
@@ -600,12 +592,12 @@ export default function HomePage() {
             </div>
             <div className="mt-6 flex flex-wrap justify-center gap-4">
               <Button size="lg" asChild>
-                <Link href="https://github.com/HackKentucky" target="_blank">
-                  Fork the template
+                <Link href="/auth/sign-up">
+                  Get Started Free
                 </Link>
               </Button>
               <Button size="lg" variant="outline" asChild>
-                <Link href="#hero">Read the docs</Link>
+                <Link href="/lab">Try the Creator</Link>
               </Button>
             </div>
           </section>

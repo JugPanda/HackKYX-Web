@@ -1,12 +1,12 @@
 {
-  "survivorName": "Nyx Calder",
-  "codename": "Nyx",
-  "nemesisName": "Verdant Swarm",
-  "survivorBio": "create a 2d platformer",
-  "safehouseName": "Zephyr Atrium",
-  "safehouseDescription": "create a 2d platformer",
+  "survivorName": "Create",
+  "codename": "Create",
+  "nemesisName": "The Mireborn",
+  "survivorBio": "Create 2d platformer",
+  "safehouseName": "Gravity Bastion",
+  "safehouseDescription": "Create 2d platformer",
   "safehouseImage": "",
-  "victoryCondition": "Seal the rift beneath the lab",
+  "victoryCondition": "Restore power to the drifting city",
   "tone": "hopeful",
   "difficulty": "veteran"
 }
