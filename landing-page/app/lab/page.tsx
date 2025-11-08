@@ -260,7 +260,6 @@ export default function MadlibLabPage() {
       setTimeout(() => {
         router.push('/dashboard');
       }, 1500);
-      
     } catch (error) {
       console.error(error);
       setBuildStatus({ 
