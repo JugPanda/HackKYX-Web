@@ -456,11 +456,6 @@ export default function MadlibLabPage() {
                     )}
                   </>
                 )}
-                {status.message && (
-                  <div className={`text-sm ${status.error ? "text-rose-300" : "text-emerald-300"}`}>
-                    {status.message}
-                  </div>
-                )}
                 {buildStatus.message && !buildStatus.loading && (
                   <div className={`text-sm ${buildStatus.error ? "text-rose-300" : "text-emerald-300"}`}>
                     {buildStatus.message}
@@ -514,11 +509,6 @@ export default function MadlibLabPage() {
                     </div>
                   </div>
                 </div>
-                {serverResponse && serverResponse.ok && (
-                  <div className="rounded-2xl border border-emerald-500/30 bg-emerald-500/10 px-5 py-3 text-sm text-emerald-100">
-                    {serverResponse.summary}
-                  </div>
-                )}
               </CardContent>
             </Card>
 
