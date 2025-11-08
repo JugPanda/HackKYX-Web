@@ -16,30 +16,58 @@ export async function POST(request: Request) {
     }
 
     const body = await request.json();
-    const { slug, title, description, config } = body;
+    const { slug, title, description, config, generatedCode } = body;
 
     // Validate config
     const validation = gameConfigSchema.safeParse(config);
     if (!validation.success) {
+      console.error("Game config validation failed:", validation.error.issues);
+      console.error("Received config:", JSON.stringify(config, null, 2));
       return NextResponse.json(
         { error: "Invalid game configuration", issues: validation.error.issues },
         { status: 400 }
       );
     }
 
+    // Check if slug is provided, otherwise generate one
+    const finalSlug = slug || 
+      title.toLowerCase()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/(^-|-$)/g, "") + 
+      "-" + Date.now();
+
     // Check if slug is unique for this user
     const { data: existingGame } = await supabase
       .from("games")
       .select("id")
       .eq("user_id", user.id)
-      .eq("slug", slug)
+      .eq("slug", finalSlug)
       .single();
 
     if (existingGame) {
-      return NextResponse.json(
-        { error: "A game with this slug already exists" },
-        { status: 409 }
-      );
+      // If slug exists, append timestamp to make it unique
+      const uniqueSlug = `${finalSlug}-${Date.now()}`;
+      const { data: game, error: gameError } = await supabase
+        .from("games")
+        .insert({
+          user_id: user.id,
+          slug: uniqueSlug,
+          title,
+          description,
+          config: validation.data,
+          generated_code: generatedCode || null, // Store AI-generated code
+          status: "draft",
+          visibility: "private",
+        })
+        .select()
+        .single();
+
+      if (gameError) {
+        console.error("Error creating game:", gameError);
+        return NextResponse.json({ error: "Failed to create game" }, { status: 500 });
+      }
+
+      return NextResponse.json({ game }, { status: 201 });
     }
 
     // Create game record
@@ -47,10 +75,11 @@ export async function POST(request: Request) {
       .from("games")
       .insert({
         user_id: user.id,
-        slug,
+        slug: finalSlug,
         title,
         description,
         config: validation.data,
+        generated_code: generatedCode || null, // Store AI-generated code
         status: "draft",
         visibility: "private",
       })

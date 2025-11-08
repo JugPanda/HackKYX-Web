@@ -49,20 +49,30 @@ export async function POST(request: Request) {
     const configPath = join(tempDir, "game_config.json");
     await writeFile(configPath, JSON.stringify(config, null, 2));
 
-    // Copy main.py from demo-game
-    const repoRoot = process.cwd().replace(/landing-page$/, "");
-    const mainPySource = join(repoRoot, "demo-game", "main.py");
+    // Check if game has AI-generated code
+    const mainPyPath = join(tempDir, "main.py");
+    
+    if (game.generated_code) {
+      // Use AI-generated code
+      console.log("Using AI-generated game code");
+      await writeFile(mainPyPath, game.generated_code);
+    } else {
+      // Fallback: Copy main.py from demo-game template
+      console.log("Using demo-game template");
+      const repoRoot = process.cwd().replace(/landing-page$/, "");
+      const mainPySource = join(repoRoot, "demo-game", "main.py");
 
-    if (!existsSync(mainPySource)) {
-      throw new Error("main.py not found");
+      if (!existsSync(mainPySource)) {
+        throw new Error("main.py not found");
+      }
+
+      // Copy main.py to temp directory
+      await execAsync(
+        process.platform === "win32"
+          ? `copy "${mainPySource}" "${join(tempDir, "main.py")}"`
+          : `cp "${mainPySource}" "${join(tempDir, "main.py")}"`
+      );
     }
-
-    // Copy main.py to temp directory
-    await execAsync(
-      process.platform === "win32"
-        ? `copy "${mainPySource}" "${join(tempDir, "main.py")}"`
-        : `cp "${mainPySource}" "${join(tempDir, "main.py")}"`
-    );
 
     // Run pygbag build
     const pythonCmd = process.env.KYX_PYTHON || "python3";

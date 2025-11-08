@@ -87,11 +87,11 @@ export type MadlibPayload = z.infer<typeof madlibSchema>;
 
 export const defaultMadlibPayload: MadlibPayload = {
   survivorName: "Dr. Rowan Hale",
-  codename: "Beacon",
+  codename: "Shadow Runner",
   nemesisName: "The Mireborn",
-  survivorBio: "Former epidemiologist turned reluctant tactician, Rowan broadcasts cure recipes while guiding survivors between rooftops.",
-  safehouseName: "Riverside Relay",
-  safehouseDescription: "Stacked shipping containers form a neon-lit lab above the floodline. Solar rigs, med bays, and a single patched radio tower pierce the fog.",
+  survivorBio: "A brave hero on an epic adventure through mysterious lands.",
+  safehouseName: "The Sanctuary",
+  safehouseDescription: "A safe haven where heroes gather strength before venturing into the unknown.",
   safehouseImage: "",
   victoryCondition: "Synthesize the Riverside serum before the Mireborn corrupt the water table.",
   tone: "hopeful",

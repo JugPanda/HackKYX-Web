@@ -1,7 +1,8 @@
 "use client";
 
-import { useMemo, useState, type ChangeEvent } from "react";
+import { useMemo, useState, useEffect, type ChangeEvent } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { ArrowLeft, Loader2, UploadCloud } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
@@ -14,6 +15,7 @@ import {
   MadlibApiResponse,
   MadlibPayload,
 } from "@/lib/schemas";
+import { createClient } from "@/lib/supabase/client";
 
 type GeneratedConfig = {
   story?: {
@@ -42,16 +44,16 @@ const difficultyOptions: Array<{ label: string; value: MadlibPayload["difficulty
 
 const labOnboarding = [
   {
-    title: "Step 1 · Story hooks",
-    detail: "Name your lead, codename, and rival so dialogue, UI, and promo assets feel bespoke.",
+    title: "1. Describe Your Game",
+    detail: "Tell us about your hero, enemies, and the goal",
   },
   {
-    title: "Step 2 · Visual mood",
-    detail: "Describe the hub space in plain language and drop an image. We prep it for the browser automatically.",
+    title: "2. Choose the Mood",
+    detail: "Pick a tone and difficulty level that fits your vision",
   },
   {
-    title: "Step 3 · Share + remix",
-    detail: "Tap Generate to see the JSON and summary you can hand off to teammates, players, or classrooms.",
+    title: "3. Build & Share",
+    detail: "Create a real playable game you can share with others",
   },
 ];
 
@@ -60,6 +62,9 @@ type StatusState = { loading: boolean; message?: string; error?: boolean };
 const initialStatus: StatusState = { loading: false };
 
 export default function MadlibLabPage() {
+  const router = useRouter();
+  const [isSignedIn, setIsSignedIn] = useState(false);
+  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
   const [formData, setFormData] = useState<MadlibPayload>(defaultMadlibPayload);
   const [imagePreview, setImagePreview] = useState<string>("");
   const [serverResponse, setServerResponse] = useState<MadlibApiResponse | null>(null);
@@ -68,6 +73,23 @@ export default function MadlibLabPage() {
   const [promptStatus, setPromptStatus] = useState<StatusState>(initialStatus);
   const [buildStatus, setBuildStatus] = useState<StatusState>(initialStatus);
   const [buildResult, setBuildResult] = useState<{ slug: string; url: string } | null>(null);
+
+  // Check authentication status
+  useEffect(() => {
+    const checkAuth = async () => {
+      const supabase = createClient();
+      if (!supabase) {
+        setIsCheckingAuth(false);
+        return;
+      }
+      
+      const { data: { user } } = await supabase.auth.getUser();
+      setIsSignedIn(!!user);
+      setIsCheckingAuth(false);
+    };
+    
+    checkAuth();
+  }, []);
 
   const requestJson = useMemo(() => JSON.stringify(formData, null, 2), [formData]);
   const responseJson = useMemo(() => {
@@ -161,24 +183,137 @@ export default function MadlibLabPage() {
   };
 
   const handleBuild = async () => {
-    setBuildStatus({ loading: true });
-    setBuildResult(null);
+    if (!isSignedIn) {
+      router.push('/auth/sign-in');
+      return;
+    }
+
+    setBuildStatus({ loading: true, message: "Generating game code with AI..." });
+    
     try {
-      const res = await fetch("/api/build", {
+      // Step 1: Generate AI game code
+      const codeGenRes = await fetch("/api/generate-game-code", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({
+          heroName: formData.survivorName || "Hero",
+          enemyName: formData.nemesisName || "Enemy",
+          goal: formData.victoryCondition || "Complete the adventure",
+          tone: formData.tone,
+          difficulty: formData.difficulty,
+          description: promptText || undefined,
+        }),
       });
-      const data = await res.json();
-      if (!data.ok) {
-        setBuildStatus({ loading: false, error: true, message: data.message || "Build failed" });
-        return;
+
+      if (!codeGenRes.ok) {
+        const errorData = await codeGenRes.json();
+        throw new Error(errorData.error || "Failed to generate game code");
       }
-      setBuildResult(data.build);
-      setBuildStatus({ loading: false, message: "Playable build ready" });
+
+      const { mainPy, config: generatedConfig } = await codeGenRes.json();
+      
+      setBuildStatus({ loading: true, message: "Creating game entry..." });
+
+      // Convert madlib payload to full game config format
+      const gameConfig = {
+        story: {
+          title: formData.survivorName || "My Awesome Platformer",
+          leadName: formData.survivorName || "Hero",
+          codename: formData.codename || "The Runner",
+          rivalName: formData.nemesisName || "Dark Forces",
+          hubName: formData.safehouseName || "The Safe Haven",
+          hubDescription: (formData.safehouseDescription && formData.safehouseDescription.length >= 20) 
+            ? formData.safehouseDescription 
+            : "A safe place to rest and prepare for the journey ahead. This sanctuary provides shelter and hope for weary travelers.",
+          goal: (formData.victoryCondition && formData.victoryCondition.length >= 10)
+            ? formData.victoryCondition
+            : "Complete the adventure and save the world from darkness",
+          tone: formData.tone,
+          difficulty: formData.difficulty,
+          gameOverTitle: "Game Over",
+          gameOverMessage: "Try again to complete your mission! You can do this!",
+        },
+        tuning: {
+          playerMaxHealth: formData.difficulty === "rookie" ? 5 : formData.difficulty === "veteran" ? 3 : 2,
+          runMultiplier: 1.5,
+          dashSpeed: 15,
+          enemyBaseSpeed: formData.difficulty === "rookie" ? 1 : formData.difficulty === "veteran" ? 1.5 : 2,
+        },
+        colors: {
+          accent: formData.tone === "hopeful" ? "#10b981" : formData.tone === "gritty" ? "#6b7280" : "#f59e0b",
+          hud: "#ffffff",
+          backgroundTop: "#1e293b",
+          backgroundBottom: "#0f172a",
+        },
+      };
+
+      // Generate slug from hero name
+      const slug = (formData.survivorName || "my-game")
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/(^-|-$)/g, "");
+
+      // Step 2: Create the game entry
+      const createRes = await fetch("/api/games/create", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          slug: slug,
+          title: formData.survivorName || "My Platformer",
+          description: formData.victoryCondition || "A platformer adventure",
+          config: gameConfig,
+          generatedCode: mainPy, // Include AI-generated Python code
+        }),
+      });
+
+      if (!createRes.ok) {
+        const errorData = await createRes.json();
+        console.error("Create game error:", errorData);
+        
+        // Show detailed validation errors if available
+        if (errorData.issues) {
+          const issueMessages = errorData.issues.map((issue: any) => 
+            `${issue.path.join('.')}: ${issue.message}`
+          ).join(', ');
+          throw new Error(`Validation error: ${issueMessages}`);
+        }
+        
+        throw new Error(errorData.error || "Failed to create game");
+      }
+
+      const { game } = await createRes.json();
+
+      // Step 2: Trigger the build
+      setBuildStatus({ loading: true, message: "Building your game..." });
+      
+      const buildRes = await fetch("/api/games/build", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ gameId: game.id }),
+      });
+
+      if (!buildRes.ok) {
+        const errorData = await buildRes.json();
+        throw new Error(errorData.error || "Failed to start build");
+      }
+
+      setBuildStatus({ 
+        loading: false, 
+        message: "Game created! Redirecting to dashboard..." 
+      });
+      
+      // Redirect to dashboard after a short delay
+      setTimeout(() => {
+        router.push('/dashboard');
+      }, 1500);
+      
     } catch (error) {
       console.error(error);
-      setBuildStatus({ loading: false, error: true, message: "Network error while building" });
+      setBuildStatus({ 
+        loading: false, 
+        error: true, 
+        message: error instanceof Error ? error.message : "Failed to build game" 
+      });
     }
   };
 
@@ -194,12 +329,12 @@ export default function MadlibLabPage() {
           </Link>
           <div className="space-y-3">
             <Badge className="border-emerald-500/40 bg-emerald-500/10 text-emerald-100">
-              Isolated prototype
+              Game Creator
             </Badge>
-            <h1 className="text-4xl font-semibold text-white">Madlib config lab</h1>
+            <h1 className="text-4xl font-semibold text-white">Create Your Game</h1>
             <p className="text-lg text-slate-300">
-              Fill in character details, upload art, and press generate. We convert your prompts into a
-              JSON payload that patches the KYX sample game without exposing non-technical players to raw config files.
+              Describe your game idea and we'll turn it into a playable platformer. 
+              Sign in to build and share your game with the community!
             </p>
           </div>
         </div>
@@ -218,22 +353,24 @@ export default function MadlibLabPage() {
         <Card className="border-slate-800/70 bg-slate-950/40">
           <CardContent className="space-y-4 p-6">
             <div className="flex flex-col gap-2">
-              <p className="text-xs uppercase tracking-[0.35em] text-slate-500">Describe your game</p>
+              <p className="text-lg font-semibold text-white">What's your game about?</p>
+              <p className="text-sm text-slate-400">Describe your game idea in a few sentences</p>
               <Textarea
-                rows={3}
-                placeholder="Example: A hopeful neon courier dodging rival cultists above a flooded city."
+                rows={4}
+                placeholder="Example: A hero exploring mysterious caves, fighting shadow creatures, and collecting ancient artifacts. The world feels dark but hopeful."
                 value={promptText}
                 onChange={(event) => setPromptText(event.target.value)}
+                className="text-base"
               />
             </div>
-            <div className="flex flex-wrap gap-3">
-              <Button onClick={handlePromptGenerate} disabled={promptStatus.loading}>
+            <div className="flex flex-wrap gap-3 items-center">
+              <Button onClick={handlePromptGenerate} disabled={promptStatus.loading} size="lg">
                 {promptStatus.loading ? (
                   <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Drafting
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Creating...
                   </>
                 ) : (
-                  "Generate from prompt"
+                  "Generate My Game →"
                 )}
               </Button>
               {promptStatus.message && (
@@ -248,48 +385,44 @@ export default function MadlibLabPage() {
         <section className="grid gap-8 lg:grid-cols-[1.05fr_0.95fr]">
           <Card className="border-slate-800/70 bg-slate-950/40">
             <CardContent className="space-y-6 p-6">
-              <div className="flex flex-col gap-2">
-                <p className="text-xs uppercase tracking-[0.35em] text-slate-500">Character brief</p>
-                <div className="grid gap-4 md:grid-cols-2">
-                  <div>
-                    <label className="text-xs font-semibold uppercase tracking-[0.3em] text-slate-400">
-                      Lead name
-                    </label>
-                    <Input
-                      value={formData.survivorName}
-                      onChange={(event) => updateField("survivorName", event.target.value)}
-                    />
-                  </div>
-                  <div>
-                    <label className="text-xs font-semibold uppercase tracking-[0.3em] text-slate-400">
-                      Codename
-                    </label>
-                    <Input value={formData.codename} onChange={(event) => updateField("codename", event.target.value)} />
-                  </div>
+              <div className="space-y-4">
+                <div>
+                  <label className="text-sm font-semibold text-white mb-2 block">
+                    Hero Name
+                  </label>
+                  <Input
+                    placeholder="e.g. Shadow Knight"
+                    value={formData.survivorName}
+                    onChange={(event) => updateField("survivorName", event.target.value)}
+                    className="text-base"
+                  />
                 </div>
                 <div>
-                  <label className="text-xs font-semibold uppercase tracking-[0.3em] text-slate-400">
-                    Lead bio
+                  <label className="text-sm font-semibold text-white mb-2 block">
+                    Enemy Name
                   </label>
-                  <Textarea
-                    rows={3}
-                    value={formData.survivorBio}
-                    onChange={(event) => updateField("survivorBio", event.target.value)}
+                  <Input
+                    placeholder="e.g. Dark Forces"
+                    value={formData.nemesisName}
+                    onChange={(event) => updateField("nemesisName", event.target.value)}
+                    className="text-base"
+                  />
+                </div>
+                <div>
+                  <label className="text-sm font-semibold text-white mb-2 block">
+                    Goal
+                  </label>
+                  <Input
+                    placeholder="e.g. Collect all crystals"
+                    value={formData.victoryCondition}
+                    onChange={(event) => updateField("victoryCondition", event.target.value)}
+                    className="text-base"
                   />
                 </div>
               </div>
 
               <div className="space-y-4">
-                <p className="text-xs uppercase tracking-[0.35em] text-slate-500">Rival + tone</p>
-                <div>
-                  <label className="text-xs font-semibold uppercase tracking-[0.3em] text-slate-400">
-                    Rival name
-                  </label>
-                  <Input
-                    value={formData.nemesisName}
-                    onChange={(event) => updateField("nemesisName", event.target.value)}
-                  />
-                </div>
+                <p className="text-sm font-semibold text-white">Game Mood</p>
                 <div className="grid gap-3 md:grid-cols-2">
                   {toneOptions.map((tone) => (
                     <button
@@ -310,52 +443,7 @@ export default function MadlibLabPage() {
               </div>
 
               <div className="space-y-4">
-                <p className="text-xs uppercase tracking-[0.35em] text-slate-500">Hub location</p>
-                <div className="grid gap-4 md:grid-cols-2">
-                  <div>
-                    <label className="text-xs font-semibold uppercase tracking-[0.3em] text-slate-400">
-                      Hub name
-                    </label>
-                    <Input
-                      value={formData.safehouseName}
-                      onChange={(event) => updateField("safehouseName", event.target.value)}
-                    />
-                  </div>
-                  <div>
-                    <label className="text-xs font-semibold uppercase tracking-[0.3em] text-slate-400">
-                      Victory condition
-                    </label>
-                    <Input
-                      value={formData.victoryCondition}
-                      onChange={(event) => updateField("victoryCondition", event.target.value)}
-                    />
-                  </div>
-                </div>
-                <div>
-                  <label className="text-xs font-semibold uppercase tracking-[0.3em] text-slate-400">
-                    Description
-                  </label>
-                  <Textarea
-                    rows={3}
-                    value={formData.safehouseDescription}
-                    onChange={(event) => updateField("safehouseDescription", event.target.value)}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <label className="text-xs font-semibold uppercase tracking-[0.3em] text-slate-400">
-                    Upload hub photo
-                  </label>
-                  <label className="flex cursor-pointer flex-col items-center justify-center rounded-2xl border border-dashed border-slate-700/70 bg-slate-950/40 px-4 py-8 text-center text-sm text-slate-400 hover:border-slate-500/80">
-                    <UploadCloud className="h-6 w-6 text-slate-300" />
-                    <span className="mt-2 font-medium text-white">Drop PNG/JPG</span>
-                    <span className="text-xs text-slate-500">Max 2MB • stored as Base64 for demo</span>
-                    <input type="file" accept="image/png,image/jpeg" className="hidden" onChange={handleFileChange} />
-                  </label>
-                </div>
-              </div>
-
-              <div className="space-y-4">
-                <p className="text-xs uppercase tracking-[0.35em] text-slate-500">Difficulty</p>
+                <p className="text-sm font-semibold text-white">Difficulty</p>
                 <div className="grid gap-3 md:grid-cols-3">
                   {difficultyOptions.map((difficulty) => (
                     <button
@@ -375,36 +463,52 @@ export default function MadlibLabPage() {
                 </div>
               </div>
 
-              <div className="flex flex-wrap gap-3">
-                <Button onClick={handleSubmit} disabled={status.loading} className="flex-1 min-w-[180px]">
-                  {status.loading ? (
-                    <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Generating
-                    </>
-                  ) : (
-                    "Generate JSON template"
-                  )}
-                </Button>
-                <Button
-                  variant="outline"
-                  onClick={handleBuild}
-                  disabled={buildStatus.loading}
-                  className="flex-1 min-w-[180px]"
-                >
-                  {buildStatus.loading ? (
-                    <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Building playable demo
-                    </>
-                  ) : (
-                    "Build & upload demo"
-                  )}
-                </Button>
+              <div className="space-y-3">
+                {!isCheckingAuth && (
+                  <>
+                    {isSignedIn ? (
+                      <>
+                        <div className="rounded-2xl border border-emerald-500/30 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-100">
+                          ✨ <strong>Ready to build!</strong> Click below to create your playable game and share it with the community.
+                        </div>
+                        <Button
+                          onClick={handleBuild}
+                          disabled={buildStatus.loading}
+                          className="w-full"
+                          size="lg"
+                        >
+                          {buildStatus.loading ? (
+                            <>
+                              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                              {buildStatus.message || "Building..."}
+                            </>
+                          ) : (
+                            "Build & Publish Game →"
+                          )}
+                        </Button>
+                      </>
+                    ) : (
+                      <>
+                        <div className="rounded-2xl border border-sky-500/30 bg-sky-500/10 px-4 py-3 text-sm text-sky-100">
+                          💡 <strong>Ready to build your game?</strong> Create an account to turn this into a real playable game and share it with others!
+                        </div>
+                        <Button
+                          onClick={() => router.push('/auth/sign-in')}
+                          className="w-full"
+                          size="lg"
+                        >
+                          Sign In to Build & Publish →
+                        </Button>
+                      </>
+                    )}
+                  </>
+                )}
                 {status.message && (
                   <div className={`text-sm ${status.error ? "text-rose-300" : "text-emerald-300"}`}>
                     {status.message}
                   </div>
                 )}
-                {buildStatus.message && (
+                {buildStatus.message && !buildStatus.loading && (
                   <div className={`text-sm ${buildStatus.error ? "text-rose-300" : "text-emerald-300"}`}>
                     {buildStatus.message}
                   </div>
@@ -416,7 +520,7 @@ export default function MadlibLabPage() {
           <div className="space-y-6">
             <Card className="border-slate-800/70 bg-slate-950/50">
               <CardContent className="space-y-4 p-6">
-                <p className="text-xs uppercase tracking-[0.35em] text-slate-500">Live preview</p>
+                <p className="text-lg font-semibold text-white">Your Game Preview</p>
                 <div className="overflow-hidden rounded-2xl border border-slate-800/70">
                   <div className="h-52 w-full bg-slate-900/70">
                     {imagePreview || formData.safehouseImage ? (
@@ -427,23 +531,33 @@ export default function MadlibLabPage() {
                         className="h-full w-full object-cover"
                       />
                     ) : (
-                      <div className="flex h-full items-center justify-center text-sm text-slate-500">
-                        Preview image appears here
+                      <div 
+                        className="flex h-full items-center justify-center text-sm"
+                        style={{
+                          background: formData.tone === "hopeful" 
+                            ? "linear-gradient(135deg, #065f46 0%, #10b981 100%)"
+                            : formData.tone === "gritty"
+                            ? "linear-gradient(135deg, #1f2937 0%, #4b5563 100%)"
+                            : "linear-gradient(135deg, #92400e 0%, #f59e0b 100%)",
+                        }}
+                      >
+                        <div className="text-center text-white/80">
+                          <p className="text-3xl mb-2">🎮</p>
+                          <p className="text-sm font-semibold">{formData.survivorName || "Your Hero"}</p>
+                          <p className="text-xs opacity-75">vs {formData.nemesisName || "The Enemy"}</p>
+                        </div>
                       </div>
                     )}
                   </div>
-                  <div className="space-y-2 border-t border-slate-800/70 bg-[#0b1018] px-5 py-4">
-                    <div className="flex items-center justify-between text-xs text-slate-400">
-                      <span>{formData.safehouseName}</span>
-                      <span>{formData.difficulty.toUpperCase()}</span>
+                  <div className="space-y-3 border-t border-slate-800/70 bg-[#0b1018] px-5 py-4">
+                    <div className="flex items-center justify-between">
+                      <p className="text-xl font-semibold text-white">{formData.survivorName}</p>
+                      <Badge className="text-xs">{formData.difficulty}</Badge>
                     </div>
-                    <p className="text-lg font-semibold text-white">{formData.survivorName}</p>
-                    <p className="text-sm text-slate-400">{formData.survivorBio}</p>
-                    <div className="rounded-xl border border-slate-800/70 bg-slate-950/40 px-4 py-3 text-sm text-slate-200">
-                      <span className="font-semibold text-white">Rival:</span> {formData.nemesisName}
-                    </div>
-                    <div className="rounded-xl border border-slate-800/70 bg-slate-950/40 px-4 py-3 text-sm text-slate-200">
-                      <span className="font-semibold text-white">Goal:</span> {formData.victoryCondition}
+                    <div className="space-y-2 text-sm text-slate-300">
+                      <p><span className="font-semibold text-white">Enemy:</span> {formData.nemesisName}</p>
+                      <p><span className="font-semibold text-white">Goal:</span> {formData.victoryCondition}</p>
+                      <p><span className="font-semibold text-white">Mood:</span> {formData.tone}</p>
                     </div>
                   </div>
                 </div>
@@ -455,74 +569,9 @@ export default function MadlibLabPage() {
               </CardContent>
             </Card>
 
-            <Card className="border-slate-800/70 bg-slate-950/50">
-              <CardContent className="space-y-4 p-6">
-                <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-                  <div>
-                    <p className="text-xs uppercase tracking-[0.35em] text-slate-500">JSON transport</p>
-                    <h2 className="text-xl font-semibold text-white">Request & response</h2>
-                  </div>
-                  <Button variant="outline" size="sm" onClick={handleSubmit} disabled={status.loading}>
-                    Re-run preview
-                  </Button>
-                </div>
-                <div className="grid gap-4 md:grid-cols-2">
-                  <div>
-                    <p className="text-xs uppercase tracking-[0.35em] text-slate-500">Request</p>
-                    <pre className="h-64 overflow-y-auto rounded-2xl border border-slate-800/70 bg-black/40 p-4 text-xs leading-relaxed text-emerald-200">
-{requestJson}
-                    </pre>
-                  </div>
-                  <div>
-                    <p className="text-xs uppercase tracking-[0.35em] text-slate-500">Response</p>
-                    <pre className="h-64 overflow-y-auto rounded-2xl border border-slate-800/70 bg-black/40 p-4 text-xs leading-relaxed text-cyan-200">
-{responseJson}
-                    </pre>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            {buildResult && (
-              <Card className="border-emerald-500/40 bg-emerald-500/10">
-                <CardContent className="space-y-3 p-6 text-sm text-emerald-100">
-                  <p className="text-xs uppercase tracking-[0.35em] text-emerald-200">Playable build</p>
-                  <p className="text-xl font-semibold text-white">/generated/{buildResult.slug}</p>
-                  <p>
-                    Share this link with your community. It serves the pygbag bundle produced from your current config.
-                  </p>
-                  <Button size="sm" variant="outline" asChild>
-                    <Link href={buildResult.url} target="_blank" rel="noreferrer">
-                      Open playable demo
-                    </Link>
-                  </Button>
-                </CardContent>
-              </Card>
-            )}
           </div>
         </section>
 
-        <section className="grid gap-4 rounded-3xl border border-slate-800/70 bg-slate-950/40 p-8 md:grid-cols-3">
-          {[
-            {
-              title: "Player friendly",
-              body: "Every input is plain language. We keep the JSON hidden unless you want to inspect it.",
-            },
-            {
-              title: "API ready",
-              body: "The backend validates payloads with Zod and emits a schema-versioned config object.",
-            },
-            {
-              title: "Mobile aware",
-              body: "Responsive layout keeps form controls stacked with sticky preview on small screens.",
-            },
-          ].map((item) => (
-            <div key={item.title} className="space-y-2">
-              <h3 className="text-lg font-semibold text-white">{item.title}</h3>
-              <p className="text-sm text-slate-400">{item.body}</p>
-            </div>
-          ))}
-        </section>
       </main>
     </div>
   );
