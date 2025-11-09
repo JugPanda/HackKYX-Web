@@ -66,7 +66,6 @@ function MadlibLabPageContent() {
   const editGameId = searchParams.get("edit");
   const [isSignedIn, setIsSignedIn] = useState(false);
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
-  const [isLoadingGame, setIsLoadingGame] = useState(false);
   const [formData, setFormData] = useState<MadlibPayload>(defaultMadlibPayload);
   const [promptText, setPromptText] = useState("");
   const [promptStatus, setPromptStatus] = useState<StatusState>(initialStatus);
@@ -87,7 +86,6 @@ function MadlibLabPageContent() {
 
       // Load game data if editing
       if (editGameId && user) {
-        setIsLoadingGame(true);
         try {
           const { data: game, error } = await supabase
             .from("games")
@@ -104,7 +102,17 @@ function MadlibLabPageContent() {
 
           // Populate form with game data
           if (game.config && typeof game.config === "object" && "story" in game.config) {
-            const story = (game.config as any).story;
+            const config = game.config as { story: {
+              leadName?: string;
+              codename?: string;
+              hubDescription?: string;
+              rivalName?: string;
+              hubName?: string;
+              goal?: string;
+              tone?: MadlibPayload["tone"];
+              difficulty?: MadlibPayload["difficulty"];
+            }};
+            const story = config.story;
             setFormData({
               survivorName: story.leadName || "",
               codename: story.codename || "",
@@ -124,8 +132,6 @@ function MadlibLabPageContent() {
           }
         } catch (error) {
           console.error("Error loading game:", error);
-        } finally {
-          setIsLoadingGame(false);
         }
       }
     };
