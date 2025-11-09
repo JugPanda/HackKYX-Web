@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Game } from "@/lib/db-types";
 import Link from "next/link";
 import { Trash2, Loader2 } from "lucide-react";
+import { Progress } from "@/components/ui/progress";
 
 interface GameCardActionsProps {
   game: Game;
@@ -114,10 +115,20 @@ export function GameCardActions({ game, profileUsername }: GameCardActionsProps)
       });
 
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || "Failed to make game public");
+        const text = await response.text();
+        let errorMessage = "Failed to make game public";
+        try {
+          const errorData = JSON.parse(text);
+          errorMessage = errorData.error || errorMessage;
+        } catch {
+          errorMessage = text || errorMessage;
+        }
+        throw new Error(errorMessage);
       }
 
+      // Parse response
+      await response.json();
+      
       // Refresh the page to show updated status
       router.refresh();
     } catch (err) {
