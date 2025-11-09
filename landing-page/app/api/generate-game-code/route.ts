@@ -4,7 +4,7 @@ import { buildGameGenerationPrompt, type GameGenerationRequest } from "@/lib/gam
 
 // Force dynamic rendering and disable caching
 export const dynamic = 'force-dynamic';
-export const maxDuration = 30; // Allow up to 30 seconds for AI generation
+export const maxDuration = 60; // Allow up to 60 seconds for AI generation
 
 // Initialize OpenAI client
 const openai = new OpenAI({
@@ -39,21 +39,21 @@ export async function POST(request: Request) {
     console.log("Hero:", body.heroName, "Enemy:", body.enemyName);
 
     // Call OpenAI to generate the game code
-    // Using gpt-4o-mini: faster, cheaper, and works within Vercel's 10s timeout
+    // Using gpt-4o-mini: faster, cheaper, and works within Vercel's timeout
     const completion = await openai.chat.completions.create({
-      model: "gpt-4o-mini", // Fast model that works within serverless timeout
+      model: "gpt-4o-mini", // Fast model
       messages: [
         {
           role: "system",
-          content: "You are an expert Pygame developer who creates fun, complete, working games. Generate clean, well-commented Python code that works with pygbag for web deployment.",
+          content: "You are a Pygame developer. Generate simple, working Python game code. Be concise.",
         },
         {
           role: "user",
           content: prompt,
         },
       ],
-      temperature: 0.7,
-      max_tokens: 3000, // Reduced for faster generation
+      temperature: 0.5, // Lower temperature for faster, more predictable output
+      max_tokens: 1500, // Reduced significantly for speed
     });
 
     const generatedCode = completion.choices[0]?.message?.content;
