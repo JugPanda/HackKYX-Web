@@ -118,6 +118,7 @@ function MadlibLabPageContent() {
               goal?: string;
               tone?: MadlibPayload["tone"];
               difficulty?: MadlibPayload["difficulty"];
+              genre?: MadlibPayload["genre"];
             }};
             const story = config.story;
             setFormData({
@@ -127,9 +128,11 @@ function MadlibLabPageContent() {
               nemesisName: story.rivalName || "",
               safehouseName: story.hubName || "",
               safehouseDescription: story.hubDescription || "",
+              safehouseImage: "",
               victoryCondition: story.goal || "",
               tone: story.tone || "hopeful",
               difficulty: story.difficulty || "rookie",
+              genre: story.genre || "platformer",
             });
           }
 
