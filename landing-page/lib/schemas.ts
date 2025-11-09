@@ -81,6 +81,7 @@ export const madlibSchema = z.object({
   victoryCondition: z.string().min(10).max(160),
   tone: z.enum(["hopeful", "gritty", "heroic"]),
   difficulty: z.enum(["rookie", "veteran", "nightmare"]),
+  genre: z.enum(["platformer", "adventure", "puzzle"]),
 });
 
 export type MadlibPayload = z.infer<typeof madlibSchema>;
@@ -96,6 +97,7 @@ export const defaultMadlibPayload: MadlibPayload = {
   victoryCondition: "Synthesize the Riverside serum before the Mireborn corrupt the water table.",
   tone: "hopeful",
   difficulty: "veteran",
+  genre: "platformer",
 };
 
 export type MadlibSuccessResponse = {

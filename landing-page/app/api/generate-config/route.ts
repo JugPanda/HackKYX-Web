@@ -48,7 +48,8 @@ Return a JSON object with this structure:
     "rivalName": "enemy/villain name (extract or create)",
     "goal": "main objective (extract or create)",
     "tone": "hopeful OR gritty OR heroic (based on mood)",
-    "difficulty": "rookie OR veteran OR nightmare (based on challenge level)"
+    "difficulty": "rookie OR veteran OR nightmare (based on challenge level)",
+    "genre": "platformer OR adventure OR puzzle (based on game type)"
   }
 }
 
@@ -56,6 +57,8 @@ Guidelines:
 - Extract names if mentioned, otherwise create fitting names
 - Detect tone: hopeful=bright/optimistic, gritty=dark/harsh, heroic=epic/legendary
 - Detect difficulty: rookie=easy/casual, veteran=medium/balanced, nightmare=hard/brutal
+- Detect genre: platformer=jumping/running, adventure=exploration/top-down/zelda, puzzle=matching/solving
+- If no genre is clear, use "platformer" as default
 - Keep names concise (2-3 words max)
 - Make goal specific and actionable
 - ALWAYS return valid JSON`,
@@ -89,6 +92,7 @@ Guidelines:
         goal: parsedConfig.story?.goal || "Complete the mission",
         tone: parsedConfig.story?.tone || "hopeful",
         difficulty: parsedConfig.story?.difficulty || "veteran",
+        genre: parsedConfig.story?.genre || "platformer",
       },
     };
 

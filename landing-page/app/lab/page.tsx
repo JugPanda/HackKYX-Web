@@ -26,6 +26,7 @@ type GeneratedConfig = {
     goal?: string;
     tone?: MadlibPayload["tone"];
     difficulty?: MadlibPayload["difficulty"];
+    genre?: MadlibPayload["genre"];
   };
 };
 
@@ -39,6 +40,12 @@ const difficultyOptions: Array<{ label: string; value: MadlibPayload["difficulty
   { label: "Rookie", value: "rookie", blurb: "Story-first" },
   { label: "Veteran", value: "veteran", blurb: "Balanced tension" },
   { label: "Nightmare", value: "nightmare", blurb: "High pressure runs" },
+];
+
+const genreOptions: Array<{ label: string; value: MadlibPayload["genre"]; blurb: string; icon: string }> = [
+  { label: "Platformer", value: "platformer", blurb: "Jump and run", icon: "🏃" },
+  { label: "Adventure", value: "adventure", blurb: "Top-down exploration", icon: "🗡️" },
+  { label: "Puzzle", value: "puzzle", blurb: "Solve challenges", icon: "🧩" },
 ];
 
 const labOnboarding = [
@@ -160,6 +167,7 @@ function MadlibLabPageContent() {
       victoryCondition: config.story?.goal ?? prev.victoryCondition,
       tone: config.story?.tone ?? prev.tone,
       difficulty: config.story?.difficulty ?? prev.difficulty,
+      genre: config.story?.genre ?? prev.genre,
     }));
   };
 
@@ -207,6 +215,7 @@ function MadlibLabPageContent() {
           goal: formData.victoryCondition || "Complete the adventure",
           tone: formData.tone,
           difficulty: formData.difficulty,
+          genre: formData.genre,
           description: promptText || undefined,
         }),
       });
@@ -423,7 +432,11 @@ function MadlibLabPageContent() {
               </p>
               <Textarea
                 rows={4}
-                placeholder="Example: A horror platformer where Luna the Ghost Hunter explores abandoned mansions, fighting spectral enemies and collecting cursed artifacts. Dark, scary atmosphere with brutal difficulty."
+                placeholder="Examples:
+• Top-down adventure where Link explores dungeons
+• Puzzle game matching colorful gems
+• Platformer with a ninja avoiding traps
+Be specific about genre, characters, and goal!"
                 value={promptText}
                 onChange={(event) => setPromptText(event.target.value)}
                 className="text-base"
@@ -491,8 +504,31 @@ function MadlibLabPageContent() {
               </div>
 
               <div className="space-y-4">
+                <p className="text-sm font-semibold text-white">Game Genre</p>
+                <div className="grid gap-3 md:grid-cols-3">
+                  {genreOptions.map((genre) => (
+                    <button
+                      key={genre.value}
+                      type="button"
+                      onClick={() => updateField("genre", genre.value)}
+                      className={`rounded-2xl border px-3 py-3 text-left text-sm transition ${
+                        formData.genre === genre.value
+                          ? "border-blue-500/60 bg-blue-500/10"
+                          : "border-slate-800/70 bg-slate-950/40 hover:border-slate-600/70"
+                      }`}
+                    >
+                      <p className="font-semibold text-white">
+                        {genre.icon} {genre.label}
+                      </p>
+                      <p className="text-xs text-slate-400">{genre.blurb}</p>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="space-y-4">
                 <p className="text-sm font-semibold text-white">Game Mood</p>
-                <div className="grid gap-3 md:grid-cols-2">
+                <div className="grid gap-3 md:grid-cols-3">
                   {toneOptions.map((tone) => (
                     <button
                       key={tone.value}
