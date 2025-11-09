@@ -14,28 +14,30 @@ _Last updated: 2025-11-08_
 HackKentucky-KYX/
 ├── demo-game/
 │   ├── game_config.json
-│   ├── main.py
-│   └── build/
-│       ├── version.txt
-│       ├── web/
-│       │   ├── favicon.png
-│       │   ├── demo-game.apk
-│       │   └── index.html
-│       └── web-cache/
-│           └── hashed *.data/*.head/*.tmpl chunks from pygbag
+│   └── main.py
+├── build-service/          # Python Flask service for building games
+│   ├── app.py
+│   ├── requirements.txt
+│   └── DEPLOY_GUIDE.md
 ├── landing-page/
 │   ├── app/
-│   │   ├── page.tsx
-│   │   ├── lab/page.tsx
-│   │   └── api/madlib/route.ts
-│   ├── lib/schemas.ts
-│   ├── public/demo-game/  # copy of demo-game/build/web
-│   └── … (components, configs, package.json, etc.)
-├── index.html             # legacy Bottle Episodes tool
-├── example_mod.json
-├── requirements.txt
+│   │   ├── page.tsx       # Landing page
+│   │   ├── lab/page.tsx   # Game creator (AI-powered)
+│   │   ├── dashboard/page.tsx
+│   │   ├── community/page.tsx
+│   │   └── api/           # API routes
+│   ├── components/
+│   ├── lib/
+│   │   ├── schemas.ts     # Zod validation schemas
+│   │   ├── game-generator.ts
+│   │   └── supabase/
+│   ├── public/demo-game/
+│   └── … (configs, package.json, etc.)
+├── docs/
+├── requirements.txt        # For local game development
 ├── README.md
-├── notes.txt
+├── SETUP.md
+├── ARCHITECTURE.md
 ├── .gitignore
 └── .git/
 ```

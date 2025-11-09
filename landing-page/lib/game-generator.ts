@@ -9,6 +9,7 @@ export interface GameGenerationRequest {
   goal: string;
   tone: "hopeful" | "gritty" | "heroic";
   difficulty: "rookie" | "veteran" | "nightmare";
+  genre: "platformer" | "adventure" | "puzzle";
   description?: string; // Optional longer description
 }
 
@@ -51,32 +52,79 @@ export function buildGameGenerationPrompt(
   };
 
   const toneSettings = {
-    hopeful: { colors: "bright greens and blues", music: "uplifting", atmosphere: "encouraging" },
-    gritty: { colors: "dark grays and browns", music: "tense", atmosphere: "harsh and realistic" },
-    heroic: { colors: "golds and oranges", music: "epic", atmosphere: "grand and adventurous" },
+    hopeful: { colors: "bright greens and blues", atmosphere: "encouraging and uplifting" },
+    gritty: { colors: "dark grays and browns", atmosphere: "harsh and realistic" },
+    heroic: { colors: "golds and oranges", atmosphere: "grand and adventurous" },
+  };
+
+  const genreTemplates = {
+    platformer: {
+      description: "a 2D side-scrolling platformer",
+      mechanics: `
+- Gravity and jumping physics
+- 2-3 platforms at different heights
+- Player can move left/right (WASD or Arrow keys)
+- Player can jump (Space or W/Up arrow)
+- 1-2 enemies that patrol platforms
+- Collision detection for platforms and enemies
+- Player loses health on enemy contact`,
+      gameplay: "Side-scrolling view. Player jumps between platforms, avoids enemies, reaches goal.",
+    },
+    adventure: {
+      description: "a top-down adventure game (Zelda-style)",
+      mechanics: `
+- 8-directional movement (WASD or Arrow keys)
+- Top-down view of a room/area
+- Player can explore the entire screen
+- 1-2 enemies that move around
+- Simple collision with walls/boundaries
+- Player loses health on enemy contact
+- Collectible items or goal area to reach`,
+      gameplay: "Top-down view. Player explores room, avoids/defeats enemies, collects items or reaches goal area.",
+    },
+    puzzle: {
+      description: "a simple puzzle game",
+      mechanics: `
+- Grid-based or tile-based gameplay
+- Mouse clicks or keyboard to interact
+- Match-3, sliding puzzle, or similar mechanic
+- Score tracking
+- Simple win condition (reach score, solve puzzle)
+- Visual feedback for moves
+- Restart option`,
+      gameplay: "Puzzle mechanics. Player solves puzzles by matching, sliding, or arranging elements.",
+    },
   };
 
   const diff = difficultySettings[request.difficulty];
   const mood = toneSettings[request.tone];
+  const genreInfo = genreTemplates[request.genre];
 
-  return `Create a simple 2D platformer game in Python using Pygame.
+  return `Create ${genreInfo.description} in Python using Pygame.
 
-**Game Setup:**
+**Game Info:**
 - Hero: ${request.heroName}
-- Enemy: ${request.enemyName}
+- Enemy/Obstacle: ${request.enemyName}
 - Goal: ${request.goal}
-- Health: ${diff.health} HP
-- Colors: ${mood.colors}
+- Player Health: ${diff.health} HP
+- Enemy Speed/Difficulty: ${request.difficulty}
+- Visual Style: ${mood.colors}
+- Atmosphere: ${mood.atmosphere}
 
-**Requirements:**
+**Core Mechanics:**${genreInfo.mechanics}
+
+**CRITICAL Requirements:**
 1. Must use \`import asyncio\` and \`import pygame\`
 2. Must have \`async def main()\` as entry point
-3. Must call \`await asyncio.sleep(0)\` in the game loop
-4. Keep it SIMPLE - basic platformer with player, 2-3 platforms, 1-2 enemies
-5. Use rectangles for graphics (no images)
-6. 800x600 screen size
-7. Basic jump/move controls
+3. Must call \`await asyncio.sleep(0)\` at the end of the game loop
+4. 800x600 screen size
+5. Use simple shapes/rectangles (no images needed)
+6. Include game over screen when health reaches 0
+7. Include win screen when goal is reached
 
-Generate ONLY valid Python code. Keep it under 150 lines. Focus on working code, not complexity.`;
+**Gameplay:**
+${genreInfo.gameplay}
+
+Generate ONLY the Python code. Keep it simple and under 200 lines. Focus on working, playable code.`;
 }
 

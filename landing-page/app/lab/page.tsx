@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { ArrowLeft, Loader2 } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
@@ -26,6 +26,7 @@ type GeneratedConfig = {
     goal?: string;
     tone?: MadlibPayload["tone"];
     difficulty?: MadlibPayload["difficulty"];
+    genre?: MadlibPayload["genre"];
   };
 };
 
@@ -39,6 +40,12 @@ const difficultyOptions: Array<{ label: string; value: MadlibPayload["difficulty
   { label: "Rookie", value: "rookie", blurb: "Story-first" },
   { label: "Veteran", value: "veteran", blurb: "Balanced tension" },
   { label: "Nightmare", value: "nightmare", blurb: "High pressure runs" },
+];
+
+const genreOptions: Array<{ label: string; value: MadlibPayload["genre"]; blurb: string; icon: string }> = [
+  { label: "Platformer", value: "platformer", blurb: "Jump and run", icon: "🏃" },
+  { label: "Adventure", value: "adventure", blurb: "Top-down exploration", icon: "🗡️" },
+  { label: "Puzzle", value: "puzzle", blurb: "Solve challenges", icon: "🧩" },
 ];
 
 const labOnboarding = [
@@ -60,8 +67,10 @@ type StatusState = { loading: boolean; message?: string; error?: boolean };
 
 const initialStatus: StatusState = { loading: false };
 
-export default function MadlibLabPage() {
+function MadlibLabPageContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const editGameId = searchParams.get("edit");
   const [isSignedIn, setIsSignedIn] = useState(false);
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
   const [formData, setFormData] = useState<MadlibPayload>(defaultMadlibPayload);
@@ -69,9 +78,9 @@ export default function MadlibLabPage() {
   const [promptStatus, setPromptStatus] = useState<StatusState>(initialStatus);
   const [buildStatus, setBuildStatus] = useState<StatusState>(initialStatus);
 
-  // Check authentication status
+  // Check authentication status and load game if editing
   useEffect(() => {
-    const checkAuth = async () => {
+    const checkAuthAndLoadGame = async () => {
       const supabase = createClient();
       if (!supabase) {
         setIsCheckingAuth(false);
@@ -81,10 +90,64 @@ export default function MadlibLabPage() {
       const { data: { user } } = await supabase.auth.getUser();
       setIsSignedIn(!!user);
       setIsCheckingAuth(false);
+
+      // Load game data if editing
+      if (editGameId && user) {
+        try {
+          const { data: game, error } = await supabase
+            .from("games")
+            .select("*")
+            .eq("id", editGameId)
+            .eq("user_id", user.id)
+            .single();
+
+          if (error || !game) {
+            console.error("Error loading game:", error);
+            router.push("/dashboard");
+            return;
+          }
+
+          // Populate form with game data
+          if (game.config && typeof game.config === "object" && "story" in game.config) {
+            const config = game.config as { story: {
+              leadName?: string;
+              codename?: string;
+              hubDescription?: string;
+              rivalName?: string;
+              hubName?: string;
+              goal?: string;
+              tone?: MadlibPayload["tone"];
+              difficulty?: MadlibPayload["difficulty"];
+              genre?: MadlibPayload["genre"];
+            }};
+            const story = config.story;
+            setFormData({
+              survivorName: story.leadName || "",
+              codename: story.codename || "",
+              survivorBio: story.hubDescription || "",
+              nemesisName: story.rivalName || "",
+              safehouseName: story.hubName || "",
+              safehouseDescription: story.hubDescription || "",
+              safehouseImage: "",
+              victoryCondition: story.goal || "",
+              tone: story.tone || "hopeful",
+              difficulty: story.difficulty || "rookie",
+              genre: story.genre || "platformer",
+            });
+          }
+
+          // Set description as prompt text
+          if (game.description) {
+            setPromptText(game.description);
+          }
+        } catch (error) {
+          console.error("Error loading game:", error);
+        }
+      }
     };
     
-    checkAuth();
-  }, []);
+    checkAuthAndLoadGame();
+  }, [editGameId, router]);
 
 
   const updateField = (key: keyof MadlibPayload, value: string) => {
@@ -107,6 +170,7 @@ export default function MadlibLabPage() {
       victoryCondition: config.story?.goal ?? prev.victoryCondition,
       tone: config.story?.tone ?? prev.tone,
       difficulty: config.story?.difficulty ?? prev.difficulty,
+      genre: config.story?.genre ?? prev.genre,
     }));
   };
 
@@ -154,6 +218,7 @@ export default function MadlibLabPage() {
           goal: formData.victoryCondition || "Complete the adventure",
           tone: formData.tone,
           difficulty: formData.difficulty,
+          genre: formData.genre,
           description: promptText || undefined,
         }),
       });
@@ -224,35 +289,73 @@ export default function MadlibLabPage() {
         .replace(/[^a-z0-9]+/g, "-")
         .replace(/(^-|-$)/g, "");
 
-      // Step 2: Create the game entry
-      const createRes = await fetch("/api/games/create", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          slug: slug,
-          title: formData.survivorName || "My Platformer",
-          description: formData.victoryCondition || "A platformer adventure",
-          config: gameConfig,
-          generatedCode: mainPy, // Include AI-generated Python code
-        }),
-      });
+      // Step 2: Create or update the game entry
+      let game;
+      if (editGameId) {
+        // Update existing game
+        setBuildStatus({ loading: true, message: "Updating game..." });
+        const updateRes = await fetch("/api/games/update", {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            gameId: editGameId,
+            title: formData.survivorName || "My Platformer",
+            description: formData.victoryCondition || "A platformer adventure",
+            config: gameConfig,
+            generatedCode: mainPy, // Include AI-generated Python code
+          }),
+        });
 
-      if (!createRes.ok) {
-        const errorData = await createRes.json();
-        console.error("Create game error:", errorData);
-        
-        // Show detailed validation errors if available
-        if (errorData.issues) {
-          const issueMessages = errorData.issues.map((issue: { path: string[]; message: string }) => 
-            `${issue.path.join('.')}: ${issue.message}`
-          ).join(', ');
-          throw new Error(`Validation error: ${issueMessages}`);
+        if (!updateRes.ok) {
+          const errorData = await updateRes.json();
+          console.error("Update game error:", errorData);
+          
+          // Show detailed validation errors if available
+          if (errorData.issues) {
+            const issueMessages = errorData.issues.map((issue: { path: string[]; message: string }) => 
+              `${issue.path.join('.')}: ${issue.message}`
+            ).join(', ');
+            throw new Error(`Validation error: ${issueMessages}`);
+          }
+          
+          throw new Error(errorData.error || "Failed to update game");
         }
-        
-        throw new Error(errorData.error || "Failed to create game");
-      }
 
-      const { game } = await createRes.json();
+        const updateData = await updateRes.json();
+        game = updateData.game;
+      } else {
+        // Create new game
+        setBuildStatus({ loading: true, message: "Creating game entry..." });
+        const createRes = await fetch("/api/games/create", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            slug: slug,
+            title: formData.survivorName || "My Platformer",
+            description: formData.victoryCondition || "A platformer adventure",
+            config: gameConfig,
+            generatedCode: mainPy, // Include AI-generated Python code
+          }),
+        });
+
+        if (!createRes.ok) {
+          const errorData = await createRes.json();
+          console.error("Create game error:", errorData);
+          
+          // Show detailed validation errors if available
+          if (errorData.issues) {
+            const issueMessages = errorData.issues.map((issue: { path: string[]; message: string }) => 
+              `${issue.path.join('.')}: ${issue.message}`
+            ).join(', ');
+            throw new Error(`Validation error: ${issueMessages}`);
+          }
+          
+          throw new Error(errorData.error || "Failed to create game");
+        }
+
+        const createData = await createRes.json();
+        game = createData.game;
+      }
 
       // Step 2: Trigger the build
       setBuildStatus({ loading: true, message: "Building your game..." });
@@ -270,7 +373,7 @@ export default function MadlibLabPage() {
 
       setBuildStatus({ 
         loading: false, 
-        message: "Game created! Redirecting to dashboard..." 
+        message: editGameId ? "Game updated! Redirecting to dashboard..." : "Game created! Redirecting to dashboard..." 
       });
       
       // Redirect to dashboard after a short delay
@@ -301,10 +404,13 @@ export default function MadlibLabPage() {
             <Badge className="border-emerald-500/40 bg-emerald-500/10 text-emerald-100">
               Game Creator
             </Badge>
-            <h1 className="text-4xl font-semibold text-white">Create Your Game</h1>
+            <h1 className="text-4xl font-semibold text-white">
+              {editGameId ? "Edit Your Game" : "Create Your Game"}
+            </h1>
             <p className="text-lg text-slate-300">
-              Describe your game idea and we&apos;ll turn it into a playable platformer. 
-              Sign in to build and share your game with the community!
+              {editGameId 
+                ? "Update your game details and rebuild to see the changes."
+                : "Describe your game idea and we'll turn it into a playable platformer. Sign in to build and share your game with the community!"}
             </p>
           </div>
         </div>
@@ -323,11 +429,17 @@ export default function MadlibLabPage() {
         <Card className="border-slate-800/70 bg-slate-950/40">
           <CardContent className="space-y-4 p-6">
             <div className="flex flex-col gap-2">
-              <p className="text-lg font-semibold text-white">What&apos;s your game about?</p>
-              <p className="text-sm text-slate-400">Describe your game idea in a few sentences</p>
+              <p className="text-lg font-semibold text-white">What&apos;s your game about? ✨</p>
+              <p className="text-sm text-slate-400">
+                Describe your game idea - include genre, characters, setting, and mood. The AI will extract details and fill the form!
+              </p>
               <Textarea
                 rows={4}
-                placeholder="Example: A hero exploring mysterious caves, fighting shadow creatures, and collecting ancient artifacts. The world feels dark but hopeful."
+                placeholder="Examples:
+• Top-down adventure where Link explores dungeons
+• Puzzle game matching colorful gems
+• Platformer with a ninja avoiding traps
+Be specific about genre, characters, and goal!"
                 value={promptText}
                 onChange={(event) => setPromptText(event.target.value)}
                 className="text-base"
@@ -358,42 +470,68 @@ export default function MadlibLabPage() {
               <div className="space-y-4">
                 <div>
                   <label className="text-sm font-semibold text-white mb-2 block">
-                    Hero Name
+                    Hero Name <span className="text-xs text-slate-400 font-normal">(required)</span>
                   </label>
                   <Input
                     placeholder="e.g. Shadow Knight"
                     value={formData.survivorName}
                     onChange={(event) => updateField("survivorName", event.target.value)}
                     className="text-base"
+                    required
                   />
                 </div>
                 <div>
                   <label className="text-sm font-semibold text-white mb-2 block">
-                    Enemy Name
+                    Enemy Name <span className="text-xs text-slate-400 font-normal">(required)</span>
                   </label>
                   <Input
                     placeholder="e.g. Dark Forces"
                     value={formData.nemesisName}
                     onChange={(event) => updateField("nemesisName", event.target.value)}
                     className="text-base"
+                    required
                   />
                 </div>
                 <div>
                   <label className="text-sm font-semibold text-white mb-2 block">
-                    Goal
+                    Goal <span className="text-xs text-slate-400 font-normal">(required)</span>
                   </label>
                   <Input
                     placeholder="e.g. Collect all crystals"
                     value={formData.victoryCondition}
                     onChange={(event) => updateField("victoryCondition", event.target.value)}
                     className="text-base"
+                    required
                   />
                 </div>
               </div>
 
               <div className="space-y-4">
+                <p className="text-sm font-semibold text-white">Game Genre</p>
+                <div className="grid gap-3 md:grid-cols-3">
+                  {genreOptions.map((genre) => (
+                    <button
+                      key={genre.value}
+                      type="button"
+                      onClick={() => updateField("genre", genre.value)}
+                      className={`rounded-2xl border px-3 py-3 text-left text-sm transition ${
+                        formData.genre === genre.value
+                          ? "border-blue-500/60 bg-blue-500/10"
+                          : "border-slate-800/70 bg-slate-950/40 hover:border-slate-600/70"
+                      }`}
+                    >
+                      <p className="font-semibold text-white">
+                        {genre.icon} {genre.label}
+                      </p>
+                      <p className="text-xs text-slate-400">{genre.blurb}</p>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="space-y-4">
                 <p className="text-sm font-semibold text-white">Game Mood</p>
-                <div className="grid gap-3 md:grid-cols-2">
+                <div className="grid gap-3 md:grid-cols-3">
                   {toneOptions.map((tone) => (
                     <button
                       key={tone.value}
@@ -485,11 +623,14 @@ export default function MadlibLabPage() {
           <div className="space-y-6">
             <Card className="border-slate-800/70 bg-slate-950/50">
               <CardContent className="space-y-4 p-6">
-                <p className="text-lg font-semibold text-white">Your Game Preview</p>
+                <div className="flex items-center justify-between">
+                  <p className="text-lg font-semibold text-white">Your Game Preview</p>
+                  <p className="text-xs text-slate-400">Updates as you type ✨</p>
+                </div>
                 <div className="overflow-hidden rounded-2xl border border-slate-800/70">
                   <div className="h-52 w-full bg-slate-900/70">
                     <div 
-                      className="flex h-full items-center justify-center text-sm"
+                      className="flex h-full items-center justify-center text-sm transition-all duration-300"
                       style={{
                         background: formData.tone === "hopeful" 
                           ? "linear-gradient(135deg, #065f46 0%, #10b981 100%)"
@@ -507,13 +648,13 @@ export default function MadlibLabPage() {
                   </div>
                   <div className="space-y-3 border-t border-slate-800/70 bg-[#0b1018] px-5 py-4">
                     <div className="flex items-center justify-between">
-                      <p className="text-xl font-semibold text-white">{formData.survivorName}</p>
-                      <Badge className="text-xs">{formData.difficulty}</Badge>
+                      <p className="text-xl font-semibold text-white">{formData.survivorName || "..."}</p>
+                      <Badge className="text-xs capitalize">{formData.difficulty}</Badge>
                     </div>
                     <div className="space-y-2 text-sm text-slate-300">
-                      <p><span className="font-semibold text-white">Enemy:</span> {formData.nemesisName}</p>
-                      <p><span className="font-semibold text-white">Goal:</span> {formData.victoryCondition}</p>
-                      <p><span className="font-semibold text-white">Mood:</span> {formData.tone}</p>
+                      <p><span className="font-semibold text-white">Enemy:</span> {formData.nemesisName || "..."}</p>
+                      <p><span className="font-semibold text-white">Goal:</span> {formData.victoryCondition || "..."}</p>
+                      <p><span className="font-semibold text-white">Mood:</span> <span className="capitalize">{formData.tone}</span></p>
                     </div>
                   </div>
                 </div>
@@ -525,5 +666,17 @@ export default function MadlibLabPage() {
 
       </main>
     </div>
+  );
+}
+
+export default function MadlibLabPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-[#010409] text-slate-100 flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-emerald-500" />
+      </div>
+    }>
+      <MadlibLabPageContent />
+    </Suspense>
   );
 }

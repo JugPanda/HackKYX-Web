@@ -81,6 +81,7 @@ export const madlibSchema = z.object({
   victoryCondition: z.string().min(10).max(160),
   tone: z.enum(["hopeful", "gritty", "heroic"]),
   difficulty: z.enum(["rookie", "veteran", "nightmare"]),
+  genre: z.enum(["platformer", "adventure", "puzzle"]),
 });
 
 export type MadlibPayload = z.infer<typeof madlibSchema>;
@@ -96,43 +97,6 @@ export const defaultMadlibPayload: MadlibPayload = {
   victoryCondition: "Synthesize the Riverside serum before the Mireborn corrupt the water table.",
   tone: "hopeful",
   difficulty: "veteran",
+  genre: "platformer",
 };
 
-export type MadlibSuccessResponse = {
-  ok: true;
-  config: {
-    schemaVersion: string;
-    characters: {
-      survivor: {
-        name: string;
-        codename: string;
-        bio: string;
-      };
-      nemesis: {
-        name: string;
-        threatLevel: string;
-      };
-    };
-    world: {
-      safehouse: {
-        name: string;
-        description: string;
-        media: string | null;
-      };
-      victoryCondition: string;
-      tone: MadlibPayload["tone"];
-      difficulty: MadlibPayload["difficulty"];
-    };
-    modifiers: Array<{ label: string; value: number }>;
-    lastUpdated: string;
-  };
-  summary: string;
-};
-
-export type MadlibErrorResponse = {
-  ok: false;
-  message: string;
-  issues?: Record<string, string[]>;
-};
-
-export type MadlibApiResponse = MadlibSuccessResponse | MadlibErrorResponse;
