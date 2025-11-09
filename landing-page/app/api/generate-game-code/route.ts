@@ -35,8 +35,9 @@ export async function POST(request: Request) {
     console.log("Hero:", body.heroName, "Enemy:", body.enemyName);
 
     // Call OpenAI to generate the game code
+    // Using gpt-4o-mini: faster, cheaper, and works within Vercel's 10s timeout
     const completion = await openai.chat.completions.create({
-      model: "gpt-4-turbo-preview", // or "gpt-4" for better code generation
+      model: "gpt-4o-mini", // Fast model that works within serverless timeout
       messages: [
         {
           role: "system",
@@ -47,8 +48,8 @@ export async function POST(request: Request) {
           content: prompt,
         },
       ],
-      temperature: 0.7, // Some creativity but still coherent
-      max_tokens: 4000, // Enough for a complete game
+      temperature: 0.7,
+      max_tokens: 3000, // Reduced for faster generation
     });
 
     const generatedCode = completion.choices[0]?.message?.content;
@@ -106,7 +107,7 @@ export async function POST(request: Request) {
       },
       metadata: {
         generatedBy: "AI",
-        model: "gpt-4-turbo-preview",
+        model: "gpt-4o-mini",
         generatedAt: new Date().toISOString(),
       },
     };
@@ -119,7 +120,7 @@ export async function POST(request: Request) {
       config,
       assets: [], // No additional assets for now
       codeLength: mainPy.length,
-      model: "gpt-4-turbo-preview",
+      model: "gpt-4o-mini",
     });
   } catch (error) {
     console.error("Error generating game code:", error);
