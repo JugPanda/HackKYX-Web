@@ -58,14 +58,14 @@ export default function HomePage() {
           <section id="hero" className="grid gap-12 py-12 lg:grid-cols-[1.1fr_0.9fr]">
             <div className="space-y-8">
               <Badge variant="success" className="w-fit border-emerald-500/50 bg-emerald-500/10 text-emerald-200">
-                Create Platformer Games
+                Create Your Own Game
               </Badge>
               <div className="space-y-6">
                 <h1 className="text-4xl font-semibold leading-tight text-white sm:text-5xl lg:text-[3.5rem]">
-                  Create Your Own Platformer Game
+                  Create Your Own Game with AI
                 </h1>
                 <p className="max-w-2xl text-lg text-slate-300">
-                  Describe your game idea in plain English, and we&apos;ll turn it into a playable platformer. 
+                  Describe your game idea in plain English, and we&apos;ll turn it into a playable game. 
                   Share it with friends or publish it for the community to play.
                 </p>
                 <div className="rounded-2xl border border-slate-800/70 bg-slate-950/40 p-5 text-sm text-slate-300">
@@ -157,7 +157,7 @@ export default function HomePage() {
               No Coding Required
             </h2>
             <p className="text-slate-400 max-w-2xl mx-auto">
-              Anyone can create a platformer game. Just describe your idea, customize a few settings, and you&apos;re done!
+              Anyone can create a game. Just describe your idea, customize a few settings, and you&apos;re done!
             </p>
           </div>
         </section>
@@ -168,7 +168,7 @@ export default function HomePage() {
                 Ready to Create Your Game?
               </h2>
               <p className="text-slate-400">
-                Sign up now and start building your own platformer in minutes.
+                Sign up now and start building your own game in minutes.
               </p>
             </div>
             <div className="mt-6 flex flex-wrap justify-center gap-4">
