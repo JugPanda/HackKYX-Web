@@ -2,6 +2,9 @@ import { createClient } from "@/lib/supabase/server";
 import { gameConfigSchema } from "@/lib/schemas";
 import { NextResponse } from "next/server";
 
+// Force dynamic rendering and disable caching
+export const dynamic = 'force-dynamic';
+
 export async function POST(request: Request) {
   try {
     const supabase = await createClient();

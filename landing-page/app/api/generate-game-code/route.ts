@@ -2,6 +2,10 @@ import { NextResponse } from "next/server";
 import OpenAI from "openai";
 import { buildGameGenerationPrompt, type GameGenerationRequest } from "@/lib/game-generator";
 
+// Force dynamic rendering and disable caching
+export const dynamic = 'force-dynamic';
+export const maxDuration = 30; // Allow up to 30 seconds for AI generation
+
 // Initialize OpenAI client
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
