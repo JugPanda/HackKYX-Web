@@ -53,3 +53,8 @@ landing-page/.turbo/
 landing-page/out/
 landing-page/public/generated/*
 !landing-page/public/generated/.gitkeep
+
+# Environment variables
+landing-page/.env.local
+.env.local
+.env*.local
