@@ -126,26 +126,40 @@ def build_game(build_id: str, game_id: str, config: dict, generated_code: str = 
         if not build_output.exists():
             raise FileNotFoundError("Build output directory not found")
         
-        # Create a zip of the build output
-        zip_path = Path(temp_dir) / f"{game_id}.zip"
-        shutil.make_archive(str(zip_path.with_suffix("")), "zip", build_output)
-        logger.info(f"Created zip archive: {zip_path}")
+        # Upload all files from build/web directory to Supabase Storage
+        logger.info("Uploading build files to Supabase Storage...")
+        storage_base = f"games/{game_id}"
         
-        # Upload to Supabase Storage
-        with open(zip_path, "rb") as f:
-            file_data = f.read()
+        # Upload each file individually
+        for file_path in build_output.rglob("*"):
+            if file_path.is_file():
+                # Get relative path from build_output
+                relative_path = file_path.relative_to(build_output)
+                storage_path = f"{storage_base}/{relative_path}".replace("\\", "/")
+                
+                # Determine content type
+                content_type = "text/html"
+                if str(file_path).endswith(".js"):
+                    content_type = "application/javascript"
+                elif str(file_path).endswith(".wasm"):
+                    content_type = "application/wasm"
+                elif str(file_path).endswith(".data"):
+                    content_type = "application/octet-stream"
+                elif str(file_path).endswith(".json"):
+                    content_type = "application/json"
+                
+                logger.info(f"Uploading: {storage_path}")
+                with open(file_path, "rb") as f:
+                    file_data = f.read()
+                
+                supabase.storage.from_("game-bundles").upload(
+                    storage_path,
+                    file_data,
+                    file_options={"content-type": content_type, "upsert": "true"}
+                )
         
-        storage_path = f"games/{game_id}/bundle.zip"
-        logger.info(f"Uploading to Supabase Storage: {storage_path}")
-        
-        supabase.storage.from_("game-bundles").upload(
-            storage_path,
-            file_data,
-            file_options={"content-type": "application/zip"}
-        )
-        
-        # Get public URL
-        bundle_url = supabase.storage.from_("game-bundles").get_public_url(storage_path)
+        # Get public URL for index.html
+        bundle_url = supabase.storage.from_("game-bundles").get_public_url(f"{storage_base}/index.html")
         logger.info(f"Bundle URL: {bundle_url}")
         
         return bundle_url
