@@ -7,19 +7,28 @@ import { Badge } from "@/components/ui/badge";
 export default async function CommunityPage() {
   const supabase = await createClient();
 
-  // Fetch published games with profiles
+  // Fetch published games
   const { data: games } = await supabase
     .from("games")
-    .select(`
-      *,
-      profiles:user_id (
-        username,
-        avatar_url
-      )
-    `)
+    .select("*")
     .eq("visibility", "public")
     .order("published_at", { ascending: false })
     .limit(50);
+
+  // Enrich with profile data
+  if (games && games.length > 0) {
+    const userIds = [...new Set(games.map(g => g.user_id))];
+    const { data: profiles } = await supabase
+      .from("profiles")
+      .select("id, username, avatar_url")
+      .in("id", userIds);
+    
+    const profileMap = new Map(profiles?.map(p => [p.id, p]) || []);
+    games.forEach(game => {
+      const profile = profileMap.get(game.user_id);
+      game.profiles = profile ? { username: profile.username, avatar_url: profile.avatar_url } : null;
+    });
+  }
 
   return (
     <div className="container mx-auto px-4 py-8">

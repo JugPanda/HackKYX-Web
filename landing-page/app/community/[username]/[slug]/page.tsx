@@ -22,34 +22,36 @@ export default async function GamePage({ params }: PageProps) {
   } = await supabase.auth.getUser();
 
   // Fetch profile by username
-  const { data: profile } = await supabase
+  const { data: profile, error: profileError } = await supabase
     .from("profiles")
-    .select("id")
+    .select("id, username, avatar_url, bio")
     .eq("username", username)
     .single();
 
-  if (!profile) {
+  if (!profile || profileError) {
+    console.error("Profile not found:", username, profileError);
     notFound();
   }
 
   // Fetch game
-  const { data: game } = await supabase
+  const { data: game, error: gameError } = await supabase
     .from("games")
-    .select(`
-      *,
-      profiles:user_id (
-        username,
-        avatar_url,
-        bio
-      )
-    `)
+    .select("*")
     .eq("user_id", profile.id)
     .eq("slug", slug)
     .single();
 
-  if (!game) {
+  if (!game || gameError) {
+    console.error("Game not found:", { username, slug, profileId: profile.id }, gameError);
     notFound();
   }
+
+  // Attach profile data manually
+  game.profiles = {
+    username: username,
+    avatar_url: profile.avatar_url || null,
+    bio: profile.bio || null
+  };
 
   // Check if user can view this game
   const isOwner = user && game.user_id === user.id;
@@ -80,15 +82,24 @@ export default async function GamePage({ params }: PageProps) {
   // Fetch comments
   const { data: comments } = await supabase
     .from("comments")
-    .select(`
-      *,
-      profiles:user_id (
-        username,
-        avatar_url
-      )
-    `)
+    .select("*")
     .eq("game_id", game.id)
     .order("created_at", { ascending: false});
+
+  // Enrich comments with profile data
+  if (comments && comments.length > 0) {
+    const commentUserIds = [...new Set(comments.map(c => c.user_id))];
+    const { data: commentProfiles } = await supabase
+      .from("profiles")
+      .select("id, username, avatar_url")
+      .in("id", commentUserIds);
+    
+    const commentProfileMap = new Map(commentProfiles?.map(p => [p.id, p]) || []);
+    comments.forEach(comment => {
+      const commentProfile = commentProfileMap.get(comment.user_id);
+      comment.profiles = commentProfile ? { username: commentProfile.username, avatar_url: commentProfile.avatar_url } : null;
+    });
+  }
 
   return (
     <div className="container mx-auto px-4 py-8">
