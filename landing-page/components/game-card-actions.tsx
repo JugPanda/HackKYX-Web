@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button";
 import { Game } from "@/lib/db-types";
 import Link from "next/link";
 import { Trash2, Loader2 } from "lucide-react";
-import { Progress } from "@/components/ui/progress";
 
 interface GameCardActionsProps {
   game: Game;

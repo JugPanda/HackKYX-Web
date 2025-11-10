@@ -216,7 +216,7 @@ function MadlibLabPageContent() {
         throw new Error("Failed to build demo game");
       }
 
-      const data = await response.json();
+      await response.json();
       setBuildStatus({ loading: false, message: "Demo game built! Redirecting..." });
       
       // Redirect to the game page
