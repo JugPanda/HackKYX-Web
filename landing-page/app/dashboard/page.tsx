@@ -6,6 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { GameCardActions } from "@/components/game-card-actions";
+import { DashboardNav } from "@/components/dashboard-nav";
 
 export default async function DashboardPage() {
   const supabase = await createClient();
@@ -33,11 +34,13 @@ export default async function DashboardPage() {
     .single();
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="mb-8">
-        <h1 className="text-4xl font-bold mb-2">Dashboard</h1>
-        <p className="text-muted-foreground">Welcome back, {profile?.username}!</p>
-      </div>
+    <>
+      <DashboardNav />
+      <div className="container mx-auto px-4 py-8">
+        <div className="mb-8">
+          <h1 className="text-4xl font-bold mb-2">Dashboard</h1>
+          <p className="text-muted-foreground">Welcome back, {profile?.username}!</p>
+        </div>
 
       {/* Quick Actions */}
       <div className="mb-8 flex gap-4">
@@ -136,6 +139,7 @@ export default async function DashboardPage() {
         </Card>
       </div>
     </div>
+    </>
   );
 }
 

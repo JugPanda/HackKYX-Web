@@ -15,6 +15,7 @@ import {
   MadlibPayload,
 } from "@/lib/schemas";
 import { createClient } from "@/lib/supabase/client";
+import { DashboardNav } from "@/components/dashboard-nav";
 
 type GeneratedConfig = {
   story?: {
@@ -224,40 +225,6 @@ function MadlibLabPageContent() {
     } catch (error) {
       console.error(error);
       setPromptStatus({ loading: false, error: true, message: "Unable to generate config" });
-    }
-  };
-
-  const handleTestDemo = async () => {
-    if (!isSignedIn) {
-      router.push('/auth/sign-in');
-      return;
-    }
-
-    setBuildStatus({ loading: true, message: "Building test demo game..." });
-    
-    try {
-      const response = await fetch("/api/games/build-demo", {
-        method: "POST",
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to build demo game");
-      }
-
-      await response.json();
-      setBuildStatus({ loading: false, message: "Demo game built! Redirecting..." });
-      
-      // Redirect to the game page
-      setTimeout(() => {
-        router.push(`/dashboard`);
-      }, 1500);
-    } catch (error) {
-      console.error("Demo build error:", error);
-      setBuildStatus({ 
-        loading: false, 
-        message: "Failed to build demo game", 
-        error: true 
-      });
     }
   };
 
@@ -497,14 +464,17 @@ function MadlibLabPageContent() {
 
   return (
     <div className="min-h-screen bg-[#010409] text-slate-100">
+      {isSignedIn && <DashboardNav />}
       <main className="mx-auto flex w-full max-w-6xl flex-col gap-10 px-6 py-12">
         <div className="space-y-4">
-          <Link
-            href="/"
-            className="inline-flex items-center gap-2 text-sm text-slate-400 transition hover:text-slate-100"
-          >
-            <ArrowLeft className="h-4 w-4" /> Back to landing page
-          </Link>
+          {!isSignedIn && (
+            <Link
+              href="/"
+              className="inline-flex items-center gap-2 text-sm text-slate-400 transition hover:text-slate-100"
+            >
+              <ArrowLeft className="h-4 w-4" /> Back to landing page
+            </Link>
+          )}
           <div className="space-y-3">
             <Badge className="border-emerald-500/40 bg-emerald-500/10 text-emerald-100">
               Game Creator
@@ -762,15 +732,6 @@ Be specific about genre, characters, and goal!"
                             ) : (
                               "Build & Publish Game →"
                             )}
-                          </Button>
-                          <Button
-                            onClick={handleTestDemo}
-                            disabled={buildStatus.loading}
-                            variant="outline"
-                            size="lg"
-                            title="Test with a working demo game"
-                          >
-                            🧪 Test Demo
                           </Button>
                         </div>
                       </>
