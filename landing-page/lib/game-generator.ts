@@ -189,46 +189,149 @@ ${genreInfo.gameplay}
    - Particle effects (5-10 particles on: jumps, hits, pickups, wins)
    - Smooth lerp/easing for movements
    - Flash effects on damage (player flickers white)
-   - Sound feedback using simple beeps (optional)
+   - Collectibles and power-ups (health pickups, speed boosts, invincibility)
+   - Score multipliers and combo systems
+   - Progressive difficulty (enemies get slightly faster over time)
 
-3. **Visual Polish:**
-   - Clean UI: Health bar (top-left), Score (top-right), Title (center-top)
-   - Smooth animations (not instant teleporting)
-   - Color scheme: Player=${mood.playerColor}, Enemy=${mood.enemyColor}, BG=${mood.bgColor}
-   - Rounded rectangles for characters (pygame.draw.rect with border_radius=5)
-   - Shadows/outlines for depth
+3. **Visual Design (NO IMAGES - Draw Everything):**
+   - **Player Character:** Draw a detailed character using shapes:
+     * Body: Main rectangle/circle in ${mood.playerColor}
+     * Features: Add eyes, limbs, accessories that match "${request.heroName}"
+     * Animation: Bob/rotate slightly when moving
+     * Example: For "Knight" - draw body + helmet shape + sword
+   
+   - **Enemies:** Draw recognizable enemies for "${request.enemyName}":
+     * Use ${mood.enemyColor} as base color
+     * Add distinctive features (spikes, eyes, tentacles, etc.)
+     * Animate them (float, pulse, rotate)
+     * Make them look threatening but clear
+   
+   - **Environment:**
+     * Background gradient: ${mood.bgColor} with lighter/darker shades
+     * Platform decorations (grass on top, cracks, etc.)
+     * Environmental details (stars, clouds, particles)
+   
+   - **UI:**
+     * Health bar (top-left) with icon/heart symbols
+     * Score (top-right) with large, clear numbers
+     * Collectible counter if applicable
+     * Clean, readable fonts
 
-4. **Gameplay Balance:**
-   - Fair but challenging at "${request.difficulty}" difficulty
-   - Clear visual feedback for all actions
-   - Invincibility frames after damage (0.5s)
-   - Victory should feel earned but achievable
+4. **Storyline & Narrative:**
+   - **Intro Screen:** Show a story introduction before gameplay
+     * Display the goal: "${request.goal}"
+     * Brief setup explaining why the player is here
+     * "Press SPACE to Start" prompt
+   
+   - **In-Game Storytelling:**
+     * Show story text at key moments (reaching checkpoints, collecting items)
+     * Display victory/goal reminders in UI
+     * Add context to gameplay (e.g., "Collect 3 crystals to unlock the exit")
+   
+   - **Win Screen:** Story conclusion
+     * Celebrate the achievement of: "${request.goal}"
+     * Show what happened after the victory
+     * Display final score and stats
+     * "Press R to Play Again"
+   
+   - **Lose Screen:** Encouraging retry
+     * Brief story moment ("The ${request.enemyName} were too strong...")
+     * Show what progress was made
+     * "Press R to Try Again"
 
-5. **Code Structure:**
+5. **Fun Gameplay Elements:**
+   - Add collectibles (coins, gems, power-ups)
+   - Include at least one power-up type (speed boost, invincibility, health)
+   - Score system that rewards skilled play
+   - Optional: Hidden secrets or bonus areas
+   - Varied enemy behaviors (some patrol, some chase, some shoot)
+   - Environmental hazards matching the theme
+
+6. **Code Structure:**
 ${genreInfo.codeExample}
 
-**CRITICAL Technical Requirements:**
-1. MUST start with: \`import asyncio\` and \`import pygame\`
-2. MUST have: \`async def main()\` as the main game loop
-3. MUST include: \`await asyncio.sleep(0)\` at the end of each game loop iteration
+**CRITICAL Technical Requirements (MUST FOLLOW EXACTLY):**
+
+1. **Imports:** MUST start with:
+\`\`\`python
+import asyncio
+import pygame
+\`\`\`
+
+2. **Event Loop:** MUST handle events properly for web:
+\`\`\`python
+async def main():
+    pygame.init()
+    screen = pygame.display.set_mode((800, 600))
+    clock = pygame.time.Clock()
+    running = True
+    
+    while running:
+        # CRITICAL: Process ALL events every frame
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+            # Handle other events here
+        
+        # Get keyboard state for continuous input
+        keys = pygame.key.get_pressed()
+        
+        # Your game logic here
+        
+        # Draw everything
+        pygame.display.flip()
+        clock.tick(60)
+        
+        # CRITICAL: Must yield control to browser
+        await asyncio.sleep(0)
+    
+    pygame.quit()
+
+# CRITICAL: Must call main with asyncio
+asyncio.run(main())
+\`\`\`
+
+3. **Input Handling:** Use \`pygame.key.get_pressed()\` for movement (NOT event.key)
 4. Screen size: EXACTLY 800x600
-5. Frame rate: 60 FPS (\`clock.tick(60)\`)
+5. Frame rate: 60 FPS with \`clock.tick(60)\`
 6. ALL positions/sizes must be integers (use int() for calculations)
 7. Include proper game states: PLAYING, WIN, LOSE
 8. Show appropriate screens for each state
-9. "Press R to restart" on game over/win screens
+9. "Press R to restart" on game over/win screens (use event.type == pygame.KEYDOWN)
 
-**Polish Checklist:**
-✓ Particle class with list management
-✓ Screen shake function
-✓ Health bar with outline
-✓ Smooth enemy patrol/chase AI
-✓ Clear win/lose conditions with visual feedback
-✓ Invincibility flashing effect
-✓ Centered text rendering function
-✓ Clean, readable variable names
+**Required Game States:**
+1. INTRO - Story introduction, press SPACE to start
+2. PLAYING - Main gameplay
+3. WIN - Victory screen with story conclusion
+4. LOSE - Game over screen with encouragement
 
-Generate COMPLETE, WORKING Python code (300-400 lines). Make it FUN and POLISHED. Focus on game feel and player feedback. Every action should have visual/audio feedback.
+**Must Include:**
+✓ Intro screen with story/goal
+✓ Detailed character art (drawn with shapes, not rectangles)
+✓ Detailed enemy art matching "${request.enemyName}"
+✓ At least 1 collectible type (coins, gems, etc.)
+✓ At least 1 power-up type (health, speed, invincibility)
+✓ Particle effects on all actions
+✓ Screen shake on impacts
+✓ Health bar with heart/icon visuals
+✓ Score display
+✓ Smooth enemy AI with varied behaviors
+✓ Story text at key moments
+✓ Win screen with story conclusion
+✓ Lose screen with retry encouragement
+✓ Background gradient with details
+✓ Platform/environment decorations
+✓ Progressive difficulty or challenge curve
+
+**Character Drawing Examples:**
+- Knight: Rectangle body + triangle helmet + line sword + circle eyes
+- Astronaut: White suit (circles) + glass helmet (circle outline) + antenna
+- Robot: Multiple rectangles + circles for joints + glowing eyes (circles)
+- Dragon: Triangle body + wings (triangles) + spikes (small triangles)
+
+Make the game FEEL GOOD to play. Every action should have satisfying feedback. The player should want to keep playing!
+
+Generate COMPLETE, WORKING Python code (400-600 lines with all features). Make it HIGHLY POLISHED and FUN!
 
 Return ONLY the Python code, no explanations.`;
 }

@@ -68,7 +68,7 @@ You write complete, production-ready games that feel satisfying to play.`,
         },
       ],
       temperature: 0.7, // Slightly higher for more creative, varied games
-      max_tokens: 3000, // Increased for more detailed, polished games (300-400 lines)
+      max_tokens: 4500, // Increased for highly detailed games with story, collectibles, power-ups (400-600 lines)
     });
 
     const generatedCode = completion.choices[0]?.message?.content;

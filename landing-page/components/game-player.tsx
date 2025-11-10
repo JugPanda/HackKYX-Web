@@ -17,8 +17,15 @@ export function GamePlayer({ gameId, gameTitle }: GamePlayerProps) {
 
   return (
     <>
-      <div className="mb-2 text-sm text-muted-foreground">
-        💡 Click on the game to start playing! Use Arrow Keys or WASD to move, Spacebar to jump.
+      <div className="mb-3 p-3 bg-blue-500/10 border border-blue-500/30 rounded-lg">
+        <p className="text-sm font-medium text-blue-300 mb-1">🎮 How to Play:</p>
+        <ol className="text-xs text-blue-200 space-y-1 ml-4 list-decimal">
+          <li><strong>Click on the game window below</strong> to focus it</li>
+          <li>Wait for "Python loading..." to finish (~10 seconds)</li>
+          <li>Use <strong>Arrow Keys</strong> or <strong>WASD</strong> to move</li>
+          <li>Press <strong>Spacebar</strong> to jump (platformers)</li>
+          <li>Press <strong>R</strong> to restart if you win or lose</li>
+        </ol>
       </div>
       <Card 
         className="mb-6 overflow-hidden cursor-pointer" 
