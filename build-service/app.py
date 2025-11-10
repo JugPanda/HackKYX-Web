@@ -70,7 +70,7 @@ def update_game_status(game_id: str, status: str, bundle_url: str = None):
         logger.error(f"Failed to update game status: {e}")
 
 
-def build_game(build_id: str, game_id: str, config: dict, generated_code: str = None) -> str:
+def build_game(build_id: str, game_id: str, config: dict, generated_code: str = None, use_test_game: bool = False) -> str:
     """
     Build a game using pygbag and upload to Supabase Storage.
     Returns the bundle URL.
@@ -92,8 +92,6 @@ def build_game(build_id: str, game_id: str, config: dict, generated_code: str = 
         main_py_path = Path(temp_dir) / "main.py"
         
         # Check if this is a test game build
-        use_test_game = data.get("use_test_game", False)
-        
         if use_test_game:
             # Use the guaranteed-to-work test game
             logger.info("Using TEST GAME")
@@ -243,18 +241,19 @@ def process_build():
         game_id = data.get("gameId")
         config = data.get("config")
         generated_code = data.get("generatedCode")
+        use_test_game = data.get("use_test_game", False)
         
         if not all([build_id, game_id, config]):
             return jsonify({"error": "Missing required fields"}), 400
         
-        logger.info(f"Processing build request: build_id={build_id}, game_id={game_id}")
+        logger.info(f"Processing build request: build_id={build_id}, game_id={game_id}, use_test_game={use_test_game}")
         
         # Update status to processing
         update_build_status(build_id, "processing")
         update_game_status(game_id, "building")
         
         # Build the game
-        bundle_url = build_game(build_id, game_id, config, generated_code)
+        bundle_url = build_game(build_id, game_id, config, generated_code, use_test_game)
         
         # Update status to completed
         update_build_status(build_id, "completed")
