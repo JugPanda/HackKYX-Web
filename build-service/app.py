@@ -167,53 +167,29 @@ def build_game(build_id: str, game_id: str, config: dict, generated_code: str = 
                 with open(file_path, "rb") as f:
                     file_data = f.read()
                 
-                # Use direct HTTP request with proper headers
-                import httpx
-                upload_url = f"{SUPABASE_URL}/storage/v1/object/game-bundles/{storage_path}"
-                
-                # Upload with multipart form data to set content-type correctly
-                files = {
-                    'file': (storage_path.split('/')[-1], file_data, content_type)
-                }
-                upload_params = {
+                # Use Supabase Python SDK with explicit file options
+                file_options = {
+                    "content-type": content_type,
+                    "cache-control": "no-cache, no-store, must-revalidate",
                     "upsert": "true"
                 }
-                upload_headers_minimal = {
-                    "Authorization": f"Bearer {SUPABASE_SERVICE_KEY}"
-                }
                 
-                response = httpx.post(
-                    upload_url, 
-                    files=files,
-                    params=upload_params,
-                    headers=upload_headers_minimal, 
-                    timeout=30.0
-                )
-                response.raise_for_status()
-                logger.info(f"Upload successful with multipart: {response.status_code}")
-                
-                # FORCE update the Content-Type metadata via Supabase's object update API
-                # This is a workaround for Supabase Storage ignoring multipart Content-Type
-                update_url = f"{SUPABASE_URL}/storage/v1/object/game-bundles/{storage_path}"
-                update_payload = {
-                    "contentType": content_type,
-                    "cacheControl": "no-cache, no-store, must-revalidate"
-                }
-                update_headers = {
-                    "Authorization": f"Bearer {SUPABASE_SERVICE_KEY}",
-                    "Content-Type": "application/json"
-                }
-                
-                update_response = httpx.put(
-                    update_url,
-                    json=update_payload,
-                    headers=update_headers,
-                    timeout=30.0
-                )
-                if update_response.status_code == 200:
-                    logger.info(f"✅ Metadata updated: {storage_path} -> {content_type}")
-                else:
-                    logger.warning(f"⚠️ Metadata update failed ({update_response.status_code}): {update_response.text}")
+                try:
+                    supabase.storage.from_("game-bundles").upload(
+                        storage_path,
+                        file_data,
+                        file_options=file_options
+                    )
+                    logger.info(f"✅ Upload successful: {storage_path} -> {content_type}")
+                except Exception as e:
+                    logger.warning(f"Upload error (might be upsert conflict): {e}")
+                    # If upload fails due to existing file, try update
+                    supabase.storage.from_("game-bundles").update(
+                        storage_path,
+                        file_data,
+                        file_options=file_options
+                    )
+                    logger.info(f"✅ Update successful: {storage_path} -> {content_type}")
         
         # Get public URL for index.html
         bundle_url = supabase.storage.from_("game-bundles").get_public_url(f"{storage_base}/index.html")
