@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { GamePlayer } from "@/components/game-player";
 import Link from "next/link";
 
 interface PageProps {
@@ -143,26 +144,7 @@ export default async function GamePage({ params }: PageProps) {
 
       {/* Game Player */}
       {game.bundle_url ? (
-        <>
-          <div className="mb-2 text-sm text-muted-foreground">
-            💡 Click on the game to start playing! Use Arrow Keys or WASD to move, Spacebar to jump.
-          </div>
-          <Card className="mb-6 overflow-hidden cursor-pointer" onClick={(e) => {
-            const iframe = e.currentTarget.querySelector('iframe');
-            if (iframe) iframe.focus();
-          }}>
-            <div className="w-full h-[600px] overflow-hidden relative">
-              <iframe
-                src={`/api/play/${game.id}/`}
-                className="w-full h-full border-0 pointer-events-auto"
-                title={game.title}
-                sandbox="allow-scripts allow-same-origin allow-downloads allow-forms allow-modals"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                tabIndex={0}
-              />
-            </div>
-          </Card>
-        </>
+        <GamePlayer gameId={game.id} gameTitle={game.title} />
       ) : (
         <Card className="mb-6 p-8 text-center">
           <p className="text-muted-foreground">
