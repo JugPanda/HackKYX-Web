@@ -69,8 +69,10 @@ export function GameCardActions({ game, profileUsername }: GameCardActionsProps)
         setBuildProgress("Finalizing and verifying build...");
       }
 
-      // Refresh to check status
-      router.refresh();
+      // Only refresh every 5 seconds to avoid reloading too often
+      if (pollCount % 5 === 0) {
+        router.refresh();
+      }
     }, 1000); // Poll every 1 second
 
     return () => clearInterval(pollInterval);
