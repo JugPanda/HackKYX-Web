@@ -199,6 +199,40 @@ function MadlibLabPageContent() {
     }
   };
 
+  const handleTestDemo = async () => {
+    if (!isSignedIn) {
+      router.push('/auth/sign-in');
+      return;
+    }
+
+    setBuildStatus({ loading: true, message: "Building test demo game..." });
+    
+    try {
+      const response = await fetch("/api/games/build-demo", {
+        method: "POST",
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to build demo game");
+      }
+
+      const data = await response.json();
+      setBuildStatus({ loading: false, message: "Demo game built! Redirecting..." });
+      
+      // Redirect to the game page
+      setTimeout(() => {
+        router.push(`/dashboard`);
+      }, 1500);
+    } catch (error) {
+      console.error("Demo build error:", error);
+      setBuildStatus({ 
+        loading: false, 
+        message: "Failed to build demo game", 
+        error: true 
+      });
+    }
+  };
+
   const handleBuild = async () => {
     if (!isSignedIn) {
       router.push('/auth/sign-in');
@@ -579,21 +613,32 @@ Be specific about genre, characters, and goal!"
                         <div className="rounded-2xl border border-emerald-500/30 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-100">
                           ✨ <strong>Ready to build!</strong> Click below to create your playable game and share it with the community.
                         </div>
-                        <Button
-                          onClick={handleBuild}
-                          disabled={buildStatus.loading}
-                          className="w-full"
-                          size="lg"
-                        >
-                          {buildStatus.loading ? (
-                            <>
-                              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                              {buildStatus.message || "Building..."}
-                            </>
-                          ) : (
-                            "Build & Publish Game →"
-                          )}
-                        </Button>
+                        <div className="flex gap-2">
+                          <Button
+                            onClick={handleBuild}
+                            disabled={buildStatus.loading}
+                            className="flex-1"
+                            size="lg"
+                          >
+                            {buildStatus.loading ? (
+                              <>
+                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                {buildStatus.message || "Building..."}
+                              </>
+                            ) : (
+                              "Build & Publish Game →"
+                            )}
+                          </Button>
+                          <Button
+                            onClick={handleTestDemo}
+                            disabled={buildStatus.loading}
+                            variant="outline"
+                            size="lg"
+                            title="Test with a working demo game"
+                          >
+                            🧪 Test Demo
+                          </Button>
+                        </div>
                       </>
                     ) : (
                       <>

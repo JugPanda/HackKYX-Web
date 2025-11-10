@@ -90,12 +90,24 @@ def build_game(build_id: str, game_id: str, config: dict, generated_code: str = 
         
         # Write main.py
         main_py_path = Path(temp_dir) / "main.py"
-        if generated_code:
+        
+        # Check if this is a test game build
+        use_test_game = data.get("use_test_game", False)
+        
+        if use_test_game:
+            # Use the guaranteed-to-work test game
+            logger.info("Using TEST GAME")
+            test_game = Path(__file__).parent / "test-game.py"
+            if test_game.exists():
+                shutil.copy(test_game, main_py_path)
+            else:
+                raise FileNotFoundError("Test game not found")
+        elif generated_code:
             logger.info("Using AI-generated game code")
             with open(main_py_path, "w") as f:
                 f.write(generated_code)
         else:
-            # Use demo game template (you'll need to mount this or include it)
+            # Use demo game template
             logger.info("Using demo game template")
             demo_main = Path(__file__).parent / "demo-game" / "main.py"
             if demo_main.exists():
