@@ -21,6 +21,9 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy application code
 COPY app.py .
 
+# Copy test game
+COPY test-game.py .
+
 # Copy demo game template (optional, for fallback)
 # COPY demo-game/ ./demo-game/
 
