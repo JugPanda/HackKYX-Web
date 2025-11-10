@@ -148,6 +148,8 @@ export default async function GamePage({ params }: PageProps) {
             src={game.bundle_url}
             className="w-full h-[600px] border-0"
             title={game.title}
+            sandbox="allow-scripts allow-same-origin allow-downloads allow-forms allow-modals"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
           />
         </Card>
       ) : (
