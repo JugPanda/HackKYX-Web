@@ -191,6 +191,29 @@ def build_game(build_id: str, game_id: str, config: dict, generated_code: str = 
                 )
                 response.raise_for_status()
                 logger.info(f"Upload successful with multipart: {response.status_code}")
+                
+                # FORCE update the Content-Type metadata via Supabase's object update API
+                # This is a workaround for Supabase Storage ignoring multipart Content-Type
+                update_url = f"{SUPABASE_URL}/storage/v1/object/game-bundles/{storage_path}"
+                update_payload = {
+                    "contentType": content_type,
+                    "cacheControl": "public, max-age=3600"
+                }
+                update_headers = {
+                    "Authorization": f"Bearer {SUPABASE_SERVICE_KEY}",
+                    "Content-Type": "application/json"
+                }
+                
+                update_response = httpx.put(
+                    update_url,
+                    json=update_payload,
+                    headers=update_headers,
+                    timeout=30.0
+                )
+                if update_response.status_code == 200:
+                    logger.info(f"✅ Metadata updated: {storage_path} -> {content_type}")
+                else:
+                    logger.warning(f"⚠️ Metadata update failed ({update_response.status_code}): {update_response.text}")
         
         # Get public URL for index.html
         bundle_url = supabase.storage.from_("game-bundles").get_public_url(f"{storage_base}/index.html")
