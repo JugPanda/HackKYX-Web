@@ -29,8 +29,31 @@ export default function SettingsPage() {
 
   useEffect(() => {
     loadProfile();
+    handleEmailVerification();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const handleEmailVerification = async () => {
+    // Check if user just confirmed email change
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('email-updated') === 'true') {
+      const supabase = createClient();
+      
+      // Refresh the session to get updated user data
+      const { data: { session }, error } = await supabase.auth.refreshSession();
+      
+      if (!error && session) {
+        // Reload profile to show updated email
+        await loadProfile();
+        setMessage({ type: "success", text: "Email updated successfully! Your new email is now active." });
+      } else {
+        setMessage({ type: "success", text: "Email updated! Please sign out and sign back in with your new email." });
+      }
+      
+      // Clear the URL parameter
+      window.history.replaceState({}, '', '/settings');
+    }
+  };
 
   const loadProfile = async () => {
     const supabase = createClient();
