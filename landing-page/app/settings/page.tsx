@@ -21,7 +21,6 @@ export default function SettingsPage() {
   const [email, setEmail] = useState("");
   
   // Password change
-  const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   
@@ -30,6 +29,7 @@ export default function SettingsPage() {
 
   useEffect(() => {
     loadProfile();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const loadProfile = async () => {
@@ -127,7 +127,6 @@ export default function SettingsPage() {
       setMessage({ type: "error", text: error.message });
     } else {
       setMessage({ type: "success", text: "Password updated successfully!" });
-      setCurrentPassword("");
       setNewPassword("");
       setConfirmPassword("");
     }

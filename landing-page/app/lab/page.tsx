@@ -588,6 +588,7 @@ Be specific about genre, characters, and goal!"
                         />
                         {playerSpritePreview && (
                           <div className="relative w-24 h-24 border border-slate-600 rounded bg-slate-900">
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
                             <img src={playerSpritePreview} alt="Player preview" className="w-full h-full object-contain" />
                             <button
                               type="button"
@@ -615,6 +616,7 @@ Be specific about genre, characters, and goal!"
                         />
                         {enemySpritePreview && (
                           <div className="relative w-24 h-24 border border-slate-600 rounded bg-slate-900">
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
                             <img src={enemySpritePreview} alt="Enemy preview" className="w-full h-full object-contain" />
                             <button
                               type="button"
