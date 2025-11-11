@@ -91,12 +91,21 @@ export default function SettingsPage() {
     setMessage(null);
 
     const supabase = createClient();
-    const { error } = await supabase.auth.updateUser({ email: newEmail });
+    
+    // Get the current domain (works for both dev and production)
+    const redirectUrl = typeof window !== 'undefined' 
+      ? `${window.location.origin}/settings?email-updated=true`
+      : undefined;
+    
+    const { error } = await supabase.auth.updateUser(
+      { email: newEmail },
+      redirectUrl ? { emailRedirectTo: redirectUrl } : undefined
+    );
 
     if (error) {
       setMessage({ type: "error", text: error.message });
     } else {
-      setMessage({ type: "success", text: "Confirmation email sent to your new address!" });
+      setMessage({ type: "success", text: "Confirmation email sent to your new address! Check your inbox and click the link." });
       setNewEmail("");
     }
 

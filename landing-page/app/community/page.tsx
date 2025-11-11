@@ -3,6 +3,7 @@ import { Game } from "@/lib/db-types";
 import Link from "next/link";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { DashboardNav } from "@/components/dashboard-nav";
 
 export default async function CommunityPage() {
   const supabase = await createClient();
@@ -31,13 +32,15 @@ export default async function CommunityPage() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="mb-8">
-        <h1 className="text-4xl font-bold mb-2">Community Games</h1>
-        <p className="text-muted-foreground">
-          Explore games created by the KYX community
-        </p>
-      </div>
+    <>
+      <DashboardNav />
+      <div className="container mx-auto px-4 py-8">
+        <div className="mb-8">
+          <h1 className="text-4xl font-bold mb-2">Community Games</h1>
+          <p className="text-muted-foreground">
+            Explore games created by the KYX community
+          </p>
+        </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {games && games.length > 0 ? (
@@ -78,6 +81,7 @@ export default async function CommunityPage() {
         )}
       </div>
     </div>
+    </>
   );
 }
 

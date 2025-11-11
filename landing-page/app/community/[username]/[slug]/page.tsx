@@ -5,6 +5,7 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { GamePlayer } from "@/components/game-player";
 import Link from "next/link";
+import { DashboardNav } from "@/components/dashboard-nav";
 
 interface PageProps {
   params: Promise<{
@@ -103,9 +104,11 @@ export default async function GamePage({ params }: PageProps) {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      {/* Game Header */}
-      <div className="mb-6">
+    <>
+      <DashboardNav />
+      <div className="container mx-auto px-4 py-8">
+        {/* Game Header */}
+        <div className="mb-6">
         <div className="flex items-start justify-between mb-4">
           <div>
             <h1 className="text-4xl font-bold mb-2">{game.title}</h1>
@@ -232,6 +235,7 @@ export default async function GamePage({ params }: PageProps) {
         )}
       </div>
     </div>
+    </>
   );
 }
 

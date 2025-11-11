@@ -178,6 +178,15 @@ The #1 priority is that arrow keys and WASD work perfectly. Test your code menta
 
 If ANY of these are "no", fix it before generating code!
 
+**CONTROLS ARE MANDATORY - ALWAYS INCLUDE THEM:**
+Even if the user doesn't mention controls, you MUST implement:
+- Arrow Keys: LEFT, RIGHT, UP, DOWN
+- WASD Keys: A, D, W, S  
+- Space: For jumping (platformers) or special actions
+- R: For restarting after win/lose
+
+NEVER create a game without full keyboard controls!
+
 **Game Theme:**
 - Player Character: ${request.heroName}
 - Enemy/Obstacle: ${request.enemyName}
