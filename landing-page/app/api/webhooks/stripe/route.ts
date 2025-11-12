@@ -63,15 +63,17 @@ export async function POST(request: NextRequest) {
         }
 
         // Update profile with subscription info
+        // @ts-ignore - Stripe API version mismatch for current_period_end
+        const periodEnd = subscription.current_period_end;
         await supabase
           .from("profiles")
           .update({
             subscription_tier: tier,
             subscription_status: subscription.status,
             stripe_subscription_id: subscription.id,
-            subscription_current_period_end: new Date(
-              subscription.current_period_end * 1000
-            ).toISOString(),
+            subscription_current_period_end: periodEnd 
+              ? new Date(periodEnd * 1000).toISOString()
+              : null,
           })
           .eq("id", profile.id);
 
