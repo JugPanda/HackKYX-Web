@@ -33,7 +33,14 @@ const onboardingSteps = [
 
 export default function HomePage() {
   return (
-    <div className="relative min-h-screen overflow-hidden bg-white dark:bg-[#010409] text-slate-900 dark:text-slate-100">
+    <div className="relative min-h-screen overflow-hidden bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50 dark:bg-[#010409] text-slate-900 dark:text-slate-100">
+      {/* Light mode gradients */}
+      <div className="pointer-events-none absolute inset-0 dark:hidden">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(56,189,248,0.15),transparent_50%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_80%,rgba(167,139,250,0.15),transparent_50%)]" />
+      </div>
+      
+      {/* Dark mode gradients */}
       <div className="pointer-events-none absolute inset-0 dark:block hidden">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(56,189,248,0.12),transparent_50%)]" />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_0%,rgba(16,185,129,0.15),transparent_45%)]" />
@@ -59,7 +66,7 @@ export default function HomePage() {
         <main className="mx-auto w-full max-w-6xl flex-1 px-6 pb-24">
           <section id="hero" className="grid gap-12 py-12 lg:grid-cols-[1.1fr_0.9fr]">
             <div className="space-y-8">
-              <Badge variant="success" className="w-fit border-emerald-500/50 bg-emerald-500/10 text-emerald-200">
+              <Badge variant="success" className="w-fit border-emerald-500/50 bg-emerald-100 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-200 shadow-sm">
                 Create Your Own Game
               </Badge>
               <div className="space-y-6">
@@ -70,7 +77,7 @@ export default function HomePage() {
                   Describe your game idea in plain English, and we&apos;ll turn it into a playable game. 
                   Share it with friends or publish it for the community to play.
                 </p>
-                <div className="rounded-2xl border border-slate-300 dark:border-slate-800/70 bg-slate-100 dark:bg-slate-950/40 p-5 text-sm text-slate-700 dark:text-slate-300">
+                <div className="rounded-2xl border border-slate-200 dark:border-slate-800/70 bg-white dark:bg-slate-950/40 p-5 text-sm text-slate-700 dark:text-slate-300 shadow-lg shadow-slate-200/50 dark:shadow-none">
                   <ol className="mt-3 space-y-2">
                     <li>
                       <span className="font-semibold text-slate-900 dark:text-white">1. Describe your game idea</span>
@@ -100,7 +107,7 @@ export default function HomePage() {
 
             <Card
               id="builder"
-              className="relative overflow-hidden border border-slate-300 dark:border-slate-800/70 bg-gradient-to-br from-slate-50 via-slate-100 to-slate-200 dark:from-[#161b22] dark:via-[#0d1117] dark:to-[#020711]"
+              className="relative overflow-hidden border border-slate-200 dark:border-slate-800/70 bg-gradient-to-br from-white via-blue-50 to-purple-50 dark:from-[#161b22] dark:via-[#0d1117] dark:to-[#020711] shadow-2xl shadow-blue-200/30 dark:shadow-none"
             >
               <CardContent className="mt-6 space-y-5">
                 <div className="space-y-2">
@@ -130,7 +137,7 @@ export default function HomePage() {
           </section>
 
           <section id="how-it-works" className="space-y-8 py-12">
-            <div className="rounded-3xl border border-slate-300 dark:border-slate-800/70 bg-slate-100 dark:bg-slate-950/40 px-8 py-10">
+            <div className="rounded-3xl border border-slate-200 dark:border-slate-800/70 bg-white dark:bg-slate-950/40 px-8 py-10 shadow-xl shadow-slate-200/50 dark:shadow-none">
               <div className="space-y-3 text-center">
                 <h2 className="text-3xl font-semibold text-slate-900 dark:text-white sm:text-4xl">
                   How It Works
@@ -141,7 +148,7 @@ export default function HomePage() {
               </div>
               <div className="mt-8 grid gap-6 md:grid-cols-3">
                 {onboardingSteps.map((step) => (
-                  <Card key={step.title} className="border-slate-300 dark:border-slate-800/70 bg-white dark:bg-slate-950/50">
+                  <Card key={step.title} className="border-slate-200 dark:border-slate-800/70 bg-gradient-to-br from-white to-slate-50 dark:bg-slate-950/50 shadow-md shadow-slate-200/50 dark:shadow-none hover:shadow-lg hover:shadow-slate-300/50 dark:hover:shadow-none transition-shadow">
                     <CardContent className="space-y-3 p-6">
                       <p className="text-lg font-semibold text-slate-900 dark:text-white">{step.title}</p>
                       <p className="text-slate-700 dark:text-slate-300">{step.description}</p>
@@ -164,7 +171,7 @@ export default function HomePage() {
             </div>
             <div className="grid gap-6 md:grid-cols-3">
               {/* Free Tier */}
-              <Card className="border-gray-500/50 bg-white dark:bg-slate-950/50 hover:border-gray-500/70 transition-all">
+              <Card className="border-gray-300 dark:border-gray-500/50 bg-white dark:bg-slate-950/50 hover:border-gray-400 dark:hover:border-gray-500/70 transition-all shadow-lg shadow-slate-200/50 dark:shadow-none">
                 <CardHeader className="text-center pb-4">
                   <div className="flex justify-center mb-3">
                     <Sparkles className="w-10 h-10" />
@@ -191,7 +198,7 @@ export default function HomePage() {
               </Card>
 
               {/* Pro Tier */}
-              <Card className="border-blue-500/50 bg-gradient-to-br from-blue-50 to-slate-50 dark:from-blue-950/30 dark:to-slate-950/50 hover:border-blue-500/70 transition-all">
+              <Card className="border-blue-400 dark:border-blue-500/50 bg-gradient-to-br from-blue-50 via-white to-blue-50 dark:from-blue-950/30 dark:to-slate-950/50 hover:border-blue-500 dark:hover:border-blue-500/70 transition-all shadow-xl shadow-blue-200/50 dark:shadow-none">
                 <CardHeader className="text-center pb-4">
                   <div className="flex justify-center mb-3">
                     <Zap className="w-10 h-10" />
@@ -218,7 +225,7 @@ export default function HomePage() {
               </Card>
 
               {/* Premium Tier */}
-              <Card className="border-purple-500/50 bg-gradient-to-br from-purple-50 to-slate-50 dark:from-purple-950/30 dark:to-slate-950/50 hover:border-purple-500/70 transition-all relative">
+              <Card className="border-purple-400 dark:border-purple-500/50 bg-gradient-to-br from-purple-50 via-white to-pink-50 dark:from-purple-950/30 dark:to-slate-950/50 hover:border-purple-500 dark:hover:border-purple-500/70 transition-all relative shadow-xl shadow-purple-200/50 dark:shadow-none">
                 <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-gradient-to-r from-purple-500 to-pink-500 text-white px-4 py-1 rounded-full text-sm font-semibold">
                   Most Popular
                 </div>
@@ -265,7 +272,7 @@ export default function HomePage() {
           </div>
         </section>
 
-          <section className="rounded-3xl border border-slate-300 dark:border-slate-800/70 bg-gradient-to-br from-slate-100 via-slate-200 to-slate-100 dark:from-[#0d1117] dark:via-[#05070c] dark:to-black p-10 text-center">
+          <section className="rounded-3xl border border-slate-200 dark:border-slate-800/70 bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 dark:from-[#0d1117] dark:via-[#05070c] dark:to-black p-10 text-center shadow-2xl shadow-blue-200/30 dark:shadow-none">
             <div className="space-y-4">
               <h2 className="text-3xl font-semibold text-slate-900 dark:text-white sm:text-4xl">
                 Ready to Create Your Game?
@@ -287,7 +294,7 @@ export default function HomePage() {
           </section>
         </main>
 
-        <footer className="border-t border-slate-300 dark:border-slate-800/80 bg-slate-100 dark:bg-slate-950/40">
+        <footer className="border-t border-slate-200 dark:border-slate-800/80 bg-white/50 backdrop-blur-sm dark:bg-slate-950/40">
           <div className="mx-auto flex w-full max-w-6xl flex-col gap-4 px-6 py-8 text-sm text-slate-600 dark:text-slate-400 sm:flex-row sm:items-center sm:justify-between">
             <div className="text-slate-700 dark:text-slate-300">
               Built in Kentucky
