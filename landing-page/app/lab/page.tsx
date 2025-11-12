@@ -88,7 +88,6 @@ function MadlibLabPageContent() {
   
   // Subscription state
   const [subscriptionTier, setSubscriptionTier] = useState<SubscriptionTier>("free");
-  const [gamesCreated, setGamesCreated] = useState(0);
   const [canCreate, setCanCreate] = useState(true);
 
   // Load subscription info
@@ -97,7 +96,6 @@ function MadlibLabPageContent() {
       const subscription = await getUserSubscription();
       if (subscription) {
         setSubscriptionTier(subscription.tier);
-        setGamesCreated(subscription.gamesCreatedThisMonth);
         setCanCreate(canCreateGame(subscription.tier, subscription.gamesCreatedThisMonth));
       }
     };
