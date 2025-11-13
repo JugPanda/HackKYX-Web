@@ -56,9 +56,9 @@ export async function POST(request: NextRequest) {
         let tier: "pro" | "premium" = "pro";
         const priceId = subscription.items.data[0]?.price.id;
         
-        if (priceId === process.env.STRIPE_PREMIUM_PRICE_ID) {
+        if (priceId === process.env.STRIPE_PRICE_ID_PREMIUM) {
           tier = "premium";
-        } else if (priceId === process.env.STRIPE_PRO_PRICE_ID) {
+        } else if (priceId === process.env.STRIPE_PRICE_ID_PRO) {
           tier = "pro";
         }
 
