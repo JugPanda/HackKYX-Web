@@ -68,11 +68,15 @@ export default function DashboardPage() {
       }
 
       // Fetch user's games
-      const { data: gamesData } = await supabase
+      const { data: gamesData, error: gamesError } = await supabase
         .from("games")
         .select("*")
         .eq("user_id", user.id)
         .order("updated_at", { ascending: false });
+
+      if (gamesError) {
+        console.error("Error fetching games:", gamesError);
+      }
 
       // Fetch user profile
       const { data: profileData } = await supabase
@@ -81,6 +85,7 @@ export default function DashboardPage() {
         .eq("id", user.id)
         .single();
 
+      console.log("Fetched games:", gamesData?.length || 0, gamesData);
       setGames(gamesData || []);
       setProfile(profileData);
       setLoading(false);
