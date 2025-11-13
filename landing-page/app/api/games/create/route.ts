@@ -19,7 +19,7 @@ export async function POST(request: Request) {
     }
 
     const body = await request.json();
-    const { slug, title, description, config, generatedCode } = body;
+    const { slug, title, description, config, generatedCode, language } = body;
 
     // Validate config
     const validation = gameConfigSchema.safeParse(config);
@@ -59,6 +59,7 @@ export async function POST(request: Request) {
           description,
           config: validation.data,
           generated_code: generatedCode || null, // Store AI-generated code
+          language: language || "python", // Store selected language
           status: "draft",
           visibility: "private",
         })
@@ -83,6 +84,7 @@ export async function POST(request: Request) {
         description,
         config: validation.data,
         generated_code: generatedCode || null, // Store AI-generated code
+        language: language || "python", // Store selected language
         status: "draft",
         visibility: "private",
       })
