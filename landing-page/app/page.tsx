@@ -208,7 +208,7 @@ export default function HomePage() {
                 viewport={{ once: true, margin: "-100px" }}
                 variants={staggerContainer}
               >
-                {onboardingSteps.map((step, index) => (
+                {onboardingSteps.map((step) => (
                   <motion.div
                     key={step.title}
                     variants={fadeInUp}

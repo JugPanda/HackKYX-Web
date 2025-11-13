@@ -52,9 +52,8 @@ const staggerContainer = {
 
 export default function DashboardPage() {
   const router = useRouter();
-  const [user, setUser] = useState<any>(null);
   const [games, setGames] = useState<Game[]>([]);
-  const [profile, setProfile] = useState<any>(null);
+  const [profile, setProfile] = useState<{ username?: string; subscription_tier?: SubscriptionTier; games_created_this_month?: number } | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -67,8 +66,6 @@ export default function DashboardPage() {
         router.push("/auth/sign-in");
         return;
       }
-
-      setUser(user);
 
       // Fetch user's games
       const { data: gamesData } = await supabase
