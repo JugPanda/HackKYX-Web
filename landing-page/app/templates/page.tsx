@@ -16,7 +16,6 @@ import {
   getCategoryInfo,
   getFeaturedTemplates,
   getPopularTemplates,
-  searchTemplates,
   getTemplatesByCategory,
   type TemplateCategory,
   type GameTemplate,
