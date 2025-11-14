@@ -11,9 +11,10 @@ interface GameCardActionsProps {
   game: Game;
   profileUsername?: string;
   showRemix?: boolean; // Show remix button for community games
+  onDelete?: () => void; // Callback after successful deletion
 }
 
-export function GameCardActions({ game, profileUsername, showRemix = false }: GameCardActionsProps) {
+export function GameCardActions({ game, profileUsername, showRemix = false, onDelete }: GameCardActionsProps) {
   const router = useRouter();
   const [isBuilding, setIsBuilding] = useState(game.status === "building");
   const [isPublishing, setIsPublishing] = useState(false);
@@ -181,6 +182,11 @@ export function GameCardActions({ game, profileUsername, showRemix = false }: Ga
         throw new Error(errorData.error || "Failed to delete game");
       }
 
+      // Call the onDelete callback if provided
+      if (onDelete) {
+        onDelete();
+      }
+      
       // Refresh the page to remove the deleted game
       router.refresh();
     } catch (err) {

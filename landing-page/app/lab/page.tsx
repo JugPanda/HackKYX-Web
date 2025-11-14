@@ -1064,7 +1064,7 @@ Be specific about genre, characters, and goal!"
                             : "border-emerald-500/30 bg-emerald-500/10 text-emerald-100"
                         }`}>
                           {loadedTemplate || templateId ? (
-                            <>⚡ <strong>Template ready!</strong> Using "{loadedTemplate}" - no AI generation needed. Click below to build instantly!</>
+                            <>⚡ <strong>Template ready!</strong> Using &quot;{loadedTemplate}&quot; - no AI generation needed. Click below to build instantly!</>
                           ) : (
                             <>✨ <strong>Ready to build!</strong> Click below to create your playable game with AI (1-2 minutes).</>
                           )}

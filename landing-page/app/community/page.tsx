@@ -5,6 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { DashboardNav } from "@/components/dashboard-nav";
+import { CardContainer, CardBody, CardItem } from "@/components/ui/3d-card";
 
 export default async function CommunityPage() {
   const supabase = await createClient();
@@ -46,48 +47,58 @@ export default async function CommunityPage() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {games && games.length > 0 ? (
           games.map((game: Game) => (
-            <Card key={game.id} className="hover:shadow-lg transition-shadow h-full flex flex-col">
-              <Link href={`/community/${game.profiles?.username}/${game.slug}`} className="flex-1">
-                <CardHeader>
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <CardTitle className="line-clamp-1">{game.title}</CardTitle>
-                      <CardDescription className="mt-1">
-                        by {game.profiles?.username || "Anonymous"}
-                      </CardDescription>
-                    </div>
-                    <Badge variant="default">
-                      {(game.config as { story?: { difficulty?: string } })?.story?.difficulty || "veteran"}
-                    </Badge>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-muted-foreground line-clamp-2 mb-4">
-                    {game.description ||
-                      (game.config as { story?: { goal?: string } })?.story?.goal ||
-                      "No description"}
-                  </p>
-                  <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                    <span>❤️ {game.like_count}</span>
-                    <span>▶️ {game.play_count}</span>
-                  </div>
-                </CardContent>
-              </Link>
-              <CardContent className="pt-0">
-                <div className="flex gap-2">
+            <CardContainer key={game.id} className="w-full">
+              <CardBody className="w-full">
+                <Card className="border-slate-800/70 bg-slate-950/40 hover:border-slate-600/70 transition-all h-full flex flex-col">
                   <Link href={`/community/${game.profiles?.username}/${game.slug}`} className="flex-1">
-                    <Button size="sm" className="w-full">
-                      🎮 Play
-                    </Button>
+                    <CardItem translateZ="50" className="w-full">
+                      <CardHeader>
+                        <div className="flex items-start justify-between">
+                          <div className="flex-1">
+                            <CardTitle className="line-clamp-1 text-white">{game.title}</CardTitle>
+                            <CardDescription className="mt-1 text-slate-400">
+                              by {game.profiles?.username || "Anonymous"}
+                            </CardDescription>
+                          </div>
+                          <Badge variant="default" className="bg-slate-700 text-slate-200">
+                            {(game.config as { story?: { difficulty?: string } })?.story?.difficulty || "veteran"}
+                          </Badge>
+                        </div>
+                      </CardHeader>
+                    </CardItem>
+                    <CardItem translateZ="30" className="w-full">
+                      <CardContent>
+                        <p className="text-sm text-slate-400 line-clamp-2 mb-4">
+                          {game.description ||
+                            (game.config as { story?: { goal?: string } })?.story?.goal ||
+                            "No description"}
+                        </p>
+                        <div className="flex items-center gap-4 text-sm text-slate-400">
+                          <span>❤️ {game.like_count}</span>
+                          <span>▶️ {game.play_count}</span>
+                        </div>
+                      </CardContent>
+                    </CardItem>
                   </Link>
-                  <Link href={`/lab?remix=${game.id}`} className="flex-1">
-                    <Button size="sm" variant="outline" className="w-full">
-                      🔄 Remix
-                    </Button>
-                  </Link>
-                </div>
-              </CardContent>
-            </Card>
+                  <CardItem translateZ="80" className="w-full">
+                    <CardContent className="pt-0">
+                      <div className="flex gap-2">
+                        <Link href={`/community/${game.profiles?.username}/${game.slug}`} className="flex-1">
+                          <Button size="sm" className="w-full bg-blue-600 hover:bg-blue-700">
+                            🎮 Play
+                          </Button>
+                        </Link>
+                        <Link href={`/lab?remix=${game.id}`} className="flex-1">
+                          <Button size="sm" variant="outline" className="w-full border-slate-600 hover:bg-slate-800">
+                            🔄 Remix
+                          </Button>
+                        </Link>
+                      </div>
+                    </CardContent>
+                  </CardItem>
+                </Card>
+              </CardBody>
+            </CardContainer>
           ))
         ) : (
           <div className="col-span-full text-center py-12">

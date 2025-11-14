@@ -56,43 +56,48 @@ export default function DashboardPage() {
   const [profile, setProfile] = useState<{ username?: string; subscription_tier?: SubscriptionTier; games_created_this_month?: number } | null>(null);
   const [loading, setLoading] = useState(true);
 
+  const loadData = async () => {
+    const supabase = createClient();
+    
+    const { data: { user } } = await supabase.auth.getUser();
+    
+    if (!user) {
+      router.push("/auth/sign-in");
+      return;
+    }
+
+    // Fetch user's games
+    const { data: gamesData, error: gamesError } = await supabase
+      .from("games")
+      .select("*")
+      .eq("user_id", user.id)
+      .order("updated_at", { ascending: false });
+
+    if (gamesError) {
+      console.error("Error fetching games:", gamesError);
+    }
+
+    // Fetch user profile
+    const { data: profileData } = await supabase
+      .from("profiles")
+      .select("*")
+      .eq("id", user.id)
+      .single();
+
+    console.log("Fetched games:", gamesData?.length || 0, gamesData);
+    setGames(gamesData || []);
+    setProfile(profileData);
+    setLoading(false);
+  };
+
   useEffect(() => {
-    const loadData = async () => {
-      const supabase = createClient();
-      
-      const { data: { user } } = await supabase.auth.getUser();
-      
-      if (!user) {
-        router.push("/auth/sign-in");
-        return;
-      }
-
-      // Fetch user's games
-      const { data: gamesData, error: gamesError } = await supabase
-        .from("games")
-        .select("*")
-        .eq("user_id", user.id)
-        .order("updated_at", { ascending: false });
-
-      if (gamesError) {
-        console.error("Error fetching games:", gamesError);
-      }
-
-      // Fetch user profile
-      const { data: profileData } = await supabase
-        .from("profiles")
-        .select("*")
-        .eq("id", user.id)
-        .single();
-
-      console.log("Fetched games:", gamesData?.length || 0, gamesData);
-      setGames(gamesData || []);
-      setProfile(profileData);
-      setLoading(false);
-    };
-
     loadData();
   }, [router]);
+
+  const handleGameDeleted = () => {
+    // Reload the games list after deletion
+    loadData();
+  };
 
   if (loading) {
     return (
@@ -221,7 +226,7 @@ export default function DashboardPage() {
                     <Badge variant="default">{game.visibility}</Badge>
                   </div>
 
-                  <GameCardActions game={game} profileUsername={profile?.username} />
+                  <GameCardActions game={game} profileUsername={profile?.username} onDelete={handleGameDeleted} />
                 </CardContent>
               </Card>
               </motion.div>
