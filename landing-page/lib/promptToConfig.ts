@@ -149,7 +149,7 @@ export function generateConfigFromPrompt(prompt: string) {
     paletteThemes.find((theme) => prompt.toLowerCase().includes(theme.keyword))?.colors ?? undefined;
 
   const trimmedPrompt = prompt.trim();
-  const subtitle = trimmedPrompt.slice(0, 140) || "Player-authored KYX story";
+  const subtitle = trimmedPrompt.slice(0, 140) || "Player-authored JugGames story";
 
   // Generate procedural rooms based on difficulty
   const rooms = generateRoomLayouts(difficulty);

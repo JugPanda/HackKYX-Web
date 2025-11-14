@@ -172,7 +172,7 @@ export default function HomePage() {
                   <div className="aspect-[4/3] overflow-hidden rounded-xl border border-slate-200 dark:border-slate-900/80 bg-slate-100 dark:bg-black">
                     <iframe
                       src="/demo-game/index.html"
-                      title="KYX sample game"
+                      title="JugGames sample game"
                       loading="lazy"
                       className="h-full w-full"
                       allow="fullscreen *; autoplay *; gamepad *; xr-spatial-tracking"
@@ -385,7 +385,7 @@ export default function HomePage() {
               Built in Kentucky
             </div>
             <div className="flex items-center gap-2">
-              © {new Date().getFullYear()} KYX Engine
+              © {new Date().getFullYear()} JugGames
             </div>
           </div>
         </footer>

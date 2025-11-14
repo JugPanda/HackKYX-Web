@@ -15,8 +15,8 @@
   <!-- Rounded square background -->
   <rect width="64" height="64" rx="12" fill="url(#bgGradient)"/>
   
-  <!-- KYX Text - Bold and Modern -->
-  <text x="32" y="44" font-family="Arial, sans-serif" font-size="28" font-weight="bold" text-anchor="middle" fill="url(#textGradient)" style="letter-spacing: -1px;">KYX</text>
+  <!-- JugGames Text - Bold and Modern -->
+  <text x="32" y="44" font-family="Arial, sans-serif" font-size="24" font-weight="bold" text-anchor="middle" fill="url(#textGradient)" style="letter-spacing: -1px;">JugGames</text>
   
   <!-- Game controller accent - subtle -->
   <circle cx="14" cy="14" r="3" fill="#ffffff" opacity="0.3"/>

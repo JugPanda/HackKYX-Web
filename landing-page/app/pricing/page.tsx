@@ -141,7 +141,7 @@ export default function PricingPage() {
         <div className="text-center mb-12">
           <h1 className="text-5xl font-bold mb-4">Choose Your Plan</h1>
           <p className="text-xl text-muted-foreground">
-            Create amazing games with KYX. Upgrade anytime to unlock more features.
+            Create amazing games with JugGames. Upgrade anytime to unlock more features.
           </p>
         </div>
 
@@ -229,7 +229,7 @@ export default function PricingPage() {
         </div>
 
         <div className="text-center text-sm text-muted-foreground">
-          <p>All plans include access to the KYX game creation platform.</p>
+          <p>All plans include access to the JugGames game creation platform.</p>
           <p className="mt-2">Cancel or change your plan anytime from your account settings.</p>
         </div>
       </div>

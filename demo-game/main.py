@@ -215,7 +215,7 @@ def draw_ui(screen, font, player, current_room, total_rooms):
     rival = STORY_CONFIG.get("rivalName", "Rival")
     goal = STORY_CONFIG.get("goal", "Reach the exit.")
     instructions = [
-        STORY_CONFIG.get("title", "KYX Demo"),
+        STORY_CONFIG.get("title", "JugGames Demo"),
         "WASD / Arrows: move",
         "Space: jump | Shift: sprint | Ctrl / J: dash",
         f"Lead: {lead_name} (\"{codename}\")",

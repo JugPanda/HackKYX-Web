@@ -22,7 +22,7 @@ export function DashboardNav() {
           {/* Left: Logo/Brand */}
           <Link href="/" className="flex items-center gap-2">
             <span className="text-2xl font-bold bg-gradient-to-r from-blue-400 to-purple-600 bg-clip-text text-transparent">
-              KYX
+              JugGames
             </span>
           </Link>
 
