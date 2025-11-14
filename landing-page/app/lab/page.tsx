@@ -574,10 +574,17 @@ function MadlibLabPageContent() {
       }, 1500);
     } catch (error) {
       console.error(error);
+      const errorMessage = error instanceof Error ? error.message : "Failed to build game";
+      
+      // Check if it's a timeout error (504)
+      const isTimeout = errorMessage.includes("504") || errorMessage.includes("timeout");
+      
       setBuildStatus({ 
         loading: false, 
         error: true, 
-        message: error instanceof Error ? error.message : "Failed to build game" 
+        message: isTimeout 
+          ? "⏱️ AI generation timed out. Try using a template instead - they're instant and professional!" 
+          : errorMessage
       });
     }
   };
@@ -921,8 +928,18 @@ Be specific about genre, characters, and goal!"
                   </>
                 )}
                 {buildStatus.message && !buildStatus.loading && (
-                  <div className={`text-sm ${buildStatus.error ? "text-rose-300" : "text-emerald-300"}`}>
-                    {buildStatus.message}
+                  <div className="space-y-2">
+                    <div className={`text-sm ${buildStatus.error ? "text-rose-300" : "text-emerald-300"}`}>
+                      {buildStatus.message}
+                    </div>
+                    {buildStatus.error && buildStatus.message.includes("template") && (
+                      <Link 
+                        href="/templates"
+                        className="inline-block text-sm text-blue-400 hover:text-blue-300 underline"
+                      >
+                        Browse 50+ Templates →
+                      </Link>
+                    )}
                   </div>
                 )}
               </div>
