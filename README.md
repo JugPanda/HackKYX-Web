@@ -1,8 +1,8 @@
-# KYX Engine - AI-Powered Game Creation Platform
+# JugGames - AI-Powered Game Creation Platform
 
-**Create playable games with AI.** Describe your game idea in plain English, and KYX will turn it into a real, browser-based game you can share with the world.
+**Create playable games with AI.** Describe your game idea in plain English, and JugGames will turn it into a real, browser-based game you can share with the world.
 
-🎮 **Live Demo**: [https://kyx-engine.vercel.app](https://kyx-engine.vercel.app)
+🎮 **Live Demo**: [https://juggames.vercel.app](https://juggames.vercel.app)
 
 ---
 
@@ -271,4 +271,4 @@ This project is open source and available under the MIT License.
 
 For questions or issues, please open an issue on GitHub or contact support.
 
-**Made with ❤️ by the KYX Team**
+**Made with ❤️ by JugGames**
