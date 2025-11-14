@@ -19,6 +19,7 @@ import { DashboardNav } from "@/components/dashboard-nav";
 import { getUserSubscription } from "@/lib/stripe/subscription-helpers";
 import { canCreateGame, canUseCustomSprites } from "@/lib/subscription-limits";
 import type { SubscriptionTier } from "@/lib/db-types";
+import { getTemplateById } from "@/lib/game-templates";
 
 type GeneratedConfig = {
   story?: {
@@ -75,6 +76,8 @@ function MadlibLabPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const editGameId = searchParams.get("edit");
+  const templateId = searchParams.get("template");
+  const remixGameId = searchParams.get("remix");
   const [isSignedIn, setIsSignedIn] = useState(false);
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
   const [formData, setFormData] = useState<MadlibPayload>(defaultMadlibPayload);
@@ -86,6 +89,7 @@ function MadlibLabPageContent() {
   const [playerSpritePreview, setPlayerSpritePreview] = useState<string | null>(null);
   const [enemySpritePreview, setEnemySpritePreview] = useState<string | null>(null);
   const [gameLanguage, setGameLanguage] = useState<"python" | "javascript">("python");
+  const [loadedTemplate, setLoadedTemplate] = useState<string | null>(null);
   
   // Subscription state
   const [subscriptionTier, setSubscriptionTier] = useState<SubscriptionTier>("free");
@@ -103,7 +107,7 @@ function MadlibLabPageContent() {
     loadSubscriptionInfo();
   }, []);
 
-  // Check authentication status and load game if editing
+  // Check authentication status and load game if editing, template if using template, or remix
   useEffect(() => {
     const checkAuthAndLoadGame = async () => {
       const supabase = createClient();
@@ -115,6 +119,80 @@ function MadlibLabPageContent() {
       const { data: { user } } = await supabase.auth.getUser();
       setIsSignedIn(!!user);
       setIsCheckingAuth(false);
+
+      // Load template if specified
+      if (templateId) {
+        const template = getTemplateById(templateId);
+        if (template) {
+          setFormData({
+            survivorName: template.heroName,
+            codename: template.heroName.split(" ")[0] || "Hero",
+            survivorBio: template.description,
+            nemesisName: template.enemyName,
+            safehouseName: "The Sanctuary",
+            safehouseDescription: template.description,
+            safehouseImage: "",
+            victoryCondition: template.goal,
+            tone: template.tone,
+            difficulty: template.gameDifficulty,
+            genre: template.genre,
+          });
+          setPromptText(template.description);
+          setLoadedTemplate(template.name);
+        }
+      }
+
+      // Load game for remixing
+      if (remixGameId) {
+        try {
+          const { data: game, error } = await supabase
+            .from("games")
+            .select("*")
+            .eq("id", remixGameId)
+            .eq("visibility", "public")
+            .single();
+
+          if (error || !game) {
+            console.error("Error loading game to remix:", error);
+            return;
+          }
+
+          // Populate form with game data
+          if (game.config && typeof game.config === "object" && "story" in game.config) {
+            const config = game.config as { story: {
+              leadName?: string;
+              codename?: string;
+              hubDescription?: string;
+              rivalName?: string;
+              hubName?: string;
+              goal?: string;
+              tone?: MadlibPayload["tone"];
+              difficulty?: MadlibPayload["difficulty"];
+              genre?: MadlibPayload["genre"];
+            }};
+            const story = config.story;
+            setFormData({
+              survivorName: story.leadName || "",
+              codename: story.codename || "",
+              survivorBio: story.hubDescription || "",
+              nemesisName: story.rivalName || "",
+              safehouseName: story.hubName || "",
+              safehouseDescription: story.hubDescription || "",
+              safehouseImage: "",
+              victoryCondition: story.goal || "",
+              tone: story.tone || "hopeful",
+              difficulty: story.difficulty || "rookie",
+              genre: story.genre || "platformer",
+            });
+          }
+
+          if (game.description) {
+            setPromptText(`Remix of: ${game.title}. ${game.description}`);
+          }
+        } catch (error) {
+          console.error("Error loading game to remix:", error);
+        }
+      }
 
       // Load game data if editing
       if (editGameId && user) {
@@ -172,7 +250,7 @@ function MadlibLabPageContent() {
     };
     
     checkAuthAndLoadGame();
-  }, [editGameId, router]);
+  }, [editGameId, templateId, remixGameId, router]);
 
 
   const updateField = (key: keyof MadlibPayload, value: string) => {
@@ -519,16 +597,28 @@ function MadlibLabPageContent() {
           )}
           <div className="space-y-3">
             <Badge className="border-emerald-500/40 bg-emerald-500/10 text-emerald-100">
-              Game Creator
+              {loadedTemplate ? `Template: ${loadedTemplate}` : remixGameId ? "Remix Game" : "Game Creator"}
             </Badge>
             <h1 className="text-4xl font-semibold text-white">
-              {editGameId ? "Edit Your Game" : "Create Your Game"}
+              {editGameId ? "Edit Your Game" : loadedTemplate ? `Customize "${loadedTemplate}"` : remixGameId ? "Remix Community Game" : "Create Your Game"}
             </h1>
             <p className="text-lg text-slate-300">
               {editGameId 
                 ? "Update your game details and rebuild to see the changes."
-                : "Describe your game idea and we'll turn it into a playable platformer. Sign in to build and share your game with the community!"}
+                : loadedTemplate 
+                  ? `Starting with the "${loadedTemplate}" template. Customize it to make it your own!`
+                  : remixGameId
+                    ? "Take this community game and make your own version with your unique twist!"
+                    : "Describe your game idea and we'll turn it into a playable platformer. Sign in to build and share your game with the community!"}
             </p>
+            {(loadedTemplate || remixGameId) && (
+              <Link 
+                href="/templates"
+                className="text-sm text-blue-400 hover:text-blue-300 transition"
+              >
+                ← Browse other templates
+              </Link>
+            )}
           </div>
         </div>
 

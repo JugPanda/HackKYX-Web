@@ -3,6 +3,7 @@ import { Game } from "@/lib/db-types";
 import Link from "next/link";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { DashboardNav } from "@/components/dashboard-nav";
 
 export default async function CommunityPage() {
@@ -45,8 +46,8 @@ export default async function CommunityPage() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {games && games.length > 0 ? (
           games.map((game: Game) => (
-            <Link key={game.id} href={`/community/${game.profiles?.username}/${game.slug}`}>
-              <Card className="hover:shadow-lg transition-shadow cursor-pointer h-full">
+            <Card key={game.id} className="hover:shadow-lg transition-shadow h-full flex flex-col">
+              <Link href={`/community/${game.profiles?.username}/${game.slug}`} className="flex-1">
                 <CardHeader>
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
@@ -71,8 +72,22 @@ export default async function CommunityPage() {
                     <span>▶️ {game.play_count}</span>
                   </div>
                 </CardContent>
-              </Card>
-            </Link>
+              </Link>
+              <CardContent className="pt-0">
+                <div className="flex gap-2">
+                  <Link href={`/community/${game.profiles?.username}/${game.slug}`} className="flex-1">
+                    <Button size="sm" className="w-full">
+                      🎮 Play
+                    </Button>
+                  </Link>
+                  <Link href={`/lab?remix=${game.id}`} className="flex-1">
+                    <Button size="sm" variant="outline" className="w-full">
+                      🔄 Remix
+                    </Button>
+                  </Link>
+                </div>
+              </CardContent>
+            </Card>
           ))
         ) : (
           <div className="col-span-full text-center py-12">

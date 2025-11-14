@@ -10,9 +10,10 @@ import { Trash2, Loader2 } from "lucide-react";
 interface GameCardActionsProps {
   game: Game;
   profileUsername?: string;
+  showRemix?: boolean; // Show remix button for community games
 }
 
-export function GameCardActions({ game, profileUsername }: GameCardActionsProps) {
+export function GameCardActions({ game, profileUsername, showRemix = false }: GameCardActionsProps) {
   const router = useRouter();
   const [isBuilding, setIsBuilding] = useState(game.status === "building");
   const [isPublishing, setIsPublishing] = useState(false);
@@ -277,11 +278,20 @@ export function GameCardActions({ game, profileUsername }: GameCardActionsProps)
                 {isPublishing ? "Making Public..." : "Make Public"}
               </Button>
             )}
-            <Link href={`/lab?edit=${game.id}`}>
-              <Button size="sm" variant="ghost" className="shrink-0">
-                Edit
-              </Button>
-            </Link>
+            {showRemix && (
+              <Link href={`/lab?remix=${game.id}`}>
+                <Button size="sm" variant="outline" className="min-w-[120px]">
+                  🔄 Remix This
+                </Button>
+              </Link>
+            )}
+            {!showRemix && (
+              <Link href={`/lab?edit=${game.id}`}>
+                <Button size="sm" variant="ghost" className="shrink-0">
+                  Edit
+                </Button>
+              </Link>
+            )}
             <Button
               size="sm"
               variant="ghost"

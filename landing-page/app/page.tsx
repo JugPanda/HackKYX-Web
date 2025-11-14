@@ -14,7 +14,7 @@ import { SUBSCRIPTION_LIMITS } from "@/lib/subscription-limits";
 
 const navLinks = [
   { label: "How It Works", href: "#how-it-works" },
-  { label: "Pricing", href: "#pricing" },
+  { label: "Templates", href: "/templates" },
   { label: "Community", href: "/community" },
   { label: "Create Game", href: "/lab" },
 ];
