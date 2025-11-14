@@ -19,7 +19,8 @@ import { DashboardNav } from "@/components/dashboard-nav";
 import { getUserSubscription } from "@/lib/stripe/subscription-helpers";
 import { canCreateGame, canUseCustomSprites } from "@/lib/subscription-limits";
 import type { SubscriptionTier } from "@/lib/db-types";
-import { getTemplateById } from "@/lib/game-templates";
+import { getTemplateById, GAME_TEMPLATES } from "@/lib/game-templates";
+import { injectTemplateCode } from "@/lib/template-games/inject-template";
 
 type GeneratedConfig = {
   story?: {
@@ -551,7 +552,7 @@ function MadlibLabPageContent() {
         game = createData.game;
       }
 
-      // Step 2: AI generation or skip for templates
+      // Step 2: AI generation or template code injection
       const isUsingTemplate = loadedTemplate || templateId;
       
       if (!isUsingTemplate) {
@@ -587,8 +588,45 @@ function MadlibLabPageContent() {
         setBuildStatus({ loading: true, message: "AI is generating your game code..." });
         await pollGenerationStatus(game.id);
       } else {
-        // Templates skip AI generation - they're pre-configured!
-        setBuildStatus({ loading: true, message: "✨ Using template - no AI generation needed!" });
+        // Templates: inject pre-made code with customization!
+        setBuildStatus({ loading: true, message: "✨ Generating template code instantly..." });
+        
+        // Find the template
+        const template = templateId 
+          ? GAME_TEMPLATES.find(t => t.id === templateId)
+          : GAME_TEMPLATES.find(t => t.name === loadedTemplate);
+        
+        if (!template) {
+          throw new Error("Template not found");
+        }
+        
+        // Inject template code with user's customizations
+        const injectedCode = injectTemplateCode({
+          template,
+          playerName: formData.survivorName || template.heroName,
+          enemyName: formData.nemesisName || template.enemyName,
+          goal: formData.victoryCondition || template.goal,
+          tone: formData.tone,
+        });
+        
+        // Update game with the injected code
+        setBuildStatus({ loading: true, message: "✨ Saving template game..." });
+        const updateRes = await fetch("/api/games/update", {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            gameId: game.id,
+            generatedCode: injectedCode,
+            language: "javascript", // Templates use JavaScript/HTML5 Canvas
+          }),
+        });
+        
+        if (!updateRes.ok) {
+          const errorData = await updateRes.json();
+          throw new Error(errorData.error || "Failed to save template code");
+        }
+        
+        setBuildStatus({ loading: true, message: "✨ Template ready!" });
         await new Promise(resolve => setTimeout(resolve, 500)); // Brief pause for UX
       }
 
