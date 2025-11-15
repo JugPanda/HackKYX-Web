@@ -848,9 +848,16 @@ function MadlibLabPageContent() {
             )}
           </div>
           <div className="space-y-3">
-            <Badge className="border-emerald-500/40 bg-emerald-500/10 text-emerald-100">
-              {loadedTemplate ? `Template: ${loadedTemplate}` : remixGameId ? "Remix Game" : creationMode === "ai" ? "AI Generation" : "Game Creator"}
-            </Badge>
+            <div className="flex items-center gap-3 flex-wrap">
+              <Badge className="border-emerald-500/40 bg-emerald-500/10 text-emerald-100">
+                {loadedTemplate ? `Template: ${loadedTemplate}` : remixGameId ? "Remix Game" : creationMode === "ai" ? "AI Generation" : "Game Creator"}
+              </Badge>
+              {gameLanguage && (
+                <Badge className="border-blue-500/40 bg-blue-500/10 text-blue-100">
+                  {gameLanguage === "python" ? "🐍 Python" : "⚡ JavaScript"}
+                </Badge>
+              )}
+            </div>
             <h1 className="text-4xl font-semibold text-white">
               {editGameId ? "Edit Your Game" : loadedTemplate ? `Customize "${loadedTemplate}"` : remixGameId ? "Remix Community Game" : creationMode === "ai" ? "Create with AI" : "Create Your Game"}
             </h1>
