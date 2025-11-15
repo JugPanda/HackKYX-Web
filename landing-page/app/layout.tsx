@@ -8,7 +8,7 @@ const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 const grotesk = Space_Grotesk({ subsets: ["latin"], variable: "--font-mono" });
 
 export const metadata: Metadata = {
-  title: "JugGames | Create Your Own Game with AI",
+  title: "JG Engine | Create Your Own Game with AI",
   description:
     "Create and play custom games powered by AI. Choose from 50+ templates or generate custom games. No coding required - just describe your game and watch it come to life!",
 };

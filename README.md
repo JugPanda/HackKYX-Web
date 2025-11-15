@@ -1,6 +1,6 @@
-# JugGames - AI-Powered Game Creation Platform
+# JG Engine - AI-Powered Game Creation Platform
 
-**Create playable games with AI.** Describe your game idea in plain English, and JugGames will turn it into a real, browser-based game you can share with the world.
+**Create playable games with AI.** Describe your game idea in plain English, and JG Engine will turn it into a real, browser-based game you can share with the world.
 
 🎮 **Live Demo**: [https://juggames.vercel.app](https://juggames.vercel.app)
 

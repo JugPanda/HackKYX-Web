@@ -49,7 +49,7 @@ export function SignInForm() {
     <Card className="w-full max-w-md">
       <CardHeader>
         <CardTitle>Sign In</CardTitle>
-        <CardDescription>Sign in to create and manage your JugGames</CardDescription>
+        <CardDescription>Sign in to create and manage your JG Engine games</CardDescription>
       </CardHeader>
       <CardContent>
         {!isConfigured && (

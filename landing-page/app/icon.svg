@@ -15,8 +15,8 @@
   <!-- Rounded square background -->
   <rect width="64" height="64" rx="12" fill="url(#bgGradient)"/>
   
-  <!-- JugGames Text - Bold and Modern -->
-  <text x="32" y="44" font-family="Arial, sans-serif" font-size="24" font-weight="bold" text-anchor="middle" fill="url(#textGradient)" style="letter-spacing: -1px;">JugGames</text>
+  <!-- JG Engine Text - Bold and Modern -->
+  <text x="32" y="42" font-family="Arial, sans-serif" font-size="16" font-weight="bold" text-anchor="middle" fill="url(#textGradient)" style="letter-spacing: -0.5px;">JG Engine</text>
   
   <!-- Game controller accent - subtle -->
   <circle cx="14" cy="14" r="3" fill="#ffffff" opacity="0.3"/>

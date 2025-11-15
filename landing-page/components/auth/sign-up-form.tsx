@@ -56,7 +56,7 @@ export function SignUpForm() {
     <Card className="w-full max-w-md">
       <CardHeader>
         <CardTitle>Create Account</CardTitle>
-        <CardDescription>Join JugGames to create and share your platformer games</CardDescription>
+        <CardDescription>Join JugGames to create and share your platformer games with JG Engine</CardDescription>
       </CardHeader>
       <CardContent>
         {!isConfigured && (

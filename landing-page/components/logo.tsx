@@ -6,7 +6,7 @@ export function Logo() {
       </div>
       <div>
         <p className="text-base font-bold tracking-tight text-slate-900 dark:text-white">
-          JugGames
+          JG Engine
         </p>
         <p className="text-xs uppercase tracking-[0.3em] text-slate-700 dark:text-slate-400 font-medium">
           Build playable worlds

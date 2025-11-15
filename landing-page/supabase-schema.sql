@@ -1,4 +1,4 @@
--- JugGames Database Schema
+-- JG Engine Database Schema (by JugGames)
 -- Run this in your Supabase SQL Editor
 
 -- Enable UUID extension
