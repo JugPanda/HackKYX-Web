@@ -89,15 +89,16 @@ function MadlibLabPageContent() {
   const [enemySprite, setEnemySprite] = useState<File | null>(null);
   const [playerSpritePreview, setPlayerSpritePreview] = useState<string | null>(null);
   const [enemySpritePreview, setEnemySpritePreview] = useState<string | null>(null);
-  const [gameLanguage, setGameLanguage] = useState<"python" | "javascript" | null>(null);
-  const [languageSelected, setLanguageSelected] = useState(false);
+  const languageParam = searchParams.get("language");
+  const [gameLanguage, setGameLanguage] = useState<"python" | "javascript">(
+    languageParam === "python" || languageParam === "javascript" 
+      ? languageParam 
+      : "javascript" // Default to JavaScript
+  );
   const [loadedTemplate, setLoadedTemplate] = useState<string | null>(null);
   const [creationMode, setCreationMode] = useState<"choose" | "ai" | "template" | null>(
-    templateId ? "template" : remixGameId ? "ai" : editGameId ? "ai" : null
+    templateId ? "template" : remixGameId ? "ai" : editGameId ? "ai" : "choose"
   );
-  
-  // Skip language selection if editing, remixing, or using a template
-  const shouldShowLanguageSelection = !templateId && !remixGameId && !editGameId && !languageSelected;
   
   // Subscription state
   const [subscriptionTier, setSubscriptionTier] = useState<SubscriptionTier>("free");
@@ -148,9 +149,12 @@ function MadlibLabPageContent() {
           setPromptText(template.description);
           setLoadedTemplate(template.name);
           setCreationMode("template");
-          // Default to JavaScript for templates (can be changed in form)
-          setGameLanguage("javascript");
-          setLanguageSelected(true);
+          // Use language from URL or default to JavaScript for templates
+          if (languageParam === "python" || languageParam === "javascript") {
+            setGameLanguage(languageParam);
+          } else {
+            setGameLanguage("javascript");
+          }
         }
       }
 
@@ -198,13 +202,13 @@ function MadlibLabPageContent() {
             });
           }
 
-          // Set language from game or default
+          // Set language from game or use URL param or default
           if (game.language && (game.language === "python" || game.language === "javascript")) {
             setGameLanguage(game.language);
-            setLanguageSelected(true);
+          } else if (languageParam === "python" || languageParam === "javascript") {
+            setGameLanguage(languageParam);
           } else {
-            setGameLanguage("python");
-            setLanguageSelected(true);
+            setGameLanguage("javascript");
           }
 
           if (game.description) {
@@ -260,13 +264,13 @@ function MadlibLabPageContent() {
             });
           }
 
-          // Set language from game or default
+          // Set language from game or use URL param or default
           if (game.language && (game.language === "python" || game.language === "javascript")) {
             setGameLanguage(game.language);
-            setLanguageSelected(true);
+          } else if (languageParam === "python" || languageParam === "javascript") {
+            setGameLanguage(languageParam);
           } else {
-            setGameLanguage("python");
-            setLanguageSelected(true);
+            setGameLanguage("javascript");
           }
 
           // Set description as prompt text
@@ -404,15 +408,7 @@ function MadlibLabPageContent() {
       return;
     }
 
-    // Ensure language is selected
-    if (!gameLanguage) {
-      setBuildStatus({ 
-        loading: false, 
-        message: "Please select a programming language first.", 
-        error: true 
-      });
-      return;
-    }
+    // Language is always set (defaults to JavaScript if not provided)
 
     // Check subscription limits
     if (!canCreate) {
@@ -712,158 +708,8 @@ function MadlibLabPageContent() {
       {isSignedIn && <DashboardNav />}
       <main className="mx-auto flex w-full max-w-6xl flex-col gap-10 px-6 py-12">
         
-        {/* Language Selection Screen */}
-        {shouldShowLanguageSelection && (
-          <div className="space-y-8">
-            <div className="space-y-4 text-center">
-              <Badge className="border-blue-500/40 bg-blue-500/10 text-blue-100 mx-auto w-fit">
-                Step 1: Choose Your Language
-              </Badge>
-              <h1 className="text-4xl font-semibold text-white">
-                What programming language would you like to use?
-              </h1>
-              <p className="text-lg text-slate-300 max-w-2xl mx-auto">
-                Select the language that best fits your needs. Both options work great for creating games!
-              </p>
-            </div>
-
-            <div className="grid gap-6 md:grid-cols-2 max-w-5xl mx-auto">
-              {/* Python Option */}
-              <Card className="border-orange-500/40 bg-orange-950/20 hover:border-orange-500/60 transition-all cursor-pointer group"
-                onClick={() => {
-                  setGameLanguage("python");
-                  setLanguageSelected(true);
-                  setCreationMode("choose");
-                }}>
-                <CardContent className="p-8 space-y-6">
-                  <div className="space-y-3">
-                    <div className="text-5xl">🐍</div>
-                    <h2 className="text-2xl font-semibold text-white group-hover:text-orange-300 transition-colors">
-                      Python (Pygame)
-                    </h2>
-                    <p className="text-slate-400">
-                      Classic game development with Pygame - compiled to WebAssembly
-                    </p>
-                  </div>
-
-                  <div className="space-y-4">
-                    <div>
-                      <h3 className="text-sm font-semibold text-emerald-300 mb-2">✓ Advantages</h3>
-                      <ul className="space-y-2 text-sm text-slate-300">
-                        <li className="flex items-start gap-2">
-                          <span className="text-emerald-400 mt-1">•</span>
-                          <span>Rich game development ecosystem</span>
-                        </li>
-                        <li className="flex items-start gap-2">
-                          <span className="text-emerald-400 mt-1">•</span>
-                          <span>Excellent for complex game logic</span>
-                        </li>
-                        <li className="flex items-start gap-2">
-                          <span className="text-emerald-400 mt-1">•</span>
-                          <span>Great performance with Pygbag compilation</span>
-                        </li>
-                        <li className="flex items-start gap-2">
-                          <span className="text-emerald-400 mt-1">•</span>
-                          <span>Familiar syntax for Python developers</span>
-                        </li>
-                      </ul>
-                    </div>
-
-                    <div>
-                      <h3 className="text-sm font-semibold text-yellow-300 mb-2">⚠ Considerations</h3>
-                      <ul className="space-y-2 text-sm text-slate-400">
-                        <li className="flex items-start gap-2">
-                          <span className="text-yellow-400 mt-1">•</span>
-                          <span>Initial load time (~10 seconds for compilation)</span>
-                        </li>
-                        <li className="flex items-start gap-2">
-                          <span className="text-yellow-400 mt-1">•</span>
-                          <span>Requires WebAssembly compilation</span>
-                        </li>
-                      </ul>
-                    </div>
-                  </div>
-
-                  <Button className="w-full bg-orange-600 hover:bg-orange-700 text-white" size="lg">
-                    Choose Python →
-                  </Button>
-                </CardContent>
-              </Card>
-
-              {/* JavaScript Option */}
-              <Card className="border-yellow-500/40 bg-yellow-950/20 hover:border-yellow-500/60 transition-all cursor-pointer group"
-                onClick={() => {
-                  setGameLanguage("javascript");
-                  setLanguageSelected(true);
-                  setCreationMode("choose");
-                }}>
-                <CardContent className="p-8 space-y-6">
-                  <div className="space-y-3">
-                    <div className="text-5xl">⚡</div>
-                    <h2 className="text-2xl font-semibold text-white group-hover:text-yellow-300 transition-colors">
-                      JavaScript (HTML5 Canvas)
-                    </h2>
-                    <p className="text-slate-400">
-                      Fast web-native games with Canvas API - no compilation needed
-                    </p>
-                  </div>
-
-                  <div className="space-y-4">
-                    <div>
-                      <h3 className="text-sm font-semibold text-emerald-300 mb-2">✓ Advantages</h3>
-                      <ul className="space-y-2 text-sm text-slate-300">
-                        <li className="flex items-start gap-2">
-                          <span className="text-emerald-400 mt-1">•</span>
-                          <span>Instant loading - no wait time</span>
-                        </li>
-                        <li className="flex items-start gap-2">
-                          <span className="text-emerald-400 mt-1">•</span>
-                          <span>Native browser performance</span>
-                        </li>
-                        <li className="flex items-start gap-2">
-                          <span className="text-emerald-400 mt-1">•</span>
-                          <span>No compilation step required</span>
-                        </li>
-                        <li className="flex items-start gap-2">
-                          <span className="text-emerald-400 mt-1">•</span>
-                          <span>Perfect for web-first games</span>
-                        </li>
-                      </ul>
-                    </div>
-
-                    <div>
-                      <h3 className="text-sm font-semibold text-yellow-300 mb-2">⚠ Considerations</h3>
-                      <ul className="space-y-2 text-sm text-slate-400">
-                        <li className="flex items-start gap-2">
-                          <span className="text-yellow-400 mt-1">•</span>
-                          <span>Less game development libraries than Python</span>
-                        </li>
-                        <li className="flex items-start gap-2">
-                          <span className="text-yellow-400 mt-1">•</span>
-                          <span>May require more manual implementation</span>
-                        </li>
-                      </ul>
-                    </div>
-                  </div>
-
-                  <Button className="w-full bg-yellow-600 hover:bg-yellow-700 text-white" size="lg">
-                    Choose JavaScript →
-                  </Button>
-                </CardContent>
-              </Card>
-            </div>
-
-            <div className="text-center">
-              <p className="text-sm text-slate-500">
-                💡 <strong>Tip:</strong> Both languages work great! Python is ideal for complex games, 
-                while JavaScript offers instant loading. You can always create another game with a different language later.
-              </p>
-            </div>
-          </div>
-        )}
-
         {/* Creation Mode Chooser */}
-        {!shouldShowLanguageSelection && creationMode === "choose" && (
+        {creationMode === "choose" && (
           <div className="space-y-8">
             <div className="space-y-4 text-center">
               <Badge className="border-emerald-500/40 bg-emerald-500/10 text-emerald-100 mx-auto w-fit">
@@ -875,6 +721,12 @@ function MadlibLabPageContent() {
               <p className="text-lg text-slate-300 max-w-2xl mx-auto">
                 Start with a professional template or let AI generate a custom game for you
               </p>
+              {gameLanguage && (
+                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-500/10 border border-blue-500/30 text-blue-200 text-sm">
+                  <span>{gameLanguage === "python" ? "🐍" : "⚡"}</span>
+                  <span>{gameLanguage === "python" ? "Python (Pygame)" : "JavaScript (HTML5 Canvas)"}</span>
+                </div>
+              )}
             </div>
 
             <div className="grid gap-6 md:grid-cols-2 max-w-4xl mx-auto">
@@ -1205,40 +1057,17 @@ Be specific about genre, characters, and goal!"
                 </div>
               </div>
 
-              <div className="space-y-4">
-                <p className="text-sm font-semibold text-white">Programming Language</p>
-                <p className="text-xs text-slate-400">Choose which language to build your game in</p>
-                <div className="grid gap-3 md:grid-cols-2">
-                  <button
-                    type="button"
-                    onClick={() => setGameLanguage("python")}
-                    className={`rounded-2xl border px-4 py-4 text-left text-sm transition ${
-                      gameLanguage === "python"
-                        ? "border-blue-500/60 bg-blue-500/10"
-                        : "border-slate-800/70 bg-slate-950/40 hover:border-slate-600/70"
-                    }`}
-                  >
-                    <p className="font-semibold text-white">
-                      🐍 Python (Pygame)
-                    </p>
-                    <p className="text-xs text-slate-400">Classic game development with Pygame</p>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setGameLanguage("javascript")}
-                    className={`rounded-2xl border px-4 py-4 text-left text-sm transition ${
-                      gameLanguage === "javascript"
-                        ? "border-blue-500/60 bg-blue-500/10"
-                        : "border-slate-800/70 bg-slate-950/40 hover:border-slate-600/70"
-                    }`}
-                  >
-                    <p className="font-semibold text-white">
-                      ⚡ JavaScript (HTML5 Canvas)
-                    </p>
-                    <p className="text-xs text-slate-400">Fast web-native games with Canvas API</p>
-                  </button>
+              {/* Language is set via URL parameter - no UI needed */}
+              {gameLanguage && (
+                <div className="rounded-2xl border border-blue-500/30 bg-blue-500/10 px-4 py-3 text-sm text-blue-100">
+                  <p className="font-semibold">Language: {gameLanguage === "python" ? "🐍 Python (Pygame)" : "⚡ JavaScript (HTML5 Canvas)"}</p>
+                  <p className="text-xs text-blue-200/80 mt-1">
+                    {gameLanguage === "python" 
+                      ? "Your game will be compiled to WebAssembly for web deployment"
+                      : "Your game will run natively in the browser with instant loading"}
+                  </p>
                 </div>
-              </div>
+              )}
 
               <div className="space-y-4">
                 <p className="text-sm font-semibold text-white">Game Mood</p>
