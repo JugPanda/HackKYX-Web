@@ -19,7 +19,11 @@ function AnimatedCounter({ value, duration = 1 }: { value: number; duration?: nu
   const [count, setCount] = useState(0);
 
   useEffect(() => {
+<<<<<<< Current (Your changes)
     // Handle zero or negative values
+=======
+    // Handle edge cases: 0 or negative values
+>>>>>>> Incoming (Background Agent changes)
     if (value <= 0) {
       setCount(0);
       return;
@@ -27,11 +31,15 @@ function AnimatedCounter({ value, duration = 1 }: { value: number; duration?: nu
 
     let start = 0;
     const end = value;
-    const incrementTime = (duration * 1000) / end;
+    // Prevent division by zero and ensure minimum interval
+    const incrementTime = Math.max(16, (duration * 1000) / end);
     const timer = setInterval(() => {
       start += 1;
       setCount(start);
-      if (start >= end) clearInterval(timer);
+      if (start >= end) {
+        clearInterval(timer);
+        setCount(end); // Ensure final value is exact
+      }
     }, incrementTime);
 
     return () => clearInterval(timer);
@@ -84,15 +92,19 @@ export default function DashboardPage() {
     }
 
     // Fetch user profile
-    const { data: profileData } = await supabase
+    const { data: profileData, error: profileError } = await supabase
       .from("profiles")
       .select("*")
       .eq("id", user.id)
       .single();
 
+    if (profileError) {
+      console.error("Error fetching profile:", profileError);
+    }
+
     console.log("Fetched games:", gamesData?.length || 0, gamesData);
     setGames(gamesData || []);
-    setProfile(profileData);
+    setProfile(profileData || null);
     setLoading(false);
   }, [router]);
 

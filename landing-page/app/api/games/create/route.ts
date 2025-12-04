@@ -47,31 +47,10 @@ export async function POST(request: Request) {
       .eq("slug", finalSlug)
       .single();
 
+    // If slug exists, append timestamp to make it unique
+    let finalSlugToUse = finalSlug;
     if (existingGame) {
-      // If slug exists, append timestamp to make it unique
-      const uniqueSlug = `${finalSlug}-${Date.now()}`;
-      const { data: game, error: gameError } = await supabase
-        .from("games")
-        .insert({
-          user_id: user.id,
-          slug: uniqueSlug,
-          title,
-          description,
-          config: validation.data,
-          generated_code: generatedCode || null, // Store AI-generated code
-          language: language || "python", // Store selected language
-          status: "draft",
-          visibility: "private",
-        })
-        .select()
-        .single();
-
-      if (gameError) {
-        console.error("Error creating game:", gameError);
-        return NextResponse.json({ error: "Failed to create game" }, { status: 500 });
-      }
-
-      return NextResponse.json({ game }, { status: 201 });
+      finalSlugToUse = `${finalSlug}-${Date.now()}`;
     }
 
     // Create game record
@@ -79,7 +58,7 @@ export async function POST(request: Request) {
       .from("games")
       .insert({
         user_id: user.id,
-        slug: finalSlug,
+        slug: finalSlugToUse,
         title,
         description,
         config: validation.data,

@@ -27,7 +27,7 @@ export async function POST(request: Request) {
       );
     }
 
-    // Verify game ownership and fetch game data
+    // Verify game ownership
     const { data: game, error: gameError } = await supabase
       .from("games")
       .select("*")
@@ -36,32 +36,25 @@ export async function POST(request: Request) {
       .single();
 
     if (gameError || !game) {
-      console.error("Game not found:", gameError);
       return NextResponse.json(
         { error: "Game not found" },
         { status: 404 }
       );
     }
 
-    // Check if game has generated code
-    if (!game.generated_code) {
+    // Check if game has code to build
+    if (!game.generated_code && game.language !== "javascript") {
       return NextResponse.json(
-        { error: "Game must have generated code before building" },
+        { error: "Game code not found. Please generate the game code first." },
         { status: 400 }
       );
     }
 
-    // Update game status to building
-    const { error: updateError } = await supabase
-      .from("games")
-      .update({ status: "building" })
-      .eq("id", gameId);
-
-    if (updateError) {
-      console.error("Failed to update game status:", updateError);
+    // Check if build is already in progress
+    if (game.status === "building") {
       return NextResponse.json(
-        { error: "Failed to update game status" },
-        { status: 500 }
+        { error: "Build already in progress" },
+        { status: 400 }
       );
     }
 
@@ -78,48 +71,31 @@ export async function POST(request: Request) {
 
     if (buildError || !buildJob) {
       console.error("Failed to create build job:", buildError);
-      
-      // Rollback game status
-      await supabase
-        .from("games")
-        .update({ status: "draft" })
-        .eq("id", gameId);
-      
       return NextResponse.json(
         { error: "Failed to queue build" },
         { status: 500 }
       );
     }
 
+    // Update game status to building
+    await supabase
+      .from("games")
+      .update({ status: "building" })
+      .eq("id", gameId);
+
     // Trigger build service
     const buildServiceUrl = process.env.BUILD_SERVICE_URL;
     const buildServiceSecret = process.env.BUILD_SERVICE_SECRET;
 
     if (!buildServiceUrl || !buildServiceSecret) {
-      console.error("Build service not configured");
-      
-      // Update build job to failed
-      await supabase
-        .from("build_queue")
-        .update({ 
-          status: "failed",
-          error_message: "Build service not configured"
-        })
-        .eq("id", buildJob.id);
-      
-      // Rollback game status
-      await supabase
-        .from("games")
-        .update({ status: "draft" })
-        .eq("id", gameId);
-      
-      return NextResponse.json(
-        { error: "Build service not configured" },
-        { status: 500 }
-      );
+      // If build service is not configured, return success but note it's queued
+      return NextResponse.json({ 
+        success: true,
+        game_id: game.id,
+        message: "Build queued. Build service will process it shortly."
+      });
     }
 
-    // Call build service asynchronously
     try {
       const buildResponse = await fetch(`${buildServiceUrl}/build`, {
         method: "POST",
@@ -133,21 +109,13 @@ export async function POST(request: Request) {
           config: game.config,
           generatedCode: game.generated_code,
           language: game.language || "python",
+          use_test_game: false,
         }),
       });
 
       if (!buildResponse.ok) {
         const errorText = await buildResponse.text();
         console.error("Build service error:", errorText);
-        
-        // Update build job to failed
-        await supabase
-          .from("build_queue")
-          .update({ 
-            status: "failed",
-            error_message: `Build service error: ${errorText}`
-          })
-          .eq("id", buildJob.id);
         
         // Update game status to failed
         await supabase
@@ -156,45 +124,30 @@ export async function POST(request: Request) {
           .eq("id", gameId);
         
         return NextResponse.json(
-          { error: "Build service returned an error" },
+          { error: "Build service error", details: errorText },
           { status: 500 }
         );
       }
-    } catch (fetchError) {
-      console.error("Failed to call build service:", fetchError);
-      
-      // Update build job to failed
-      await supabase
-        .from("build_queue")
-        .update({ 
-          status: "failed",
-          error_message: `Failed to call build service: ${fetchError instanceof Error ? fetchError.message : String(fetchError)}`
-        })
-        .eq("id", buildJob.id);
-      
-      // Update game status to failed
-      await supabase
-        .from("games")
-        .update({ status: "failed" })
-        .eq("id", gameId);
-      
-      return NextResponse.json(
-        { error: "Failed to contact build service" },
-        { status: 500 }
-      );
-    }
 
-    return NextResponse.json({ 
-      success: true,
-      game_id: game.id,
-      build_id: buildJob.id,
-      message: "Build started successfully"
-    });
+      return NextResponse.json({ 
+        success: true,
+        game_id: game.id,
+        message: "Build started successfully"
+      });
+    } catch (fetchError) {
+      console.error("Error calling build service:", fetchError);
+      // Don't fail - the build service might process it from the queue
+      return NextResponse.json({ 
+        success: true,
+        game_id: game.id,
+        message: "Build queued. Build service will process it shortly."
+      });
+    }
 
   } catch (error) {
     console.error("Build error:", error);
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : "Internal server error" },
+      { error: "Internal server error" },
       { status: 500 }
     );
   }

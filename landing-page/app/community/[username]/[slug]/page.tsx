@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { GamePlayer } from "@/components/game-player";
+import { GameInteractions } from "@/components/game-interactions";
 import Link from "next/link";
 import { DashboardNav } from "@/components/dashboard-nav";
 
@@ -137,8 +138,8 @@ export default async function GamePage({ params }: PageProps) {
         )}
 
         <div className="flex items-center gap-4 text-sm">
-          <span>❤️ {game.like_count} likes</span>
-          <span>▶️ {game.play_count} plays</span>
+          <span>❤️ {game.like_count || 0} likes</span>
+          <span>▶️ {game.play_count || 0} plays</span>
           <span>
             Published {new Date(game.published_at || game.created_at).toLocaleDateString()}
           </span>
@@ -176,16 +177,6 @@ export default async function GamePage({ params }: PageProps) {
 
       {/* Actions */}
       <div className="flex gap-2 mb-8">
-        {user && !isOwner && (
-          <Button
-            variant={hasLiked ? "default" : "outline"}
-            onClick={() => {
-              // Like/unlike functionality (client component needed)
-            }}
-          >
-            {hasLiked ? "❤️ Liked" : "🤍 Like"}
-          </Button>
-        )}
         {isOwner && (
           <Link href="/dashboard">
             <Button variant="outline">Edit Game</Button>
@@ -193,47 +184,15 @@ export default async function GamePage({ params }: PageProps) {
         )}
       </div>
 
-      {/* Comments Section */}
-      <div className="space-y-4">
-        <h2 className="text-2xl font-bold">Comments ({comments?.length || 0})</h2>
-        
-        {user && !isOwner && (
-          <Card className="p-4">
-            <textarea
-              placeholder="Add a comment..."
-              className="w-full p-2 border rounded resize-none"
-              rows={3}
-            />
-            <Button className="mt-2">Post Comment</Button>
-          </Card>
-        )}
-
-        {comments && comments.length > 0 ? (
-          <div className="space-y-4">
-            {comments.map((comment) => (
-              <Card key={comment.id} className="p-4">
-                <div className="flex items-start gap-3">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-2">
-                      <span className="font-semibold">
-                        {comment.profiles?.username || "Anonymous"}
-                      </span>
-                      <span className="text-sm text-muted-foreground">
-                        {new Date(comment.created_at).toLocaleDateString()}
-                      </span>
-                    </div>
-                    <p className="text-sm">{comment.content}</p>
-                  </div>
-                </div>
-              </Card>
-            ))}
-          </div>
-        ) : (
-          <p className="text-muted-foreground text-center py-8">
-            No comments yet. Be the first to comment!
-          </p>
-        )}
-      </div>
+      {/* Game Interactions (Likes & Comments) */}
+      <GameInteractions
+        gameId={game.id}
+        initialHasLiked={hasLiked}
+        initialLikeCount={game.like_count || 0}
+        initialComments={comments || []}
+        isOwner={isOwner}
+        userId={user?.id || null}
+      />
     </div>
     </>
   );
