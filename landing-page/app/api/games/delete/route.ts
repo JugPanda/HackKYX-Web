@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
+import { gameIdSchema } from "@/lib/validation";
 
 export async function DELETE(request: Request) {
   try {
@@ -18,6 +19,12 @@ export async function DELETE(request: Request) {
 
     if (!gameId) {
       return NextResponse.json({ error: "gameId is required" }, { status: 400 });
+    }
+
+    // Validate game ID format
+    const validation = gameIdSchema.safeParse(gameId);
+    if (!validation.success) {
+      return NextResponse.json({ error: "Invalid game ID" }, { status: 400 });
     }
 
     // Verify game ownership

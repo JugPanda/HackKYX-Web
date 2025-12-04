@@ -33,10 +33,12 @@ ENV/
 *.swp
 *.swo
 *~
+.cursor/
 
 # OS
 .DS_Store
 Thumbs.db
+*.log
 
 # pygbag
 build/
@@ -54,7 +56,20 @@ landing-page/out/
 landing-page/public/generated/*
 !landing-page/public/generated/.gitkeep
 
+# Build artifacts
+*.apk
+*.ipa
+*.zip
+
 # Environment variables
 landing-page/.env.local
 .env.local
 .env*.local
+.env
+.env.development
+.env.production
+
+# Temporary files
+*.tmp
+*.temp
+.cache/

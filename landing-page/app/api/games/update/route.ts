@@ -1,6 +1,14 @@
 import { createClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
 import { gameConfigSchema } from "@/lib/schemas";
+import { visibilitySchema, gameIdSchema, safeJsonParse } from "@/lib/validation";
+import { z } from "zod";
+
+// PATCH request schema for visibility updates
+const patchGameSchema = z.object({
+  gameId: gameIdSchema,
+  visibility: visibilitySchema,
+});
 
 export async function PATCH(request: Request) {
   try {
@@ -14,11 +22,13 @@ export async function PATCH(request: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { gameId, visibility } = await request.json();
-
-    if (!gameId) {
-      return NextResponse.json({ error: "gameId is required" }, { status: 400 });
+    // Parse and validate request
+    const parseResult = await safeJsonParse(request, patchGameSchema);
+    if (!parseResult.success) {
+      return NextResponse.json({ error: parseResult.error }, { status: 400 });
     }
+
+    const { gameId, visibility } = parseResult.data;
 
     // Verify game ownership
     const { data: existingGame, error: fetchError } = await supabase
@@ -52,6 +62,15 @@ export async function PATCH(request: Request) {
   }
 }
 
+// PUT request schema for full game updates
+const putGameSchema = z.object({
+  gameId: gameIdSchema,
+  title: z.string().min(2).max(100).optional(),
+  description: z.string().min(10).max(500).optional(),
+  config: gameConfigSchema.optional(),
+  generatedCode: z.string().max(100000).optional(),
+});
+
 export async function PUT(request: Request) {
   try {
     const supabase = await createClient();
@@ -64,11 +83,13 @@ export async function PUT(request: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { gameId, title, description, config, generatedCode } = await request.json();
-
-    if (!gameId) {
-      return NextResponse.json({ error: "gameId is required" }, { status: 400 });
+    // Parse and validate request
+    const parseResult = await safeJsonParse(request, putGameSchema);
+    if (!parseResult.success) {
+      return NextResponse.json({ error: parseResult.error }, { status: 400 });
     }
+
+    const { gameId, title, description, config, generatedCode } = parseResult.data;
 
     // Verify game ownership
     const { data: existingGame, error: fetchError } = await supabase
@@ -82,31 +103,18 @@ export async function PUT(request: Request) {
       return NextResponse.json({ error: "Game not found" }, { status: 404 });
     }
 
-    // Validate config if provided
-    let validatedConfig = existingGame.config;
-    if (config) {
-      const validation = gameConfigSchema.safeParse(config);
-      if (!validation.success) {
-        return NextResponse.json(
-          { error: "Invalid config", issues: validation.error.issues },
-          { status: 400 }
-        );
-      }
-      validatedConfig = validation.data;
-    }
-
-    // Update game
+    // Update game - config already validated by schema
     const updateData: {
       title?: string;
       description?: string;
-      config?: typeof validatedConfig;
+      config?: typeof config;
       generated_code?: string | null;
       status?: string;
     } = {};
 
     if (title !== undefined) updateData.title = title;
     if (description !== undefined) updateData.description = description;
-    if (config !== undefined) updateData.config = validatedConfig;
+    if (config !== undefined) updateData.config = config;
     if (generatedCode !== undefined) updateData.generated_code = generatedCode || null;
     
     // Reset status to draft if config or code changed

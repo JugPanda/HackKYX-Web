@@ -53,7 +53,7 @@ export default async function GamePage({ params }: PageProps) {
   game.profiles = {
     username: username,
     avatar_url: profile.avatar_url || null,
-    bio: profile.bio || null
+    bio: profile.bio || undefined
   };
 
   // Check if user can view this game

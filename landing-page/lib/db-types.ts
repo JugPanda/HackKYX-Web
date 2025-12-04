@@ -1,5 +1,5 @@
 // Database types for TypeScript
-export type GameStatus = "draft" | "generating" | "building" | "built" | "published" | "failed" | "error";
+export type GameStatus = "draft" | "building" | "built" | "published" | "failed";
 export type GameVisibility = "private" | "unlisted" | "public";
 export type BuildQueueStatus = "pending" | "processing" | "completed" | "failed";
 export type ReportStatus = "pending" | "reviewed" | "resolved" | "dismissed";
@@ -23,6 +23,13 @@ export interface Profile {
   last_reset_date: string;
 }
 
+// Partial profile data used in joins (e.g., for game listings)
+export interface GameProfile {
+  username: string;
+  avatar_url: string | null;
+  bio?: string | null;
+}
+
 export interface Game {
   id: string;
   user_id: string;
@@ -30,8 +37,6 @@ export interface Game {
   title: string;
   description?: string;
   config: Record<string, unknown>; // Game configuration JSON
-  generated_code?: string | null; // AI-generated game code
-  language?: string; // Programming language (python or javascript)
   status: GameStatus;
   visibility: GameVisibility;
   bundle_url?: string;
@@ -41,9 +46,11 @@ export interface Game {
   created_at: string;
   updated_at: string;
   published_at?: string;
+  language?: string; // Game language (python, javascript, etc.)
   
   // Joined relations (optional)
-  profiles?: Profile;
+  // Can be full Profile or partial GameProfile depending on query
+  profiles?: Profile | GameProfile;
 }
 
 export interface BuildQueue {
@@ -73,7 +80,8 @@ export interface Comment {
   updated_at: string;
   
   // Joined relations (optional)
-  profiles?: Profile;
+  // Can be full Profile or partial GameProfile depending on query
+  profiles?: Profile | GameProfile;
 }
 
 export interface Report {

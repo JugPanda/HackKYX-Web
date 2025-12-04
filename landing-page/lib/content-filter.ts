@@ -1,10 +1,16 @@
 // Content filtering and moderation utilities
 
 const BLOCKED_WORDS = [
-  // Add offensive words here
-  // This is a basic example - use a proper profanity filter service in production
+  // Basic spam and scam detection
+  // In production, integrate with a proper profanity filter service
   "spam",
   "scam",
+  "click here",
+  "buy now",
+  "limited time",
+  "viagra",
+  "casino",
+  "lottery",
 ];
 
 const SUSPICIOUS_PATTERNS = [

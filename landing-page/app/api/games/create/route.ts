@@ -1,9 +1,23 @@
 import { createClient } from "@/lib/supabase/server";
 import { gameConfigSchema } from "@/lib/schemas";
 import { NextResponse } from "next/server";
+import { rateLimit, RATE_LIMITS } from "@/lib/rate-limit";
+import { titleSchema, descriptionSchema, languageSchema, safeJsonParse } from "@/lib/validation";
+import { sanitizeText, generateSlug } from "@/lib/content-filter";
+import { z } from "zod";
 
 // Force dynamic rendering and disable caching
 export const dynamic = 'force-dynamic';
+
+// Request body schema
+const createGameSchema = z.object({
+  slug: z.string().optional(),
+  title: titleSchema,
+  description: descriptionSchema,
+  config: gameConfigSchema,
+  generatedCode: z.string().max(100000).optional(),
+  language: languageSchema.optional(),
+});
 
 export async function POST(request: Request) {
   try {
@@ -18,26 +32,24 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const body = await request.json();
-    const { slug, title, description, config, generatedCode, language } = body;
-
-    // Validate config
-    const validation = gameConfigSchema.safeParse(config);
-    if (!validation.success) {
-      console.error("Game config validation failed:", validation.error.issues);
-      console.error("Received config:", JSON.stringify(config, null, 2));
+    // Rate limiting
+    if (!rateLimit(`create-game:${user.id}`, RATE_LIMITS.CREATE_GAME)) {
       return NextResponse.json(
-        { error: "Invalid game configuration", issues: validation.error.issues },
-        { status: 400 }
+        { error: "Rate limit exceeded. Please try again later." },
+        { status: 429 }
       );
     }
 
-    // Check if slug is provided, otherwise generate one
-    const finalSlug = slug || 
-      title.toLowerCase()
-        .replace(/[^a-z0-9]+/g, "-")
-        .replace(/(^-|-$)/g, "") + 
-      "-" + Date.now();
+    // Parse and validate request body
+    const parseResult = await safeJsonParse(request, createGameSchema);
+    if (!parseResult.success) {
+      return NextResponse.json({ error: parseResult.error }, { status: 400 });
+    }
+
+    const { slug, title, description, config, generatedCode, language } = parseResult.data;
+
+    // Generate slug from title if not provided
+    const finalSlug = slug || generateSlug(title) + "-" + Date.now();
 
     // Check if slug is unique for this user
     const { data: existingGame } = await supabase
@@ -59,11 +71,11 @@ export async function POST(request: Request) {
       .insert({
         user_id: user.id,
         slug: finalSlugToUse,
-        title,
-        description,
-        config: validation.data,
-        generated_code: generatedCode || null, // Store AI-generated code
-        language: language || "python", // Store selected language
+        title: sanitizeText(title, 100),
+        description: sanitizeText(description, 500),
+        config,
+        generated_code: generatedCode || null,
+        language: language || "python",
         status: "draft",
         visibility: "private",
       })
