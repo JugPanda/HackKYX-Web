@@ -3,21 +3,21 @@ import { redirect } from "next/navigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { checkModeratorAccess } from "@/lib/admin-check";
 
-// This is a basic admin page - in production, add proper admin role checks
 export default async function AdminReportsPage() {
-  const supabase = await createClient();
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  // Check for moderator or admin access
+  const { hasAccess, user, role } = await checkModeratorAccess();
 
   if (!user) {
     redirect("/auth/sign-in");
   }
 
-  // TODO: Add admin role check
-  // For now, any authenticated user can access (update this in production!)
+  if (!hasAccess) {
+    redirect("/dashboard?error=unauthorized");
+  }
+
+  const supabase = await createClient();
 
   // Fetch pending reports
   const { data: reports } = await supabase
@@ -36,7 +36,12 @@ export default async function AdminReportsPage() {
     <div className="container mx-auto px-4 py-8">
       <div className="mb-8">
         <h1 className="text-4xl font-bold mb-2">Moderation Dashboard</h1>
-        <p className="text-muted-foreground">Review and manage reported content</p>
+        <p className="text-muted-foreground">
+          Review and manage reported content
+          <Badge className="ml-2" variant="outline">
+            {role === 'admin' ? 'Admin' : 'Moderator'}
+          </Badge>
+        </p>
       </div>
 
       {reports && reports.length > 0 ? (

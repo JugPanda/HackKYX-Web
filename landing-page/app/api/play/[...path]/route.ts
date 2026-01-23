@@ -85,6 +85,22 @@ export async function GET(
       console.log('[PLAY API] Resolved storage path:', storagePath);
     }
 
+    // Track play count only when serving index.html (not for each asset)
+    const isIndexHtml = filename === 'index.html';
+    if (isIndexHtml && gameId) {
+      // Increment play count asynchronously (don't block the response)
+      supabase
+        .rpc('increment_play_count', { game_id: gameId })
+        .then(({ error }) => {
+          if (error) {
+            console.error('[PLAY API] Failed to increment play count:', error);
+          } else {
+            console.log('[PLAY API] Play count incremented for game:', gameId);
+          }
+        })
+        .catch(err => console.error('[PLAY API] Play count error:', err));
+    }
+
     // Download the file from storage
     console.log('[PLAY API] Attempting to download from:', storagePath);
     const { data: fileData, error: fileError } = await supabase.storage

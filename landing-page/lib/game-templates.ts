@@ -15,6 +15,8 @@ export type TemplateCategory =
 
 export type TemplateDifficulty = "beginner" | "intermediate" | "advanced";
 
+export type SubscriptionTier = "free" | "pro" | "premium";
+
 export interface GameTemplate {
   id: string;
   name: string;
@@ -36,6 +38,9 @@ export interface GameTemplate {
   features: string[];
   mechanics: string[];
   
+  // Subscription tier requirement
+  requiredTier: SubscriptionTier;
+  
   // Popularity metrics
   usageCount?: number;
   featured?: boolean;
@@ -48,6 +53,7 @@ export const GAME_TEMPLATES: GameTemplate[] = [
   {
     id: "platformer-classic",
     name: "Classic Platformer",
+    requiredTier: "free",
     description: "Jump and run through levels collecting coins and avoiding enemies. Perfect for beginners!",
     category: "platformer",
     difficulty: "beginner",
@@ -776,6 +782,33 @@ export function searchTemplates(query: string): GameTemplate[] {
  */
 export function getTemplateById(id: string): GameTemplate | undefined {
   return GAME_TEMPLATES.find(t => t.id === id);
+}
+
+/**
+ * Check if user can access template based on subscription tier
+ */
+export function canAccessTemplate(template: GameTemplate, userTier: SubscriptionTier): boolean {
+  const tierHierarchy: Record<SubscriptionTier, number> = {
+    free: 0,
+    pro: 1,
+    premium: 2,
+  };
+  
+  return tierHierarchy[userTier] >= tierHierarchy[template.requiredTier];
+}
+
+/**
+ * Get templates available for user's subscription tier
+ */
+export function getTemplatesForTier(userTier: SubscriptionTier): GameTemplate[] {
+  return GAME_TEMPLATES.filter(template => canAccessTemplate(template, userTier));
+}
+
+/**
+ * Get templates by tier requirement
+ */
+export function getTemplatesByTier(tier: SubscriptionTier): GameTemplate[] {
+  return GAME_TEMPLATES.filter(t => t.requiredTier === tier);
 }
 
 /**

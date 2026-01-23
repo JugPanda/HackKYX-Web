@@ -250,6 +250,128 @@ export default function DashboardPage() {
         )}
       </div>
 
+      {/* Usage Analytics */}
+      <Card className="border-slate-800/70 bg-slate-950/40 mb-8">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Sparkles className="h-5 w-5 text-blue-400" />
+            Usage Analytics
+          </CardTitle>
+          <CardDescription>
+            Track your monthly usage and subscription benefits
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          {/* Games Created This Month */}
+          <div>
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-sm font-medium">Games Created This Month</span>
+              <Badge variant="outline" className="capitalize">
+                {profile?.subscription_tier || 'free'} Tier
+              </Badge>
+            </div>
+            <div className="space-y-2">
+              <div className="flex items-center justify-between text-2xl font-bold">
+                <span>
+                  {profile?.games_created_this_month || 0} / {
+                    profile?.subscription_tier 
+                      ? SUBSCRIPTION_LIMITS[profile.subscription_tier as SubscriptionTier].gamesPerMonth === Infinity 
+                        ? '∞' 
+                        : SUBSCRIPTION_LIMITS[profile.subscription_tier as SubscriptionTier].gamesPerMonth
+                      : SUBSCRIPTION_LIMITS.free.gamesPerMonth
+                  }
+                </span>
+                {profile?.subscription_tier && profile.games_created_this_month !== undefined && (
+                  <span className={`text-sm ${
+                    profile.games_created_this_month >= SUBSCRIPTION_LIMITS[profile.subscription_tier as SubscriptionTier].gamesPerMonth * 0.8
+                      ? 'text-yellow-500'
+                      : 'text-green-500'
+                  }`}>
+                    {SUBSCRIPTION_LIMITS[profile.subscription_tier as SubscriptionTier].gamesPerMonth === Infinity
+                      ? '100%'
+                      : `${Math.round((profile.games_created_this_month / SUBSCRIPTION_LIMITS[profile.subscription_tier as SubscriptionTier].gamesPerMonth) * 100)}%`
+                    }
+                  </span>
+                )}
+              </div>
+              <div className="h-2 bg-slate-800 rounded-full overflow-hidden">
+                <div 
+                  className={`h-full rounded-full transition-all ${
+                    profile?.subscription_tier && profile.games_created_this_month !== undefined && 
+                    profile.games_created_this_month >= SUBSCRIPTION_LIMITS[profile.subscription_tier as SubscriptionTier].gamesPerMonth * 0.8
+                      ? 'bg-yellow-500'
+                      : 'bg-green-500'
+                  }`}
+                  style={{ 
+                    width: `${
+                      profile?.subscription_tier && profile.games_created_this_month !== undefined
+                        ? SUBSCRIPTION_LIMITS[profile.subscription_tier as SubscriptionTier].gamesPerMonth === Infinity
+                          ? 100
+                          : Math.min((profile.games_created_this_month / SUBSCRIPTION_LIMITS[profile.subscription_tier as SubscriptionTier].gamesPerMonth) * 100, 100)
+                        : 0
+                    }%` 
+                  }}
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Subscription Benefits */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="p-4 rounded-lg bg-blue-500/10 border border-blue-500/20">
+              <div className="flex items-center gap-2 mb-2">
+                <Zap className="h-4 w-4 text-blue-400" />
+                <span className="text-sm font-medium text-blue-400">Build Priority</span>
+              </div>
+              <p className="text-lg font-bold capitalize">
+                {profile?.subscription_tier 
+                  ? SUBSCRIPTION_LIMITS[profile.subscription_tier as SubscriptionTier].buildPriority
+                  : 'standard'}
+              </p>
+            </div>
+
+            <div className="p-4 rounded-lg bg-purple-500/10 border border-purple-500/20">
+              <div className="flex items-center gap-2 mb-2">
+                <Rocket className="h-4 w-4 text-purple-400" />
+                <span className="text-sm font-medium text-purple-400">Custom Sprites</span>
+              </div>
+              <p className="text-lg font-bold">
+                {profile?.subscription_tier && SUBSCRIPTION_LIMITS[profile.subscription_tier as SubscriptionTier].customSprites
+                  ? '✓ Enabled'
+                  : '✗ Disabled'}
+              </p>
+            </div>
+
+            <div className="p-4 rounded-lg bg-green-500/10 border border-green-500/20">
+              <div className="flex items-center gap-2 mb-2">
+                <Sparkles className="h-4 w-4 text-green-400" />
+                <span className="text-sm font-medium text-green-400">Total Storage</span>
+              </div>
+              <p className="text-lg font-bold">
+                {(games?.reduce((sum, game) => sum + (game.bundle_size || 0), 0) / (1024 * 1024)).toFixed(2)} MB
+              </p>
+            </div>
+          </div>
+
+          {/* Upgrade CTA */}
+          {profile?.subscription_tier === 'free' && (
+            <div className="p-4 rounded-lg bg-gradient-to-r from-blue-500/10 to-purple-500/10 border border-blue-500/20">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="font-semibold mb-1">Upgrade to Pro</p>
+                  <p className="text-sm text-slate-400">
+                    Create 20 games/month, custom sprites, priority builds
+                  </p>
+                </div>
+                <Link href="/pricing">
+                  <Button>Upgrade</Button>
+                </Link>
+              </div>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
       {/* Stats */}
       <motion.div 
         className="grid grid-cols-1 md:grid-cols-3 gap-4"

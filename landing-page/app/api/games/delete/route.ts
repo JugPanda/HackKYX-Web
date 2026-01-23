@@ -42,8 +42,24 @@ export async function DELETE(request: Request) {
     // Delete from storage if bundle exists
     if (game.bundle_url) {
       try {
-        const storageKey = `games/${gameId}/bundle.zip`;
-        await supabase.storage.from("game-bundles").remove([storageKey]);
+        // List all files in the games/{gameId}/ folder
+        const { data: fileList, error: listError } = await supabase.storage
+          .from("game-bundles")
+          .list(`games/${gameId}`);
+
+        if (!listError && fileList && fileList.length > 0) {
+          // Create array of file paths to delete
+          const filesToDelete = fileList.map(file => `games/${gameId}/${file.name}`);
+          
+          // Delete all files
+          const { error: removeError } = await supabase.storage
+            .from("game-bundles")
+            .remove(filesToDelete);
+
+          if (removeError) {
+            console.error("Error removing files from storage:", removeError);
+          }
+        }
       } catch (storageError) {
         console.error("Error deleting game bundle from storage:", storageError);
         // Continue with deletion even if storage cleanup fails

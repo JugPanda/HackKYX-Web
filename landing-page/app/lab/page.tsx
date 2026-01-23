@@ -894,6 +894,65 @@ function MadlibLabPageContent() {
           </CardContent>
         </Card>
 
+        {/* Language Selector */}
+        <Card className="border-slate-800/70 bg-slate-950/40">
+          <CardContent className="p-6">
+            <div className="space-y-3">
+              <p className="text-lg font-semibold text-white">Choose Your Language 🚀</p>
+              <p className="text-sm text-slate-400">
+                Select the programming language for your game. JavaScript is recommended for faster builds.
+              </p>
+              <div className="grid gap-3 md:grid-cols-2">
+                <button
+                  type="button"
+                  onClick={() => setGameLanguage("javascript")}
+                  className={`p-4 rounded-lg border-2 transition-all ${
+                    gameLanguage === "javascript"
+                      ? "border-green-500 bg-green-500/10"
+                      : "border-slate-700 bg-slate-900/50 hover:border-slate-600"
+                  }`}
+                >
+                  <div className="flex items-start gap-3">
+                    <div className="text-3xl">⚡</div>
+                    <div className="flex-1 text-left">
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className="font-semibold text-white">JavaScript (HTML5)</span>
+                        <Badge variant="default" className="bg-green-600 text-white text-xs">Recommended</Badge>
+                      </div>
+                      <p className="text-xs text-slate-400">
+                        Fast builds (~5 sec) • Runs everywhere • Easy debugging
+                      </p>
+                    </div>
+                  </div>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setGameLanguage("python")}
+                  className={`p-4 rounded-lg border-2 transition-all ${
+                    gameLanguage === "python"
+                      ? "border-blue-500 bg-blue-500/10"
+                      : "border-slate-700 bg-slate-900/50 hover:border-slate-600"
+                  }`}
+                >
+                  <div className="flex items-start gap-3">
+                    <div className="text-3xl">🐍</div>
+                    <div className="flex-1 text-left">
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className="font-semibold text-white">Python (Pygame)</span>
+                        <Badge variant="outline" className="border-yellow-600 text-yellow-400 text-xs">Legacy</Badge>
+                      </div>
+                      <p className="text-xs text-slate-400">
+                        Slower builds (~60 sec) • Python syntax • WebAssembly
+                      </p>
+                    </div>
+                  </div>
+                </button>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
         <Card className="border-slate-800/70 bg-slate-950/40">
           <CardContent className="space-y-4 p-6">
             <div className="flex flex-col gap-2">

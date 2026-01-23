@@ -306,7 +306,7 @@ def process_build():
         
         # Update status to completed
         update_build_status(build_id, "completed")
-        update_game_status(game_id, "published", bundle_url)
+        update_game_status(game_id, "built", bundle_url)
         
         return jsonify({
             "success": True,

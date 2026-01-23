@@ -1,16 +1,12 @@
 import { createClient } from "@/lib/supabase/server";
-import { Game } from "@/lib/db-types";
-import Link from "next/link";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { DashboardNav } from "@/components/dashboard-nav";
-import { CardContainer, CardBody, CardItem } from "@/components/ui/3d-card";
+import { CommunityGamesGrid } from "@/components/community-games-grid";
 
 export default async function CommunityPage() {
   const supabase = await createClient();
 
   // Fetch published games (only show games that are published and have bundle_url)
+  // Fetch more games for better filtering experience
   const { data: games } = await supabase
     .from("games")
     .select("*")
@@ -18,7 +14,7 @@ export default async function CommunityPage() {
     .eq("status", "published")
     .not("bundle_url", "is", null)
     .order("published_at", { ascending: false })
-    .limit(50);
+    .limit(100);
 
   // Enrich with profile data
   if (games && games.length > 0) {
@@ -46,68 +42,7 @@ export default async function CommunityPage() {
           </p>
         </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {games && games.length > 0 ? (
-          games.map((game: Game) => (
-            <CardContainer key={game.id} className="w-full">
-              <CardBody className="w-full">
-                <Card className="border-slate-800/70 bg-slate-950/40 hover:border-slate-600/70 transition-all h-full flex flex-col">
-                  <Link href={`/community/${game.profiles?.username}/${game.slug}`} className="flex-1">
-                    <CardItem translateZ="50" className="w-full">
-                      <CardHeader>
-                        <div className="flex items-start justify-between">
-                          <div className="flex-1">
-                            <CardTitle className="line-clamp-1 text-white">{game.title}</CardTitle>
-                            <CardDescription className="mt-1 text-slate-400">
-                              by {game.profiles?.username || "Anonymous"}
-                            </CardDescription>
-                          </div>
-                          <Badge variant="default" className="bg-slate-700 text-slate-200">
-                            {(game.config as { story?: { difficulty?: string } })?.story?.difficulty || "veteran"}
-                          </Badge>
-                        </div>
-                      </CardHeader>
-                    </CardItem>
-                    <CardItem translateZ="30" className="w-full">
-                      <CardContent>
-                        <p className="text-sm text-slate-400 line-clamp-2 mb-4">
-                          {game.description ||
-                            (game.config as { story?: { goal?: string } })?.story?.goal ||
-                            "No description"}
-                        </p>
-                        <div className="flex items-center gap-4 text-sm text-slate-400">
-                          <span>❤️ {game.like_count}</span>
-                          <span>▶️ {game.play_count}</span>
-                        </div>
-                      </CardContent>
-                    </CardItem>
-                  </Link>
-                  <CardItem translateZ="80" className="w-full">
-                    <CardContent className="pt-0">
-                      <div className="flex gap-2">
-                        <Link href={`/community/${game.profiles?.username}/${game.slug}`} className="flex-1">
-                          <Button size="sm" className="w-full bg-blue-600 hover:bg-blue-700">
-                            🎮 Play
-                          </Button>
-                        </Link>
-                        <Link href={`/lab?remix=${game.id}`} className="flex-1">
-                          <Button size="sm" variant="outline" className="w-full border-slate-600 hover:bg-slate-800">
-                            🔄 Remix
-                          </Button>
-                        </Link>
-                      </div>
-                    </CardContent>
-                  </CardItem>
-                </Card>
-              </CardBody>
-            </CardContainer>
-          ))
-        ) : (
-          <div className="col-span-full text-center py-12">
-            <p className="text-muted-foreground">No published games yet. Be the first!</p>
-          </div>
-        )}
-      </div>
+        <CommunityGamesGrid initialGames={games || []} />
     </div>
     </>
   );
