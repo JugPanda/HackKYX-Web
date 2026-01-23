@@ -266,7 +266,7 @@ export default function DashboardPage() {
           <div>
             <div className="flex items-center justify-between mb-2">
               <span className="text-sm font-medium">Games Created This Month</span>
-              <Badge variant="outline" className="capitalize">
+              <Badge variant="default" className="capitalize">
                 {profile?.subscription_tier || 'free'} Tier
               </Badge>
             </div>

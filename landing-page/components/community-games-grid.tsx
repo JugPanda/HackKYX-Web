@@ -199,7 +199,7 @@ export function CommunityGamesGrid({ initialGames }: CommunityGamesGridProps) {
                                 : "veteran"}
                             </Badge>
                             {game.language && (
-                              <Badge variant="outline" className="text-xs">
+                              <Badge variant="default" className="text-xs">
                                 {game.language === "javascript" ? "⚡ JS" : "🐍 PY"}
                               </Badge>
                             )}

@@ -940,7 +940,7 @@ function MadlibLabPageContent() {
                     <div className="flex-1 text-left">
                       <div className="flex items-center gap-2 mb-1">
                         <span className="font-semibold text-white">Python (Pygame)</span>
-                        <Badge variant="outline" className="border-yellow-600 text-yellow-400 text-xs">Legacy</Badge>
+                        <Badge variant="default" className="border-yellow-600 text-yellow-400 text-xs">Legacy</Badge>
                       </div>
                       <p className="text-xs text-slate-400">
                         Slower builds (~60 sec) • Python syntax • WebAssembly

@@ -178,7 +178,7 @@ export default async function UserProfilePage({ params }: UserProfilePageProps) 
                         {game.title}
                       </CardTitle>
                       {game.language && (
-                        <Badge variant="outline" className="shrink-0 text-xs">
+                        <Badge variant="default" className="shrink-0 text-xs">
                           {game.language === 'javascript' ? '⚡ JS' : '🐍 PY'}
                         </Badge>
                       )}
@@ -198,7 +198,7 @@ export default async function UserProfilePage({ params }: UserProfilePageProps) 
                         {game.like_count || 0}
                       </span>
                       {game.config?.story?.difficulty && (
-                        <Badge variant="outline" className="capitalize text-xs">
+                        <Badge variant="default" className="capitalize text-xs">
                           {game.config.story.difficulty}
                         </Badge>
                       )}
