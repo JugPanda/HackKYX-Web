@@ -38,7 +38,7 @@ export default async function AdminReportsPage() {
         <h1 className="text-4xl font-bold mb-2">Moderation Dashboard</h1>
         <p className="text-muted-foreground">
           Review and manage reported content
-          <Badge className="ml-2" variant="outline">
+          <Badge className="ml-2" variant="success">
             {role === 'admin' ? 'Admin' : 'Moderator'}
           </Badge>
         </p>
