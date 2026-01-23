@@ -97,8 +97,7 @@ export async function GET(
           } else {
             console.log('[PLAY API] Play count incremented for game:', gameId);
           }
-        })
-        .catch(err => console.error('[PLAY API] Play count error:', err));
+        });
     }
 
     // Download the file from storage
