@@ -17,7 +17,7 @@ const builders: Map<string, GameBuilder> = new Map([
   // Future builders will be added here:
   // ["lua", luaBuilder],
   // ["unity", unityBuilder],
-]);
+] as Array<[string, GameBuilder]>);
 
 /**
  * Get a builder by language ID
