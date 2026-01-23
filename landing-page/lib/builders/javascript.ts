@@ -40,6 +40,7 @@ export class JavaScriptBuilder extends GameBuilder {
     return this.canUseLanguage(userTier);
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async build(_gameId: string, code: string, _config: GameConfig): Promise<BuildResult> {
     const startTime = Date.now();
 

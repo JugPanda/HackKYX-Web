@@ -40,6 +40,7 @@ export class PythonBuilder extends GameBuilder {
     return this.canUseLanguage(userTier);
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async build(_gameId: string, code: string, _config: GameConfig): Promise<BuildResult> {
     // Python builds are handled by the build service (pygbag compilation)
     // This is just a validation step
