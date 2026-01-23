@@ -40,7 +40,7 @@ export class PythonBuilder extends GameBuilder {
     return this.canUseLanguage(userTier);
   }
 
-  async build(gameId: string, code: string, config: GameConfig): Promise<BuildResult> {
+  async build(_gameId: string, code: string, _config: GameConfig): Promise<BuildResult> {
     // Python builds are handled by the build service (pygbag compilation)
     // This is just a validation step
     const validation = this.validateCode(code);
@@ -83,7 +83,7 @@ export class PythonBuilder extends GameBuilder {
     ];
   }
 
-  async generateCode(prompt: string, config: GameConfig): Promise<string> {
+  async generateCode(_prompt: string, config: GameConfig): Promise<string> {
     // Would use AI generation with Python-specific prompts
     return this.getStarterCode(config);
   }

@@ -40,7 +40,7 @@ export class JavaScriptBuilder extends GameBuilder {
     return this.canUseLanguage(userTier);
   }
 
-  async build(gameId: string, code: string, config: GameConfig): Promise<BuildResult> {
+  async build(_gameId: string, code: string, _config: GameConfig): Promise<BuildResult> {
     const startTime = Date.now();
 
     try {
@@ -97,7 +97,7 @@ export class JavaScriptBuilder extends GameBuilder {
     ];
   }
 
-  async generateCode(prompt: string, config: GameConfig): Promise<string> {
+  async generateCode(_prompt: string, config: GameConfig): Promise<string> {
     // This would use the existing game generator with JavaScript-specific prompts
     // For now, return a basic template
     return this.getStarterCode(config);
