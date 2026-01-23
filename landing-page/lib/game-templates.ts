@@ -517,6 +517,7 @@ export const GAME_TEMPLATES: GameTemplate[] = [
   {
     id: "arcade-snake",
     name: "Classic Snake",
+    requiredTier: "free",
     description: "The timeless snake game. Eat apples, grow longer, don't hit yourself!",
     category: "arcade",
     difficulty: "beginner",
