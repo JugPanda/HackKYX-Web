@@ -56,7 +56,7 @@ export async function POST(request: Request) {
     }
 
     // Check if user can create more games based on subscription tier
-    if (!canCreateGame(profile.subscription_tier as any, profile.games_created_this_month)) {
+    if (!canCreateGame(profile.subscription_tier as "free" | "pro" | "premium", profile.games_created_this_month)) {
       return NextResponse.json(
         { 
           error: "Monthly game limit reached",

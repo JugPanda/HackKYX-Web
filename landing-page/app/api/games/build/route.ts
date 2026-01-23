@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { rateLimit, RATE_LIMITS } from "@/lib/rate-limit";
-import { canCreateGame } from "@/lib/subscription-limits";
 import { z } from "zod";
 
 export const dynamic = 'force-dynamic';

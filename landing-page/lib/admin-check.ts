@@ -30,7 +30,7 @@ export async function isModerator(userId: string): Promise<boolean> {
 
 export async function checkAdminAccess(): Promise<{
   hasAccess: boolean;
-  user: any;
+  user: { id: string; email?: string } | null;
   role: UserRole | null;
 }> {
   const supabase = await createClient();
@@ -49,7 +49,7 @@ export async function checkAdminAccess(): Promise<{
 
 export async function checkModeratorAccess(): Promise<{
   hasAccess: boolean;
-  user: any;
+  user: { id: string; email?: string } | null;
   role: UserRole | null;
 }> {
   const supabase = await createClient();

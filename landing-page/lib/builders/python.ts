@@ -111,8 +111,8 @@ export class PythonBuilder extends GameBuilder {
     };
   }
 
-  getStarterCode(config: GameConfig): string {
-    const { story } = config;
+  getStarterCode(_config: GameConfig): string {
+    const { story } = _config;
     const playerName = story?.heroName || "Player";
     const enemyName = story?.enemyName || "Enemy";
 
@@ -138,7 +138,7 @@ GRAY = (22, 33, 62)
 DARK_BLUE = (15, 52, 96)
 
 # Game configuration from template
-CONFIG = ${JSON.stringify(config, null, 2)}
+CONFIG = ${JSON.stringify(_config, null, 2)}
 
 class Player(pygame.sprite.Sprite):
     def __init__(self, x, y):

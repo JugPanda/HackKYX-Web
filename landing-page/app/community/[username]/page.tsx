@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
-import { notFound, redirect } from "next/navigation";
+import { notFound } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import { ArrowLeft, Calendar, Heart, Play, GamepadIcon } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -28,7 +29,7 @@ export default async function UserProfilePage({ params }: UserProfilePageProps) 
   }
 
   // Fetch user's public games
-  const { data: games, error: gamesError } = await supabase
+  const { data: games } = await supabase
     .from("games")
     .select("*")
     .eq("user_id", profile.id)
@@ -63,11 +64,13 @@ export default async function UserProfilePage({ params }: UserProfilePageProps) 
             <div className="flex flex-col md:flex-row gap-6 items-start md:items-center">
               {/* Avatar */}
               <div className="relative">
-                <div className="w-24 h-24 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-4xl font-bold text-white">
+                <div className="w-24 h-24 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-4xl font-bold text-white overflow-hidden">
                   {profile.avatar_url ? (
-                    <img
+                    <Image
                       src={profile.avatar_url}
                       alt={profile.username}
+                      width={96}
+                      height={96}
                       className="w-full h-full rounded-full object-cover"
                     />
                   ) : (

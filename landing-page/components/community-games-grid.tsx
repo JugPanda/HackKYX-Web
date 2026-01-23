@@ -35,7 +35,9 @@ export function CommunityGamesGrid({ initialGames }: CommunityGamesGridProps) {
         (game) =>
           game.title?.toLowerCase().includes(query) ||
           game.description?.toLowerCase().includes(query) ||
-          (game.profiles as any)?.username?.toLowerCase().includes(query)
+          (typeof game.profiles === 'object' && game.profiles && 'username' in game.profiles
+            ? String(game.profiles.username)?.toLowerCase().includes(query)
+            : false)
       );
     }
 
@@ -47,7 +49,9 @@ export function CommunityGamesGrid({ initialGames }: CommunityGamesGridProps) {
     // Difficulty filter
     if (difficultyFilter !== "all") {
       filtered = filtered.filter((game) => {
-        const difficulty = (game.config as any)?.story?.difficulty;
+        const difficulty = typeof game.config === 'object' && game.config && 'story' in game.config 
+          ? (game.config.story as { difficulty?: string })?.difficulty
+          : undefined;
         return difficulty === difficultyFilter;
       });
     }
@@ -174,7 +178,7 @@ export function CommunityGamesGrid({ initialGames }: CommunityGamesGridProps) {
               <CardBody className="w-full">
                 <Card className="border-slate-800/70 bg-slate-950/40 hover:border-slate-600/70 transition-all h-full flex flex-col">
                   <Link
-                    href={`/community/${(game.profiles as any)?.username}/${game.slug}`}
+                    href={`/community/${typeof game.profiles === 'object' && game.profiles && 'username' in game.profiles ? game.profiles.username : 'user'}/${game.slug}`}
                     className="flex-1"
                   >
                     <CardItem translateZ="50" className="w-full">
@@ -185,12 +189,14 @@ export function CommunityGamesGrid({ initialGames }: CommunityGamesGridProps) {
                               {game.title}
                             </CardTitle>
                             <CardDescription className="mt-1 text-slate-400">
-                              by {(game.profiles as any)?.username || "Anonymous"}
+                              by {typeof game.profiles === 'object' && game.profiles && 'username' in game.profiles ? game.profiles.username : 'Anonymous'}
                             </CardDescription>
                           </div>
                           <div className="flex flex-col gap-1">
                             <Badge variant="default" className="bg-slate-700 text-slate-200 text-xs">
-                              {(game.config as any)?.story?.difficulty || "veteran"}
+                              {typeof game.config === 'object' && game.config && 'story' in game.config 
+                                ? (game.config.story as { difficulty?: string })?.difficulty || "veteran"
+                                : "veteran"}
                             </Badge>
                             {game.language && (
                               <Badge variant="outline" className="text-xs">
@@ -205,7 +211,9 @@ export function CommunityGamesGrid({ initialGames }: CommunityGamesGridProps) {
                       <CardContent>
                         <p className="text-sm text-slate-400 line-clamp-2 mb-4">
                           {game.description ||
-                            (game.config as any)?.story?.goal ||
+                            (typeof game.config === 'object' && game.config && 'story' in game.config 
+                              ? (game.config.story as { goal?: string })?.goal
+                              : undefined) ||
                             "No description"}
                         </p>
                         <div className="flex items-center gap-4 text-sm text-slate-400">
@@ -219,7 +227,7 @@ export function CommunityGamesGrid({ initialGames }: CommunityGamesGridProps) {
                     <CardContent className="pt-0">
                       <div className="flex gap-2">
                         <Link
-                          href={`/community/${(game.profiles as any)?.username}/${game.slug}`}
+                          href={`/community/${typeof game.profiles === 'object' && game.profiles && 'username' in game.profiles ? game.profiles.username : 'user'}/${game.slug}`}
                           className="flex-1"
                         >
                           <Button size="sm" className="w-full bg-blue-600 hover:bg-blue-700">

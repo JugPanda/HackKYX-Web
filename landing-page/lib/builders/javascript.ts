@@ -132,8 +132,8 @@ export class JavaScriptBuilder extends GameBuilder {
     };
   }
 
-  getStarterCode(config: GameConfig): string {
-    const { story } = config;
+  getStarterCode(_config: GameConfig): string {
+    const { story } = _config;
     const playerName = story?.heroName || "Player";
     const enemyName = story?.enemyName || "Enemy";
     
@@ -181,7 +181,7 @@ export class JavaScriptBuilder extends GameBuilder {
 
     <script>
         // Game Configuration
-        const CONFIG = ${JSON.stringify(config, null, 2)};
+        const CONFIG = ${JSON.stringify(_config, null, 2)};
         
         // Canvas Setup
         const canvas = document.getElementById('gameCanvas');
