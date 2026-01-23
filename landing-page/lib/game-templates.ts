@@ -339,6 +339,7 @@ export const GAME_TEMPLATES: GameTemplate[] = [
   {
     id: "rpg-turn-based",
     name: "Turn-Based RPG Battle",
+    requiredTier: "free",
     description: "Classic JRPG-style turn-based combat. Choose your attacks wisely!",
     category: "rpg",
     difficulty: "intermediate",
@@ -414,6 +415,7 @@ export const GAME_TEMPLATES: GameTemplate[] = [
   {
     id: "shooter-bullet-hell",
     name: "Bullet Hell Chaos",
+    requiredTier: "free",
     description: "Dodge hundreds of bullets in this intense bullet-hell shooter!",
     category: "shooter",
     difficulty: "advanced",
@@ -626,6 +628,7 @@ export const GAME_TEMPLATES: GameTemplate[] = [
   {
     id: "tower-defense",
     name: "Tower Defense",
+    requiredTier: "free",
     description: "Place towers to defend against waves of enemies!",
     category: "puzzle",
     difficulty: "advanced",
@@ -697,6 +700,7 @@ export const GAME_TEMPLATES: GameTemplate[] = [
   {
     id: "card-battle",
     name: "Card Battle Arena",
+    requiredTier: "free",
     description: "Strategic card battles! Build your deck and defeat opponents.",
     category: "rpg",
     difficulty: "advanced",
