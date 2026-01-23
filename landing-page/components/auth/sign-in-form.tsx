@@ -31,16 +31,33 @@ export function SignInForm() {
     setLoading(true);
     setMessage(null);
 
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
+    try {
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
 
-    if (error) {
-      setMessage({ type: "error", text: error.message });
-    } else {
-      setMessage({ type: "success", text: "Signed in successfully!" });
-      window.location.href = "/dashboard";
+      if (error) {
+        // Handle specific error types
+        if (error.message.includes("fetch")) {
+          setMessage({ 
+            type: "error", 
+            text: "Connection failed. Please check if Supabase is configured correctly and your internet connection is working." 
+          });
+        } else if (error.message.includes("Invalid login credentials")) {
+          setMessage({ type: "error", text: "Invalid email or password" });
+        } else {
+          setMessage({ type: "error", text: error.message });
+        }
+      } else {
+        setMessage({ type: "success", text: "Signed in successfully!" });
+        window.location.href = "/dashboard";
+      }
+    } catch (err) {
+      setMessage({ 
+        type: "error", 
+        text: `Network error: ${err instanceof Error ? err.message : 'Failed to connect to server. Please check your internet connection and Supabase configuration.'}` 
+      });
     }
 
     setLoading(false);
