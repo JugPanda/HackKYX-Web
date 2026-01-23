@@ -114,8 +114,8 @@ export class PythonBuilder extends GameBuilder {
 
   getStarterCode(_config: GameConfig): string {
     const { story } = _config;
-    const playerName = story?.heroName || "Player";
-    const enemyName = story?.enemyName || "Enemy";
+    const playerName = story?.leadName || "Player";
+    const enemyName = story?.rivalName || "Enemy";
 
     return `import asyncio
 import pygame
