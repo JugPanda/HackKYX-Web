@@ -72,6 +72,7 @@ export const GAME_TEMPLATES: GameTemplate[] = [
   {
     id: "platformer-hollow-knight",
     name: "Metroidvania Explorer",
+    requiredTier: "free",
     description: "Dark fantasy platformer inspired by Hollow Knight. Dash, wall-jump, and explore interconnected areas.",
     category: "platformer",
     difficulty: "advanced",
@@ -90,6 +91,7 @@ export const GAME_TEMPLATES: GameTemplate[] = [
   {
     id: "platformer-speedrun",
     name: "Speedrun Challenge",
+    requiredTier: "free",
     description: "Fast-paced platformer designed for speedrunning. Every second counts!",
     category: "platformer",
     difficulty: "intermediate",
@@ -107,6 +109,7 @@ export const GAME_TEMPLATES: GameTemplate[] = [
   {
     id: "platformer-puzzle",
     name: "Puzzle Platformer",
+    requiredTier: "free",
     description: "Combine platforming with brain-teasing puzzles. Move blocks and activate switches.",
     category: "platformer",
     difficulty: "intermediate",
@@ -124,6 +127,7 @@ export const GAME_TEMPLATES: GameTemplate[] = [
   {
     id: "platformer-ice-cavern",
     name: "Ice Cavern Adventure",
+    requiredTier: "free",
     description: "Slippery ice physics make this platformer extra challenging!",
     category: "platformer",
     difficulty: "intermediate",
@@ -145,6 +149,7 @@ export const GAME_TEMPLATES: GameTemplate[] = [
   {
     id: "adventure-zelda",
     name: "Top-Down Dungeon Crawler",
+    requiredTier: "free",
     description: "Zelda-inspired adventure. Explore dungeons, fight enemies, collect items.",
     category: "adventure",
     difficulty: "intermediate",
@@ -163,6 +168,7 @@ export const GAME_TEMPLATES: GameTemplate[] = [
   {
     id: "adventure-treasure-hunt",
     name: "Treasure Hunter",
+    requiredTier: "free",
     description: "Explore a vast island searching for hidden treasure. Avoid traps and enemies!",
     category: "adventure",
     difficulty: "beginner",
@@ -180,6 +186,7 @@ export const GAME_TEMPLATES: GameTemplate[] = [
   {
     id: "adventure-stealth",
     name: "Stealth Mission",
+    requiredTier: "free",
     description: "Sneak past guards and security systems in this stealth adventure.",
     category: "adventure",
     difficulty: "advanced",
@@ -197,6 +204,7 @@ export const GAME_TEMPLATES: GameTemplate[] = [
   {
     id: "adventure-space-explorer",
     name: "Space Explorer",
+    requiredTier: "free",
     description: "Navigate your spaceship through asteroid fields and alien encounters.",
     category: "adventure",
     difficulty: "intermediate",
@@ -214,6 +222,7 @@ export const GAME_TEMPLATES: GameTemplate[] = [
   {
     id: "adventure-farm-quest",
     name: "Farm Quest",
+    requiredTier: "free",
     description: "Peaceful farming adventure. Plant crops, raise animals, and build your farm!",
     category: "adventure",
     difficulty: "beginner",
@@ -235,6 +244,7 @@ export const GAME_TEMPLATES: GameTemplate[] = [
   {
     id: "puzzle-match3",
     name: "Match-3 Mania",
+    requiredTier: "free",
     description: "Classic match-3 puzzle game. Match gems to score points and clear the board!",
     category: "puzzle",
     difficulty: "beginner",
@@ -253,6 +263,7 @@ export const GAME_TEMPLATES: GameTemplate[] = [
   {
     id: "puzzle-sliding-tiles",
     name: "Sliding Tile Puzzle",
+    requiredTier: "free",
     description: "Classic sliding tile puzzle. Arrange the tiles in the correct order.",
     category: "puzzle",
     difficulty: "intermediate",
@@ -270,6 +281,7 @@ export const GAME_TEMPLATES: GameTemplate[] = [
   {
     id: "puzzle-block-breaker",
     name: "Block Breaker",
+    requiredTier: "free",
     description: "Break all blocks with your bouncing ball. Don't let it fall!",
     category: "puzzle",
     difficulty: "beginner",
@@ -287,6 +299,7 @@ export const GAME_TEMPLATES: GameTemplate[] = [
   {
     id: "puzzle-connect-dots",
     name: "Connect the Dots",
+    requiredTier: "free",
     description: "Draw lines to connect matching dots. Don't let the lines cross!",
     category: "puzzle",
     difficulty: "intermediate",
@@ -304,6 +317,7 @@ export const GAME_TEMPLATES: GameTemplate[] = [
   {
     id: "puzzle-sokoban",
     name: "Box Pusher",
+    requiredTier: "free",
     description: "Push boxes to designated spots. Classic Sokoban-style puzzle.",
     category: "puzzle",
     difficulty: "advanced",
@@ -342,6 +356,7 @@ export const GAME_TEMPLATES: GameTemplate[] = [
   {
     id: "rpg-action-combat",
     name: "Action RPG Combat",
+    requiredTier: "free",
     description: "Real-time action combat inspired by Dark Souls. Dodge, attack, and survive!",
     category: "rpg",
     difficulty: "advanced",
@@ -359,6 +374,7 @@ export const GAME_TEMPLATES: GameTemplate[] = [
   {
     id: "rpg-village-quest",
     name: "Village Quest",
+    requiredTier: "free",
     description: "Help villagers with various quests. Talk to NPCs and complete missions.",
     category: "rpg",
     difficulty: "beginner",
@@ -380,6 +396,7 @@ export const GAME_TEMPLATES: GameTemplate[] = [
   {
     id: "shooter-space-invaders",
     name: "Space Invaders",
+    requiredTier: "free",
     description: "Classic space shooter. Defend Earth from alien invaders!",
     category: "shooter",
     difficulty: "beginner",
@@ -418,6 +435,7 @@ export const GAME_TEMPLATES: GameTemplate[] = [
   {
     id: "racing-top-down",
     name: "Top-Down Racer",
+    requiredTier: "free",
     description: "Race against time on a winding track. Beat your best lap!",
     category: "racing",
     difficulty: "intermediate",
@@ -435,6 +453,7 @@ export const GAME_TEMPLATES: GameTemplate[] = [
   {
     id: "racing-obstacle-course",
     name: "Obstacle Course Challenge",
+    requiredTier: "free",
     description: "Navigate through obstacles and reach the finish line!",
     category: "racing",
     difficulty: "beginner",
@@ -456,6 +475,7 @@ export const GAME_TEMPLATES: GameTemplate[] = [
   {
     id: "edu-math-adventure",
     name: "Math Adventure",
+    requiredTier: "free",
     description: "Learn math while playing! Solve equations to defeat enemies.",
     category: "educational",
     difficulty: "beginner",
@@ -473,6 +493,7 @@ export const GAME_TEMPLATES: GameTemplate[] = [
   {
     id: "edu-typing-speed",
     name: "Typing Speed Test",
+    requiredTier: "free",
     description: "Improve your typing speed by typing falling words!",
     category: "educational",
     difficulty: "beginner",
@@ -511,6 +532,7 @@ export const GAME_TEMPLATES: GameTemplate[] = [
   {
     id: "arcade-pong",
     name: "Pong Classic",
+    requiredTier: "free",
     description: "Two-player Pong! First to 10 points wins.",
     category: "arcade",
     difficulty: "beginner",
@@ -528,6 +550,7 @@ export const GAME_TEMPLATES: GameTemplate[] = [
   {
     id: "arcade-flappy-bird",
     name: "Flappy Bird Clone",
+    requiredTier: "free",
     description: "Tap to flap! Navigate through pipes in this addictive arcade game.",
     category: "arcade",
     difficulty: "intermediate",
@@ -545,6 +568,7 @@ export const GAME_TEMPLATES: GameTemplate[] = [
   {
     id: "arcade-asteroids",
     name: "Asteroids Classic",
+    requiredTier: "free",
     description: "Blast asteroids and avoid collisions in this vector-style shooter.",
     category: "arcade",
     difficulty: "intermediate",
@@ -562,6 +586,7 @@ export const GAME_TEMPLATES: GameTemplate[] = [
   {
     id: "arcade-pac-man",
     name: "Maze Runner",
+    requiredTier: "free",
     description: "Navigate mazes, collect dots, avoid ghosts. Pac-Man style!",
     category: "arcade",
     difficulty: "intermediate",
@@ -583,6 +608,7 @@ export const GAME_TEMPLATES: GameTemplate[] = [
   {
     id: "endless-runner",
     name: "Endless Runner",
+    requiredTier: "free",
     description: "Run forever! Dodge obstacles and collect coins in this endless runner.",
     category: "platformer",
     difficulty: "beginner",
@@ -617,6 +643,7 @@ export const GAME_TEMPLATES: GameTemplate[] = [
   {
     id: "rhythm-game",
     name: "Rhythm Master",
+    requiredTier: "free",
     description: "Hit the notes in time with the music! Dance Dance Revolution style.",
     category: "arcade",
     difficulty: "intermediate",
@@ -634,6 +661,7 @@ export const GAME_TEMPLATES: GameTemplate[] = [
   {
     id: "clicker-game",
     name: "Idle Clicker",
+    requiredTier: "free",
     description: "Click to earn points, buy upgrades, and watch your empire grow!",
     category: "arcade",
     difficulty: "beginner",
@@ -651,6 +679,7 @@ export const GAME_TEMPLATES: GameTemplate[] = [
   {
     id: "fishing-game",
     name: "Fishing Adventure",
+    requiredTier: "free",
     description: "Cast your line and catch fish! Peaceful fishing simulation.",
     category: "adventure",
     difficulty: "beginner",
@@ -685,6 +714,7 @@ export const GAME_TEMPLATES: GameTemplate[] = [
   {
     id: "cooking-game",
     name: "Cooking Dash",
+    requiredTier: "free",
     description: "Serve customers quickly in this fast-paced cooking game!",
     category: "arcade",
     difficulty: "intermediate",
@@ -702,6 +732,7 @@ export const GAME_TEMPLATES: GameTemplate[] = [
   {
     id: "memory-match",
     name: "Memory Match",
+    requiredTier: "free",
     description: "Classic memory card game. Find all matching pairs!",
     category: "puzzle",
     difficulty: "beginner",
@@ -719,6 +750,7 @@ export const GAME_TEMPLATES: GameTemplate[] = [
   {
     id: "whack-a-mole",
     name: "Whack-a-Mole",
+    requiredTier: "free",
     description: "Hit the moles as they pop up! Classic arcade reflexes game.",
     category: "arcade",
     difficulty: "beginner",
