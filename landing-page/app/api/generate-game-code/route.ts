@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import OpenAI from "openai";
+import { createClient } from "@/lib/supabase/server";
 import { buildGameGenerationPrompt, buildJavaScriptGamePrompt, type GameGenerationRequest } from "@/lib/game-generator";
 
 // Force dynamic rendering and disable caching
@@ -18,6 +19,17 @@ function getOpenAIClient() {
 
 export async function POST(request: Request) {
   try {
+    // 🔒 Authentication check - prevent unauthorized API usage
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    
+    if (!user) {
+      return NextResponse.json(
+        { error: "Unauthorized. Please sign in to generate games." },
+        { status: 401 }
+      );
+    }
+
     const openai = getOpenAIClient();
     
     // Check if OpenAI is configured

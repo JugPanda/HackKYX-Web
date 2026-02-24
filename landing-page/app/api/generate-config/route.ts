@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import OpenAI from "openai";
+import { createClient } from "@/lib/supabase/server";
 
 // Force dynamic rendering
 export const dynamic = 'force-dynamic';
@@ -17,6 +18,17 @@ function getOpenAIClient() {
 
 export async function POST(req: NextRequest) {
   try {
+    // 🔒 Authentication check - prevent unauthorized API usage
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    
+    if (!user) {
+      return NextResponse.json(
+        { ok: false, message: "Unauthorized. Please sign in." },
+        { status: 401 }
+      );
+    }
+
     const body = await req.json();
     const prompt = String(body?.prompt ?? "").trim();
     const openai = getOpenAIClient();

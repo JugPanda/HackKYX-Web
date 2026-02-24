@@ -1,5 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import OpenAI from "openai";
+import { createClient } from "@/lib/supabase/server";
+
+// Force dynamic rendering
+export const dynamic = 'force-dynamic';
 
 // Lazy-initialize OpenAI client to avoid build-time errors
 function getOpenAIClient() {
@@ -13,6 +17,17 @@ function getOpenAIClient() {
 
 export async function POST(request: NextRequest) {
   try {
+    // 🔒 Authentication check - prevent unauthorized API usage
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    
+    if (!user) {
+      return NextResponse.json(
+        { error: "Unauthorized. Please sign in to generate sprites." },
+        { status: 401 }
+      );
+    }
+
     const openai = getOpenAIClient();
     const body = await request.json();
     const { description, type, style } = body;
