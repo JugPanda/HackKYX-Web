@@ -5,15 +5,21 @@ import OpenAI from "openai";
 export const dynamic = 'force-dynamic';
 export const maxDuration = 30;
 
-// Initialize OpenAI client
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+// Lazy-initialize OpenAI client to avoid build-time errors
+function getOpenAIClient() {
+  if (!process.env.OPENAI_API_KEY) {
+    return null;
+  }
+  return new OpenAI({
+    apiKey: process.env.OPENAI_API_KEY,
+  });
+}
 
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
     const prompt = String(body?.prompt ?? "").trim();
+    const openai = getOpenAIClient();
 
     if (!prompt) {
       return NextResponse.json(
@@ -23,7 +29,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Check if OpenAI is configured
-    if (!process.env.OPENAI_API_KEY) {
+    if (!openai) {
       console.error("OpenAI API key not configured, using fallback");
       // Fallback to simple generation if no API key
       const { generateConfigFromPrompt } = await import("@/lib/promptToConfig");

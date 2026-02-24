@@ -7,9 +7,15 @@ import { buildGameGenerationPrompt, buildJavaScriptGamePrompt, type GameGenerati
 export const dynamic = 'force-dynamic';
 export const maxDuration = 300; // 5 minutes for background processing
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+// Lazy-initialize OpenAI client to avoid build-time errors
+function getOpenAIClient() {
+  if (!process.env.OPENAI_API_KEY) {
+    throw new Error("OPENAI_API_KEY is not configured");
+  }
+  return new OpenAI({
+    apiKey: process.env.OPENAI_API_KEY,
+  });
+}
 
 export async function POST(request: Request) {
   try {
@@ -78,6 +84,7 @@ async function generateGameCodeAsync(
   userId: string
 ) {
   const supabase = await createClient();
+  const openai = getOpenAIClient();
   
   try {
     console.log(`[Async Gen] Generating code for game ${gameId}...`);

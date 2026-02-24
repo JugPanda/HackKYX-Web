@@ -6,15 +6,22 @@ import { buildGameGenerationPrompt, buildJavaScriptGamePrompt, type GameGenerati
 export const dynamic = 'force-dynamic';
 export const maxDuration = 60; // Max for Vercel Hobby plan (use 300 for Pro)
 
-// Initialize OpenAI client
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+// Lazy-initialize OpenAI client to avoid build-time errors
+function getOpenAIClient() {
+  if (!process.env.OPENAI_API_KEY) {
+    return null;
+  }
+  return new OpenAI({
+    apiKey: process.env.OPENAI_API_KEY,
+  });
+}
 
 export async function POST(request: Request) {
   try {
+    const openai = getOpenAIClient();
+    
     // Check if OpenAI is configured
-    if (!process.env.OPENAI_API_KEY) {
+    if (!openai) {
       console.error("OpenAI API key not configured");
       return NextResponse.json(
         { error: "AI game generation not configured. Please set OPENAI_API_KEY." },
