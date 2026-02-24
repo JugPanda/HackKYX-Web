@@ -36,36 +36,39 @@ type GeneratedConfig = {
   };
 };
 
-const toneOptions: Array<{ label: string; value: MadlibPayload["tone"]; blurb: string }> = [
-  { label: "Hopeful", value: "hopeful", blurb: "Bright synths, high morale" },
-  { label: "Gritty", value: "gritty", blurb: "Grounded stakes, low resources" },
-  { label: "Heroic", value: "heroic", blurb: "Bold VO, cinematic beats" },
+const toneOptions: Array<{ label: string; value: MadlibPayload["tone"]; blurb: string; icon: string }> = [
+  { label: "Fun & Bright", value: "hopeful", blurb: "Colorful, upbeat, feel-good vibes", icon: "☀️" },
+  { label: "Dark & Serious", value: "gritty", blurb: "Challenging, intense, dramatic", icon: "🌙" },
+  { label: "Epic & Heroic", value: "heroic", blurb: "Grand adventure, save-the-world energy", icon: "⚔️" },
 ];
 
-const difficultyOptions: Array<{ label: string; value: MadlibPayload["difficulty"]; blurb: string }> = [
-  { label: "Rookie", value: "rookie", blurb: "Story-first" },
-  { label: "Veteran", value: "veteran", blurb: "Balanced tension" },
-  { label: "Nightmare", value: "nightmare", blurb: "High pressure runs" },
+const difficultyOptions: Array<{ label: string; value: MadlibPayload["difficulty"]; blurb: string; icon: string }> = [
+  { label: "Easy", value: "rookie", blurb: "Perfect for beginners, focus on fun", icon: "😊" },
+  { label: "Medium", value: "veteran", blurb: "A good challenge, but fair", icon: "💪" },
+  { label: "Hard", value: "nightmare", blurb: "For experts who want a real test", icon: "🔥" },
 ];
 
 const genreOptions: Array<{ label: string; value: MadlibPayload["genre"]; blurb: string; icon: string }> = [
-  { label: "Platformer", value: "platformer", blurb: "Jump and run", icon: "🏃" },
-  { label: "Adventure", value: "adventure", blurb: "Top-down exploration", icon: "🗡️" },
-  { label: "Puzzle", value: "puzzle", blurb: "Solve challenges", icon: "🧩" },
+  { label: "Platformer", value: "platformer", blurb: "Jump, run, and collect things (like Mario)", icon: "🏃" },
+  { label: "Adventure", value: "adventure", blurb: "Explore worlds from above (like Zelda)", icon: "🗡️" },
+  { label: "Puzzle", value: "puzzle", blurb: "Solve challenges to win", icon: "🧩" },
 ];
 
 const labOnboarding = [
   {
-    title: "1. Choose Your Language",
-    detail: "Select Python (Pygame) or JavaScript (HTML5 Canvas)",
+    title: "Step 1",
+    detail: "Tell us about your game idea in simple words",
+    icon: "💭",
   },
   {
-    title: "2. Choose Your Path",
-    detail: "Start from a template (instant) or generate with AI (custom)",
+    title: "Step 2",
+    detail: "Pick your hero, enemies, and how the game should feel",
+    icon: "🎨",
   },
   {
-    title: "3. Create & Build",
-    detail: "Customize your game and build it to share with others",
+    title: "Step 3",
+    detail: "Click Build and play your game!",
+    icon: "🚀",
   },
 ];
 
@@ -887,7 +890,10 @@ function MadlibLabPageContent() {
           <CardContent className="grid gap-6 p-6 md:grid-cols-3">
             {labOnboarding.map((step) => (
               <div key={step.title} className="space-y-2">
-                <p className="text-xs uppercase tracking-[0.35em] text-slate-500">{step.title}</p>
+                <div className="flex items-center gap-2">
+                  <span className="text-2xl">{step.icon}</span>
+                  <p className="text-xs uppercase tracking-[0.35em] text-slate-500">{step.title}</p>
+                </div>
                 <p className="text-sm text-slate-300">{step.detail}</p>
               </div>
             ))}
@@ -999,27 +1005,29 @@ Be specific about genre, characters, and goal!"
               <div className="space-y-4">
                 <div>
                   <label className="text-sm font-semibold text-white mb-2 block">
-                    Hero Name <span className="text-xs text-slate-400 font-normal">(required)</span>
+                    🦸 Who&apos;s your hero?
                   </label>
                   <Input
-                    placeholder="e.g. Shadow Knight"
+                    placeholder="Give your main character a cool name (e.g. Shadow Knight, Luna, Captain Rex)"
                     value={formData.survivorName}
                     onChange={(event) => updateField("survivorName", event.target.value)}
                     className="text-base"
                     required
                   />
+                  <p className="text-xs text-slate-500 mt-1">This is the character you&apos;ll play as!</p>
                 </div>
                 <div>
                   <label className="text-sm font-semibold text-white mb-2 block">
-                    Enemy Name <span className="text-xs text-slate-400 font-normal">(required)</span>
+                    👾 Who&apos;s the enemy?
                   </label>
                   <Input
-                    placeholder="e.g. Dark Forces"
+                    placeholder="Name the bad guys (e.g. Dark Forces, Robot Army, Evil Wizards)"
                     value={formData.nemesisName}
                     onChange={(event) => updateField("nemesisName", event.target.value)}
                     className="text-base"
                     required
                   />
+                  <p className="text-xs text-slate-500 mt-1">The villains your hero will face!</p>
                 </div>
 
                 {/* Sprite Upload Section */}
@@ -1088,36 +1096,40 @@ Be specific about genre, characters, and goal!"
 
                 <div>
                   <label className="text-sm font-semibold text-white mb-2 block">
-                    Goal <span className="text-xs text-slate-400 font-normal">(required)</span>
+                    🎯 What&apos;s the goal?
                   </label>
                   <Input
-                    placeholder="e.g. Collect all crystals"
+                    placeholder="How do you win? (e.g. Collect all crystals, Reach the castle, Defeat the boss)"
                     value={formData.victoryCondition}
                     onChange={(event) => updateField("victoryCondition", event.target.value)}
                     className="text-base"
                     required
                   />
+                  <p className="text-xs text-slate-500 mt-1">What does your hero need to accomplish?</p>
                 </div>
               </div>
 
               <div className="space-y-4">
-                <p className="text-sm font-semibold text-white">Game Genre</p>
+                <div>
+                  <p className="text-sm font-semibold text-white">🎮 What type of game do you want?</p>
+                  <p className="text-xs text-slate-500 mt-1">Pick the style that sounds most fun to you</p>
+                </div>
                 <div className="grid gap-3 md:grid-cols-3">
                   {genreOptions.map((genre) => (
                     <button
                       key={genre.value}
                       type="button"
                       onClick={() => updateField("genre", genre.value)}
-                      className={`rounded-2xl border px-3 py-3 text-left text-sm transition ${
+                      className={`rounded-2xl border px-3 py-4 text-left text-sm transition ${
                         formData.genre === genre.value
-                          ? "border-blue-500/60 bg-blue-500/10"
+                          ? "border-blue-500/60 bg-blue-500/10 ring-2 ring-blue-500/30"
                           : "border-slate-800/70 bg-slate-950/40 hover:border-slate-600/70"
                       }`}
                     >
-                      <p className="font-semibold text-white">
+                      <p className="font-semibold text-white text-base">
                         {genre.icon} {genre.label}
                       </p>
-                      <p className="text-xs text-slate-400">{genre.blurb}</p>
+                      <p className="text-xs text-slate-400 mt-1">{genre.blurb}</p>
                     </button>
                   ))}
                 </div>
@@ -1136,42 +1148,48 @@ Be specific about genre, characters, and goal!"
               )}
 
               <div className="space-y-4">
-                <p className="text-sm font-semibold text-white">Game Mood</p>
+                <div>
+                  <p className="text-sm font-semibold text-white">🎨 How should your game feel?</p>
+                  <p className="text-xs text-slate-500 mt-1">Choose the mood and atmosphere</p>
+                </div>
                 <div className="grid gap-3 md:grid-cols-3">
                   {toneOptions.map((tone) => (
                     <button
                       key={tone.value}
                       type="button"
                       onClick={() => updateField("tone", tone.value)}
-                      className={`rounded-2xl border px-4 py-3 text-left text-sm transition ${
+                      className={`rounded-2xl border px-4 py-4 text-left text-sm transition ${
                         formData.tone === tone.value
-                          ? "border-emerald-500/60 bg-emerald-500/10"
+                          ? "border-emerald-500/60 bg-emerald-500/10 ring-2 ring-emerald-500/30"
                           : "border-slate-800/70 bg-slate-950/40 hover:border-slate-600/70"
                       }`}
                     >
-                      <p className="font-semibold text-white">{tone.label}</p>
-                      <p className="text-xs text-slate-400">{tone.blurb}</p>
+                      <p className="font-semibold text-white text-base">{tone.icon} {tone.label}</p>
+                      <p className="text-xs text-slate-400 mt-1">{tone.blurb}</p>
                     </button>
                   ))}
                 </div>
               </div>
 
               <div className="space-y-4">
-                <p className="text-sm font-semibold text-white">Difficulty</p>
+                <div>
+                  <p className="text-sm font-semibold text-white">⚡ How hard should it be?</p>
+                  <p className="text-xs text-slate-500 mt-1">You can always change this later</p>
+                </div>
                 <div className="grid gap-3 md:grid-cols-3">
                   {difficultyOptions.map((difficulty) => (
                     <button
                       key={difficulty.value}
                       type="button"
                       onClick={() => updateField("difficulty", difficulty.value)}
-                      className={`rounded-2xl border px-3 py-3 text-left text-sm transition ${
+                      className={`rounded-2xl border px-3 py-4 text-left text-sm transition ${
                         formData.difficulty === difficulty.value
-                          ? "border-rose-500/60 bg-rose-500/10"
+                          ? "border-rose-500/60 bg-rose-500/10 ring-2 ring-rose-500/30"
                           : "border-slate-800/70 bg-slate-950/40 hover:border-slate-600/70"
                       }`}
                     >
-                      <p className="font-semibold text-white">{difficulty.label}</p>
-                      <p className="text-xs text-slate-400">{difficulty.blurb}</p>
+                      <p className="font-semibold text-white text-base">{difficulty.icon} {difficulty.label}</p>
+                      <p className="text-xs text-slate-400 mt-1">{difficulty.blurb}</p>
                     </button>
                   ))}
                 </div>

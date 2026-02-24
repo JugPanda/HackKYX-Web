@@ -21,16 +21,19 @@ const navLinks = [
 
 const onboardingSteps = [
   {
-    title: "Describe Your Game",
-    description: "Tell us about your hero, enemies, and what the goal is. Just use plain English—no coding needed.",
+    title: "1. Tell Us Your Idea",
+    description: "Describe your dream game in simple words. Who's the hero? What's the adventure? No tech skills needed!",
+    icon: "💭",
   },
   {
-    title: "Customize the Feel",
-    description: "Pick a mood (hopeful, gritty, or heroic) and difficulty level that matches your vision.",
+    title: "2. Pick Your Style",
+    description: "Choose whether your game feels fun and bright, dark and challenging, or epic and heroic.",
+    icon: "🎨",
   },
   {
-    title: "Build & Share",
-    description: "We'll create a real playable game you can share with friends or publish to our community.",
+    title: "3. Play & Share",
+    description: "In minutes, you'll have a real game to play! Share it with friends or the whole world.",
+    icon: "🚀",
   },
 ];
 
@@ -105,28 +108,32 @@ export default function HomePage() {
                   className="text-4xl font-semibold leading-tight text-slate-900 dark:text-white sm:text-5xl lg:text-[3.5rem]"
                   variants={fadeInUp}
                 >
-                  Create Your Own Game with AI
+                  Turn Your Ideas Into Real Games
                 </motion.h1>
                 <motion.p 
                   className="max-w-2xl text-lg text-slate-700 dark:text-slate-300"
                   variants={fadeInUp}
                 >
-                  Describe your game idea in plain English, and we&apos;ll turn it into a playable game. 
-                  Share it with friends or publish it for the community to play.
+                  Ever dreamed of making your own video game? Now you can! Just describe what you want, 
+                  and watch it come to life. <span className="font-semibold text-emerald-600 dark:text-emerald-400">No coding. No experience needed.</span>
                 </motion.p>
                 <motion.div 
                   className="rounded-2xl border border-slate-200 dark:border-slate-800/70 bg-white dark:bg-slate-950/40 p-5 text-sm text-slate-700 dark:text-slate-300 shadow-lg shadow-slate-200/50 dark:shadow-none"
                   variants={fadeInUp}
                 >
-                  <ol className="mt-3 space-y-2">
-                    <li>
-                      <span className="font-semibold text-slate-900 dark:text-white">1. Describe your game idea</span>
+                  <p className="font-semibold text-emerald-600 dark:text-emerald-400 mb-3">✨ It&apos;s as easy as 1-2-3:</p>
+                  <ol className="space-y-3">
+                    <li className="flex items-start gap-3">
+                      <span className="flex-shrink-0 w-6 h-6 rounded-full bg-blue-100 dark:bg-blue-500/20 text-blue-600 dark:text-blue-400 text-xs font-bold flex items-center justify-center">1</span>
+                      <span className="text-slate-900 dark:text-white">Tell us about your game idea in plain words</span>
                     </li>
-                    <li>
-                      <span className="font-semibold text-slate-900 dark:text-white">2. Customize the characters and difficulty</span>
+                    <li className="flex items-start gap-3">
+                      <span className="flex-shrink-0 w-6 h-6 rounded-full bg-purple-100 dark:bg-purple-500/20 text-purple-600 dark:text-purple-400 text-xs font-bold flex items-center justify-center">2</span>
+                      <span className="text-slate-900 dark:text-white">Choose your hero, enemies, and game style</span>
                     </li>
-                    <li>
-                      <span className="font-semibold text-slate-900 dark:text-white">3. Build and share your game</span>
+                    <li className="flex items-start gap-3">
+                      <span className="flex-shrink-0 w-6 h-6 rounded-full bg-emerald-100 dark:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-xs font-bold flex items-center justify-center">3</span>
+                      <span className="text-slate-900 dark:text-white">Click &quot;Build&quot; and play your game!</span>
                     </li>
                   </ol>
                 </motion.div>
@@ -216,6 +223,7 @@ export default function HomePage() {
                   >
                     <Card className="border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/80 shadow-md shadow-slate-200/50 dark:shadow-none hover:shadow-lg hover:shadow-slate-300/50 dark:hover:shadow-none transition-shadow h-full">
                       <CardContent className="space-y-3 p-6">
+                        <span className="text-4xl">{step.icon}</span>
                         <p className="text-lg font-bold text-slate-900 dark:text-white">{step.title}</p>
                         <p className="text-slate-700 dark:text-slate-300 font-medium">{step.description}</p>
                       </CardContent>
@@ -349,33 +357,48 @@ export default function HomePage() {
         <section className="space-y-8 py-12">
           <div className="flex flex-col gap-4 text-center">
             <h2 className="text-3xl font-semibold text-slate-900 dark:text-white sm:text-4xl">
-              No Coding Required
+              Made for Everyone 🎮
             </h2>
             <p className="text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
-              Anyone can create a game. Just describe your idea, customize a few settings, and you&apos;re done!
+              Whether you&apos;re 8 or 80, you can make a game here. No coding, no downloads, no complicated stuff. 
+              If you can describe your idea, you can create it!
             </p>
+            <div className="flex flex-wrap justify-center gap-4 mt-4">
+              <div className="flex items-center gap-2 px-4 py-2 bg-emerald-100 dark:bg-emerald-500/10 rounded-full text-emerald-700 dark:text-emerald-300 text-sm font-medium">
+                ✓ Free to start
+              </div>
+              <div className="flex items-center gap-2 px-4 py-2 bg-blue-100 dark:bg-blue-500/10 rounded-full text-blue-700 dark:text-blue-300 text-sm font-medium">
+                ✓ Works in your browser
+              </div>
+              <div className="flex items-center gap-2 px-4 py-2 bg-purple-100 dark:bg-purple-500/10 rounded-full text-purple-700 dark:text-purple-300 text-sm font-medium">
+                ✓ Share with anyone
+              </div>
+            </div>
           </div>
         </section>
 
           <section className="rounded-3xl border border-slate-200 dark:border-slate-800/70 bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 dark:from-[#0d1117] dark:via-[#05070c] dark:to-black p-10 text-center shadow-2xl shadow-blue-200/30 dark:shadow-none">
             <div className="space-y-4">
               <h2 className="text-3xl font-semibold text-slate-900 dark:text-white sm:text-4xl">
-                Ready to Create Your Game?
+                Ready to Make Something Amazing? 🎮
               </h2>
-              <p className="text-slate-600 dark:text-slate-400">
-                Sign up now and start building your own game in minutes.
+              <p className="text-slate-600 dark:text-slate-400 max-w-xl mx-auto">
+                Join thousands of creators who&apos;ve already made their dream games. It only takes a few minutes to get started!
               </p>
             </div>
             <div className="mt-6 flex flex-wrap justify-center gap-4">
-              <Button size="lg" className="bg-blue-600 hover:bg-blue-700 text-white font-semibold shadow-lg" asChild>
+              <Button size="lg" className="bg-blue-600 hover:bg-blue-700 text-white font-semibold shadow-lg text-lg px-8" asChild>
                 <Link href="/auth/sign-up">
-                  Get Started Free
+                  Start Creating — It&apos;s Free! 🚀
                 </Link>
               </Button>
               <Button size="lg" variant="outline" className="border-2 border-slate-300 dark:border-slate-600 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-900 dark:text-slate-100 font-semibold" asChild>
-                <Link href="/lab">Try It First</Link>
+                <Link href="/lab">Try Without Signing Up</Link>
               </Button>
             </div>
+            <p className="mt-4 text-sm text-slate-500 dark:text-slate-500">
+              No credit card needed • Takes less than 2 minutes
+            </p>
           </section>
         </main>
 

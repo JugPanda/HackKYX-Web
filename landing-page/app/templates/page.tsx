@@ -102,15 +102,26 @@ export default function TemplatesPage() {
         >
           <Badge className="border-purple-500/40 bg-purple-500/10 text-purple-100">
             <Sparkles className="w-3 h-3 mr-1" />
-            50+ Game Templates
+            50+ Ready-to-Use Games
           </Badge>
           <h1 className="text-4xl font-semibold text-white sm:text-5xl">
-            Game Template Library
+            Pick a Template, Make It Yours 🎨
           </h1>
           <p className="text-lg text-slate-300 max-w-3xl">
-            Start with a professional template and customize it to create your dream game. 
-            No coding required - just pick, customize, and play!
+            Don&apos;t know where to start? Choose from our collection of ready-made games! 
+            Just pick one you like, change the names and colors, and it&apos;s yours to share.
           </p>
+          <div className="flex flex-wrap gap-3 pt-2">
+            <div className="flex items-center gap-2 px-3 py-1.5 bg-emerald-500/10 rounded-full text-emerald-300 text-sm">
+              ⚡ Instant - No waiting
+            </div>
+            <div className="flex items-center gap-2 px-3 py-1.5 bg-blue-500/10 rounded-full text-blue-300 text-sm">
+              🎯 Professional quality
+            </div>
+            <div className="flex items-center gap-2 px-3 py-1.5 bg-purple-500/10 rounded-full text-purple-300 text-sm">
+              ✏️ Fully customizable
+            </div>
+          </div>
         </motion.div>
 
         {/* Search and Filter */}
@@ -125,7 +136,7 @@ export default function TemplatesPage() {
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
               <Input
-                placeholder="Search templates... (e.g., 'platformer', 'puzzle', 'zelda')"
+                placeholder="Search for games... (try 'mario', 'puzzle', 'space', 'adventure')"
                 value={searchQuery}
                 onChange={(e) => handleSearch(e.target.value)}
                 className="pl-10 bg-slate-950/40 border-slate-800/70 text-base"

@@ -217,19 +217,19 @@ export default function DashboardPage() {
                           : "default"
                       }
                     >
-                      {game.status}
+                      {game.status === "published" ? "🌍 Live" : game.status === "draft" ? "📝 Draft" : game.status}
                     </Badge>
                   </div>
                 </CardHeader>
                 <CardContent>
                   <p className="text-sm text-muted-foreground line-clamp-2 mb-4">
-                    {game.description || "No description"}
+                    {game.description || "No description yet"}
                   </p>
 
                   <div className="flex items-center gap-4 text-sm text-muted-foreground mb-4">
-                    <span>❤️ {game.like_count}</span>
-                    <span>▶️ {game.play_count}</span>
-                    <Badge variant="default">{game.visibility}</Badge>
+                    <span title="Likes">❤️ {game.like_count}</span>
+                    <span title="Plays">▶️ {game.play_count}</span>
+                    <Badge variant="default">{game.visibility === "public" ? "🌐 Public" : "🔒 Private"}</Badge>
                   </div>
 
                   <GameCardActions game={game} profileUsername={profile?.username} onDelete={handleGameDeleted} />
@@ -239,13 +239,22 @@ export default function DashboardPage() {
             ))}
           </motion.div>
         ) : (
-          <Card className="p-12 text-center">
-            <p className="text-muted-foreground mb-4">
-              You haven&apos;t created any games yet.
-            </p>
-            <Link href="/lab">
-              <Button>Create Your First Game</Button>
-            </Link>
+          <Card className="p-12 text-center border-dashed border-2">
+            <div className="space-y-4">
+              <div className="text-6xl">🎮</div>
+              <h3 className="text-xl font-semibold">Ready to create your first game?</h3>
+              <p className="text-muted-foreground max-w-md mx-auto">
+                It only takes a few minutes! Describe your idea, pick some options, and you&apos;ll have a playable game to share.
+              </p>
+              <div className="flex flex-wrap justify-center gap-3 pt-2">
+                <Link href="/lab">
+                  <Button size="lg">🚀 Create Your First Game</Button>
+                </Link>
+                <Link href="/templates">
+                  <Button variant="outline" size="lg">📚 Browse Templates</Button>
+                </Link>
+              </div>
+            </div>
           </Card>
         )}
       </div>
