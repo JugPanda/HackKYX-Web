@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
+import { gameIdSchema } from "@/lib/validation";
 
 export async function POST(request: Request) {
   try {
@@ -15,8 +16,10 @@ export async function POST(request: Request) {
 
     const { gameId } = await request.json();
 
-    if (!gameId) {
-      return NextResponse.json({ error: "gameId is required" }, { status: 400 });
+    // Validate gameId is a proper UUID
+    const validation = gameIdSchema.safeParse(gameId);
+    if (!validation.success) {
+      return NextResponse.json({ error: "Invalid game ID format" }, { status: 400 });
     }
 
     // Check if like already exists

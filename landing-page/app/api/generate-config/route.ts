@@ -49,7 +49,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ ok: true, config });
     }
 
-    console.log("Using AI to generate game config from prompt...");
+    // console.log("Using AI to generate game config from prompt...");
 
     // Use OpenAI to intelligently parse the prompt
     const completion = await openai.chat.completions.create({
@@ -114,7 +114,7 @@ Guidelines:
       },
     };
 
-    console.log("Successfully generated AI config:", config.story.leadName);
+    // console.log("Successfully generated AI config:", config.story.leadName);
 
     return NextResponse.json({ ok: true, config });
   } catch (error) {

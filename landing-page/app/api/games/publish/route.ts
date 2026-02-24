@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
+import { gameIdSchema, visibilitySchema } from "@/lib/validation";
 
 export async function POST(request: Request) {
   try {
@@ -15,7 +16,15 @@ export async function POST(request: Request) {
 
     const { gameId, visibility } = await request.json();
 
-    if (!["private", "unlisted", "public"].includes(visibility)) {
+    // Validate gameId is a proper UUID
+    const gameValidation = gameIdSchema.safeParse(gameId);
+    if (!gameValidation.success) {
+      return NextResponse.json({ error: "Invalid game ID format" }, { status: 400 });
+    }
+
+    // Validate visibility
+    const visValidation = visibilitySchema.safeParse(visibility);
+    if (!visValidation.success) {
       return NextResponse.json({ error: "Invalid visibility value" }, { status: 400 });
     }
 

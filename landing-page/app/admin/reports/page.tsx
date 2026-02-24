@@ -2,8 +2,8 @@ import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { checkModeratorAccess } from "@/lib/admin-check";
+import { ReportActions } from "@/components/admin/report-actions";
 
 export default async function AdminReportsPage() {
   // Check for moderator or admin access
@@ -78,17 +78,11 @@ export default async function AdminReportsPage() {
                     <p className="text-sm">{report.reason}</p>
                   </div>
 
-                  <div className="flex gap-2">
-                    <Button size="sm" variant="default">
-                      Review
-                    </Button>
-                    <Button size="sm" variant="outline">
-                      Dismiss
-                    </Button>
-                    <Button size="sm" variant="default">
-                      Take Action
-                    </Button>
-                  </div>
+                  <ReportActions 
+                    reportId={report.id}
+                    targetType={report.reported_user_id ? "user" : report.game_id ? "game" : "comment"}
+                    targetId={report.reported_user_id || report.game_id || report.comment_id}
+                  />
                 </div>
               </CardContent>
             </Card>

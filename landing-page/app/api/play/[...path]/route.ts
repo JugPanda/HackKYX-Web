@@ -29,7 +29,7 @@ export async function GET(
 ) {
   try {
     const pathSegments = params.path;
-    console.log('[PLAY API] Request path segments:', pathSegments);
+    // console.log('[PLAY API] Request path segments:', pathSegments);
     
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
     
@@ -82,7 +82,7 @@ export async function GET(
       gameId = pathSegments[0];
       filename = pathSegments[1] || 'index.html';
       storagePath = `games/${gameId}/${filename}`;
-      console.log('[PLAY API] Resolved storage path:', storagePath);
+      // console.log('[PLAY API] Resolved storage path:', storagePath);
     }
 
     // Track play count only when serving index.html (not for each asset)
@@ -95,13 +95,13 @@ export async function GET(
           if (error) {
             console.error('[PLAY API] Failed to increment play count:', error);
           } else {
-            console.log('[PLAY API] Play count incremented for game:', gameId);
+            // console.log('[PLAY API] Play count incremented for game:', gameId);
           }
         });
     }
 
     // Download the file from storage
-    console.log('[PLAY API] Attempting to download from:', storagePath);
+    // console.log('[PLAY API] Attempting to download from:', storagePath);
     const { data: fileData, error: fileError } = await supabase.storage
       .from("game-bundles")
       .download(storagePath);
@@ -177,7 +177,7 @@ export async function GET(
       });
     }
     
-    console.log('[PLAY API] File downloaded successfully, size:', fileData.size);
+    // console.log('[PLAY API] File downloaded successfully, size:', fileData.size);
 
     // Determine content type based on file extension
     let contentType = "text/html";

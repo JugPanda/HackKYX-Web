@@ -2,6 +2,10 @@ import { createClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
 import { rateLimit, RATE_LIMITS } from "@/lib/rate-limit";
 import { checkContent } from "@/lib/content-filter";
+import { z } from "zod";
+
+// UUID validation schema
+const uuidSchema = z.string().uuid("Invalid ID format");
 
 export async function POST(request: Request) {
   try {
@@ -16,7 +20,7 @@ export async function POST(request: Request) {
     }
 
     // Rate limiting
-    if (!rateLimit(`report:${user.id}`, RATE_LIMITS.REPORT)) {
+    if (!(await rateLimit(`report:${user.id}`, RATE_LIMITS.REPORT))) {
       return NextResponse.json(
         { error: "Too many reports. Please try again later." },
         { status: 429 }
@@ -29,7 +33,13 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Invalid target type" }, { status: 400 });
     }
 
-    if (!targetId || !reason) {
+    // Validate targetId is a proper UUID
+    const targetValidation = uuidSchema.safeParse(targetId);
+    if (!targetValidation.success) {
+      return NextResponse.json({ error: "Invalid target ID format" }, { status: 400 });
+    }
+
+    if (!reason) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
 

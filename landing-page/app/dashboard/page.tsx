@@ -90,7 +90,7 @@ export default function DashboardPage() {
       .eq("id", user.id)
       .single();
 
-    console.log("Fetched games:", gamesData?.length || 0, gamesData);
+    // console.log("Fetched games:", gamesData?.length || 0, gamesData);
     setGames(gamesData || []);
     setProfile(profileData);
     setLoading(false);

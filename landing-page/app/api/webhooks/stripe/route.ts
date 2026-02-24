@@ -77,7 +77,7 @@ export async function POST(request: NextRequest) {
           })
           .eq("id", profile.id);
 
-        console.log(`Subscription ${subscription.status} for user ${profile.id}:`, tier);
+        // console.log(`Subscription ${subscription.status} for user ${profile.id}:`, tier);
         break;
       }
 
@@ -108,7 +108,7 @@ export async function POST(request: NextRequest) {
           })
           .eq("id", profile.id);
 
-        console.log(`Subscription canceled for user ${profile.id}`);
+        // console.log(`Subscription canceled for user ${profile.id}`);
         break;
       }
 
@@ -130,7 +130,7 @@ export async function POST(request: NextRequest) {
             .eq("id", profile.id);
         }
 
-        console.log(`Payment succeeded for customer ${customerId}`);
+        // console.log(`Payment succeeded for customer ${customerId}`);
         break;
       }
 
@@ -152,12 +152,12 @@ export async function POST(request: NextRequest) {
             .eq("id", profile.id);
         }
 
-        console.log(`Payment failed for customer ${customerId}`);
+        // console.log(`Payment failed for customer ${customerId}`);
         break;
       }
 
       default:
-        console.log(`Unhandled event type: ${event.type}`);
+        // console.log(`Unhandled event type: ${event.type}`);
     }
 
     return NextResponse.json({ received: true });

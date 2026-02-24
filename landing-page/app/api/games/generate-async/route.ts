@@ -43,7 +43,7 @@ export async function POST(request: Request) {
     // We'll do it synchronously here since Vercel doesn't support true background jobs on Hobby
     // But we'll stream the response to avoid timeout
     
-    console.log(`[Async Gen] Starting generation for game ${gameId}`);
+    // console.log(`[Async Gen] Starting generation for game ${gameId}`);
 
     // Update game status to generating
     await supabase
@@ -87,7 +87,7 @@ async function generateGameCodeAsync(
   const openai = getOpenAIClient();
   
   try {
-    console.log(`[Async Gen] Generating code for game ${gameId}...`);
+    // console.log(`[Async Gen] Generating code for game ${gameId}...`);
 
     // Build the prompt
     const language = gameRequest.language || "python";
@@ -122,7 +122,7 @@ Return ONLY the complete Python code with proper async/await structure.`;
       throw new Error("No code generated from AI");
     }
 
-    console.log(`[Async Gen] Code generated for game ${gameId}, updating database...`);
+    // console.log(`[Async Gen] Code generated for game ${gameId}, updating database...`);
 
     // Update game with generated code
     const { error: updateError } = await supabase
@@ -139,7 +139,7 @@ Return ONLY the complete Python code with proper async/await structure.`;
       throw updateError;
     }
 
-    console.log(`[Async Gen] Successfully completed generation for game ${gameId}`);
+    // console.log(`[Async Gen] Successfully completed generation for game ${gameId}`);
 
   } catch (error) {
     console.error(`[Async Gen] Error generating game ${gameId}:`, error);

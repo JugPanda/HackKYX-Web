@@ -233,6 +233,21 @@ export async function GET(request: Request) {
       );
     }
 
+    // Verify user owns this game before showing build status
+    const { data: game } = await supabase
+      .from("games")
+      .select("id")
+      .eq("id", gameId)
+      .eq("user_id", user.id)
+      .single();
+
+    if (!game) {
+      return NextResponse.json(
+        { error: "Game not found or access denied" },
+        { status: 404 }
+      );
+    }
+
     // Fetch build status
     const { data: buildJob, error } = await supabase
       .from("build_queue")

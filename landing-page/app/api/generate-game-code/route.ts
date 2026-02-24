@@ -57,10 +57,10 @@ export async function POST(request: Request) {
       ? buildJavaScriptGamePrompt(body)
       : buildGameGenerationPrompt(body);
 
-    console.log("Generating game code with AI...");
-    console.log("Language:", language, "Hero:", body.heroName, "Enemy:", body.enemyName);
+    // console.log("Generating game code with AI...");
+    // console.log("Language:", language, "Hero:", body.heroName, "Enemy:", body.enemyName);
     if (body.description) {
-      console.log("User Description:", body.description.substring(0, 100) + (body.description.length > 100 ? "..." : ""));
+      // console.log("User Description:", body.description.substring(0, 100) + (body.description.length > 100 ? "..." : ""));
     }
 
     // Call OpenAI to generate the game code
@@ -186,7 +186,7 @@ You write complete, production-ready games that feel satisfying to play.`;
       },
     };
 
-    console.log("Successfully generated game code");
+    // console.log("Successfully generated game code");
 
     return NextResponse.json({
       success: true,

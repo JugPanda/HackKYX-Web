@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
 import { rateLimit, RATE_LIMITS } from "@/lib/rate-limit";
 import { checkContent, sanitizeText } from "@/lib/content-filter";
+import { gameIdSchema } from "@/lib/validation";
 
 export async function POST(request: Request) {
   try {
@@ -16,7 +17,7 @@ export async function POST(request: Request) {
     }
 
     // Rate limiting
-    if (!rateLimit(`comment:${user.id}`, RATE_LIMITS.COMMENT)) {
+    if (!(await rateLimit(`comment:${user.id}`, RATE_LIMITS.COMMENT))) {
       return NextResponse.json(
         { error: "Too many comments. Please slow down." },
         { status: 429 }
@@ -25,7 +26,13 @@ export async function POST(request: Request) {
 
     const { gameId, content } = await request.json();
 
-    if (!gameId || !content) {
+    // Validate gameId format
+    const gameValidation = gameIdSchema.safeParse(gameId);
+    if (!gameValidation.success) {
+      return NextResponse.json({ error: "Invalid game ID format" }, { status: 400 });
+    }
+
+    if (!content) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
 

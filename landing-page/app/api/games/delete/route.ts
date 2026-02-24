@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
 import { gameIdSchema } from "@/lib/validation";
+import { rateLimit } from "@/lib/rate-limit";
 
 export async function DELETE(request: Request) {
   try {
@@ -12,6 +13,14 @@ export async function DELETE(request: Request) {
 
     if (!user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    // Rate limiting for delete operations
+    if (!(await rateLimit(`delete:${user.id}`, { maxRequests: 10, windowMs: 60 * 60 * 1000 }))) {
+      return NextResponse.json(
+        { error: "Too many delete operations. Please try again later." },
+        { status: 429 }
+      );
     }
 
     const { searchParams } = new URL(request.url);
